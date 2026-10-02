@@ -15,3 +15,7 @@ python3 tzi_trener.py
 Bez závislostí, stačí Python 3. Postup kartiček se ukládá do `~/.tzi_trener.json`.
 
 Obsah vznikl s pomocí AI (Claude Sonnet 5.5, Anthropic) z mých poznámek z přednášky.
+
+## Licence
+
+MIT, viz [LICENSE](LICENSE).
