@@ -157,6 +157,7 @@ HTML = r"""
   .question-box .hint { font-size: .85rem; color: #9ca3af; margin-top: 6px; }
   .qsrc { font-size: .8rem; color: #9ca3af; margin-bottom: 6px; }
   .question-text { font-size: 1.15rem; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere; }
+  sub, sup { font-size: .72em; line-height: 0; }
   .question-text.calc { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.5rem; }
   .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
   .opt {
@@ -350,6 +351,14 @@ const show = id => {
 const norm = s => { s = (s || '').toUpperCase().replace(/[\s_]/g, ''); return s.replace(/^0+(?=.)/, ''); };
 const isInput = q => q.type === 'input';
 const shuffle = a => [...a].sort(() => Math.random() - .5);
+// Zápis z banky (a_n, Z^n, a_(n-1), ->) převede na HTML s dolními/horními indexy a šipkami.
+function fmt(s) {
+  s = String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return s
+    .replace(/_\(([^)]+)\)/g, '<sub>$1</sub>').replace(/_([A-Za-z0-9]+)/g, '<sub>$1</sub>')
+    .replace(/\^\(([^)]+)\)/g, '<sup>$1</sup>').replace(/\^([A-Za-z0-9]+)/g, '<sup>$1</sup>')
+    .replace(/-&gt;/g, '→').replace(/&lt;-/g, '←').replace(/\.\.\./g, '…');
+}
 
 async function init() {
   const r = await fetch('/api/sources');
@@ -586,7 +595,7 @@ function renderQ() {
   const src = sources.find(s => s.id === currentSource);
   const lec = q.id.split('-')[0];
   $('q-src').textContent = `${lec}. přednáška · otázka ${q.number}` + (isInput(q) ? ' · příklad na výsledek' : ' · teorie');
-  const t = $('q-text'); t.textContent = q.text; t.className = 'question-text' + (isInput(q) ? ' calc' : '');
+  const t = $('q-text'); t.innerHTML = fmt(q.text); t.className = 'question-text' + (isInput(q) ? ' calc' : '');
   $('q-hint').textContent = isInput(q) ? (q.hint || '') : (q.correct.length > 1 ? '(Vyberte více správných odpovědí)' : '');
   $('feedback').textContent = ''; $('feedback').className = 'feedback';
   const sol = $('solution'); sol.style.display = 'none'; sol.textContent = '';
@@ -598,8 +607,7 @@ function renderQ() {
     for (const [letter, text] of Object.entries(q.options)) {
       const div = document.createElement('div');
       div.className = 'opt'; div.id = 'opt-' + letter;
-      div.innerHTML = `<span class="letter">${letter}</span><span></span>`;
-      div.lastChild.textContent = text;
+      div.innerHTML = `<span class="letter">${letter}</span><span>${fmt(text)}</span>`;
       div.addEventListener('click', () => toggleOpt(letter));
       optsEl.appendChild(div);
     }
@@ -646,7 +654,7 @@ function showSolution(q) {
   const text = isInput(q) ? q.solution : q.explanation;
   if (!text) return;
   el.className = 'solution' + (isInput(q) ? '' : ' explain');
-  el.textContent = text; el.style.display = 'block';
+  el.innerHTML = fmt(text); el.style.display = 'block';
 }
 
 function toggleOpt(letter) {
