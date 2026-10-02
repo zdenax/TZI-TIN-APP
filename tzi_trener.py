@@ -1,551 +1,882 @@
 #!/usr/bin/env python3
-"""TZI Trenér: opakování 1. přednášky (číselné soustavy).
+"""TZI Trenér: kvíz na opakování přednášek z Teoretické informatiky (KI/TIN).
 
-Spuštění:  python3 tzi_trener.py          # spustí aplikaci v prohlížeči (http://127.0.0.1:8000)
-           python3 tzi_trener.py --cli    # terminálová verze
-Bez závislostí (jen standardní knihovna). Celé webové rozhraní je vložené v tomto souboru (HTML níže).
-Postup kartiček v terminálové verzi se ukládá do ~/.tzi_trener.json.
+Spuštění:  python3 tzi_trener.py            # http://127.0.0.1:5051, otevře se prohlížeč
+           python3 tzi_trener.py --lan      # navíc dostupné v místní síti (telefon)
+Bez závislostí (jen standardní knihovna). Banky otázek jsou v banky/*.json, jedna na přednášku.
 """
-import http.server
 import json
-import random
+import os
+import socket
 import sys
 import threading
 import webbrowser
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
-HTML = r"""<title>TZI Trenér</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap">
-<style>
-/* Layout: one narrow column, tab bar on top, one task card at a time; numbers in mono like a terminal printout */
-:root{
-  --bg:#f3f5f8; --surface:#ffffff; --fg:#14202e; --muted:#5b6878; --line:#d5dbe4;
-  --accent:#1457c4; --accent-fg:#ffffff; --good:#17794a; --good-bg:#e3f4ea; --bad:#b3261e; --bad-bg:#fbe7e5;
-  --display:'Bricolage Grotesque',system-ui,sans-serif; --body:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0f161f; --surface:#18222e; --fg:#e6ecf3; --muted:#93a1b3; --line:#2b3948;
-  --accent:#6aa3ff; --accent-fg:#0b1624; --good:#5ed39a; --good-bg:#12301f; --bad:#ff8f86; --bad-bg:#3a1916; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0f161f; --surface:#18222e; --fg:#e6ecf3; --muted:#93a1b3; --line:#2b3948;
-  --accent:#6aa3ff; --accent-fg:#0b1624; --good:#5ed39a; --good-bg:#12301f; --bad:#ff8f86; --bad-bg:#3a1916; color-scheme:dark}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 48px}
-main{max-width:640px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}
-h1{font-family:var(--display);font-size:1.7rem;line-height:1.1;margin:0;text-wrap:balance}
-.sub{color:var(--muted);margin:4px 0 0;font-size:.9rem}
-nav{display:flex;gap:6px;border-bottom:1px solid var(--line)}
-nav button{flex:1;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);font:500 .95rem var(--body);padding:10px 4px;cursor:pointer}
-nav button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
-.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:.85rem;font-family:var(--mono)}
-.q{font-family:var(--display);font-size:1.3rem;line-height:1.25;margin:0;text-wrap:balance}
-.task{font-family:var(--mono);font-size:1.5rem;margin:0;overflow-wrap:anywhere}
-.ans{border-top:1px dashed var(--line);padding-top:12px;min-width:0;overflow-wrap:anywhere}
-.ans p{margin:0 0 8px}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.btn{font:500 1rem var(--body);padding:11px 16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;flex:1;min-width:120px}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
-.btn.good{background:var(--good-bg);border-color:var(--good);color:var(--good)}
-.btn.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
-input[type=text],select{font:400 1.2rem var(--mono);padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);width:100%;min-width:0}
-select{font:400 .95rem var(--body);width:auto;flex:1}
-.fb{padding:10px 12px;border-radius:8px;font-weight:500}
-.fb.ok{background:var(--good-bg);color:var(--good)} .fb.no{background:var(--bad-bg);color:var(--bad)}
-.steps{font-family:var(--mono);font-size:.9rem;overflow-x:auto}
-.steps table{border-collapse:collapse} .steps td,.steps th{border:1px solid var(--line);padding:3px 10px;text-align:right}
-.steps p{margin:6px 0}
-.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
-.link{background:none;border:0;color:var(--muted);font:.85rem var(--body);text-decoration:underline;cursor:pointer;padding:4px;align-self:flex-start}
-@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s}}
-</style>
-
-<main>
-  <header>
-    <h1>TZI Trenér</h1>
-    <p class="sub">KI/TIN, 1. přednáška: číselné soustavy. Kartičky na teorii a generované příklady na papír.</p>
-  </header>
-  <nav role="tablist" aria-label="Režim">
-    <button role="tab" id="t-cards" aria-selected="true">Teorie</button>
-    <button role="tab" id="t-conv" aria-selected="false">Převody</button>
-    <button role="tab" id="t-arit" aria-selected="false">Aritmetika</button>
-  </nav>
-  <section id="view"></section>
-</main>
-
-<script>
-const D="0123456789ABCDEF";
-const sub=(s,z)=>`(${s})<sub>${z}</sub>`;
-const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-const pick=a=>a[rnd(0,a.length-1)];
-const toS=(n,z)=>n.toString(z).toUpperCase();
-const clean=s=>s.toUpperCase().replace(/[\s_]/g,'').replace(/^0+(?=.)/,'');
-let store={};try{store=JSON.parse(localStorage.getItem('tzi')||'{}')}catch(e){}
-const save=()=>{try{localStorage.setItem('tzi',JSON.stringify(store))}catch(e){}};
-
-/* ---------- Teorie ---------- */
-const CARDS=[
-["Co je číselná soustava? Jak se dělí?","Způsob reprezentace čísel. Čísla se tvoří z uspořádaných souborů znaků = <b>číslic</b>. Dělí se na <b>poziční</b> a <b>nepoziční</b>."],
-["Čím se liší poziční a nepoziční soustava? Příklady?","Poziční má <b>základ Z &gt; 1</b> a hodnota číslice závisí na pozici (dvojková, osmičková, desítková, šestnáctková). Nepoziční základ nemá, příklad: <b>římská</b> soustava (I, II, III, IV, V, VI…)."],
-["Co udává základ soustavy?","<b>Max. počet číslic</b>, které jsou v soustavě k dispozici. Soustava o základu Z má číslice 0 až Z−1. V osmičkové neexistují 8 a 9, po 7 následuje 10."],
-["Napiš obecný zápis čísla v poziční soustavě o základu Z.","<p>a = a<sub>n</sub>·Z<sup>n</sup> + a<sub>n−1</sub>·Z<sup>n−1</sup> + … + a<sub>1</sub>·Z<sup>1</sup> + a<sub>0</sub>·Z<sup>0</sup></p><p>Nejvyšší mocnina = <b>počet číslic − 1</b>.</p>"],
-["Rozepiš (251)<sub>10</sub> a (101)<sub>2</sub> podle obecného zápisu.","<p>(251)<sub>10</sub> = 2·10² + 5·10¹ + 1·10⁰ = 200 + 50 + 1 = 251</p><p>(101)<sub>2</sub> = 1·2² + 0·2¹ + 1·2⁰ = 4 + 0 + 1 = 5</p>"],
-["Jak se zapisují číslice 10 až 15 v šestnáctkové soustavě?","A=10, B=11, C=12, D=13, E=14, F=15."],
-["Proč jde převod 2 ↔ 16 po čtveřicích bitů a 2 ↔ 8 po trojicích?","16 = 2⁴ a 8 = 2³. Jedna hex číslice nese přesně <b>4 bity</b>, jedna osmičková <b>3 bity</b>. Např. (1010 1111)<sub>2</sub> = (AF)<sub>16</sub>. Skupiny se dělí <b>zprava</b>."],
-["Postup převodu 10 → Z a Z → 10?","<p><b>10 → Z:</b> dělím základem Z, zapisuji zbytky, dokud podíl není 0; zbytky čtu <b>zdola nahoru</b>.</p><p><b>Z → 10:</b> rozvoj podle obecného zápisu (číslice · Z<sup>pozice</sup>, sečíst).</p>"],
-["Jak se převádí 8 ↔ 16?","Oklikou přes dvojkovou: osmičkové číslice na trojice bitů, pak bity po čtveřicích zprava (a naopak)."],
-["Pravidla sčítání ve dvojkové soustavě?","0+0=0, 0+1=1, 1+0=1, <b>1+1 = (10)<sub>2</sub></b> → zapíšu 0, přenos 1 do vyššího řádu. 1+1+1 = (11)<sub>2</sub> → zapíšu 1, přenos 1."],
-["Jak se násobí a dělí ve dvojkové soustavě?","Násobení jako na papíře: pro každou 1 opíšu první číslo posunuté o řád doleva, pak sečtu. Dělení písemně jako v desítkové (odčítám dělitele nebo 0). Dělení nulou není definováno."],
-["Co znamená N ⊂ Z ⊂ Q ⊂ R ⊂ C?","Každý obor je částí dalšího: přirozená (0, 1, 2…), celá, racionální (zlomky), reálná (i √2, π), komplexní (a + ib)."],
-["Vysvětli značení n!, |x|, Σ, Π.","<p>n! = 1·2·3·…·n, 0! = 1 (5! = 120)</p><p>|x| absolutní hodnota: |−5| = 5</p><p>Σ součet a<sub>1</sub> + … + a<sub>n</sub>, Π součin a<sub>1</sub>·…·a<sub>n</sub></p>"],
-["Čemu se rovná a⁰ a co je zvláštní případ?","a⁰ = 1. Zvláštní případ je 0⁰ (na přednášce naznačeno na tabuli, ověřit)."]
-];
-let deck=[],ci=0,shown=false;
-function newDeck(onlyUnknown){
-  const known=store.known||[];
-  deck=CARDS.map((_,i)=>i).filter(i=>!onlyUnknown||!known.includes(i));
-  for(let i=deck.length-1;i>0;i--){const j=rnd(0,i);[deck[i],deck[j]]=[deck[j],deck[i]]}
-  ci=0;shown=false;
-}
-function viewCards(){
-  const v=document.getElementById('view');
-  const known=(store.known||[]).length;
-  if(!deck.length||ci>=deck.length){
-    v.innerHTML=`<div class="card"><p class="q">Balíček hotový</p><p>Umíš ${known} z ${CARDS.length} kartiček.</p>
-    <div class="row"><button class="btn primary" id="again">${known<CARDS.length?'Projít ty, co neumím':'Znovu všechny'}</button><button class="btn" id="all">Všechny od začátku</button></div></div>`;
-    document.getElementById('again').onclick=()=>{if(known>=CARDS.length)store.known=[];save();newDeck(true);viewCards()};
-    document.getElementById('all').onclick=()=>{newDeck(false);viewCards()};
-    return;
-  }
-  const idx=deck[ci],c=CARDS[idx];
-  v.innerHTML=`<div class="card">
-    <div class="meta"><span>Kartička ${ci+1} / ${deck.length}</span><span>umím: ${known}/${CARDS.length}</span></div>
-    <div class="bar"><i style="width:${ci/deck.length*100}%"></i></div>
-    <p class="q">${c[0]}</p>
-    ${shown?`<div class="ans">${c[1].startsWith('<p>')?c[1]:'<p>'+c[1]+'</p>'}</div>
-      <div class="row"><button class="btn bad" id="no">Neuměl jsem</button><button class="btn good" id="yes">Uměl jsem</button></div>`
-      :`<button class="btn primary" id="show">Ukázat odpověď</button>`}
-  </div>`;
-  if(!shown){document.getElementById('show').onclick=()=>{shown=true;viewCards()};return}
-  document.getElementById('yes').onclick=()=>{const k=new Set(store.known||[]);k.add(idx);store.known=[...k];save();ci++;shown=false;viewCards()};
-  document.getElementById('no').onclick=()=>{store.known=(store.known||[]).filter(x=>x!==idx);save();deck.push(idx);ci++;shown=false;viewCards()};
-}
-
-/* ---------- Převody ---------- */
-const MODES={
- all:"Všechny směry",d2z:"Z desítkové (2, 8, 16)",z2d:"Do desítkové",b2o:"2 → 8",o2b:"8 → 2",b2h:"2 → 16",h2b:"16 → 2",o2h:"8 → 16",h2o:"16 → 8"};
-const SPEC={d2z:null,z2d:null,b2o:[2,8],o2b:[8,2],b2h:[2,16],h2b:[16,2],o2h:[8,16],h2o:[16,8]};
-let cmode=localStorage.getItem&&'all',ctask=null,cdone=false,cstat={ok:0,all:0};
-try{cmode=localStorage.getItem('tzi-mode')||'all'}catch(e){}
-function groups(s,k){s=s.padStart(Math.ceil(s.length/k)*k,'0');return s.match(new RegExp('.{'+k+'}','g'))}
-function steps(s,from,to){
-  const n=parseInt(s,from);let h='';
-  if(from===10){
-    const rows=[];let m=n;while(m>0){rows.push([m,Math.floor(m/to),m%to]);m=Math.floor(m/to)}
-    h+=`<table><tr><th>dělení</th><th>podíl</th><th>zbytek</th></tr>`+rows.map(r=>`<tr><td>${r[0]} : ${to}</td><td>${r[1]}</td><td>${r[2]}${r[2]>9?' = '+D[r[2]]:''}</td></tr>`).join('')+`</table><p>Zbytky zdola nahoru: <b>${toS(n,to)}</b></p>`;
-  }else if(to===10){
-    const L=s.length,t=[...s].map((c,i)=>`${D.indexOf(c)}·${from}^${L-1-i}`),v=[...s].map((c,i)=>D.indexOf(c)*from**(L-1-i));
-    h+=`<p>${t.join(' + ')}</p><p>= ${v.join(' + ')} = <b>${n}</b></p>`;
-  }else{
-    const k=x=>x===2?1:x===8?3:4;
-    if(from===2){const g=groups(s,k(to));h+=`<p>Zprava po ${k(to)} bitech: ${g.join(' | ')}</p><p>→ ${g.map(x=>D[parseInt(x,2)]).join(' ')} = <b>${toS(n,to)}</b></p>`}
-    else if(to===2){const g=[...s].map(c=>parseInt(c,from).toString(2).padStart(k(from),'0'));h+=`<p>Každá číslice na ${k(from)} bity: ${g.join(' | ')}</p><p>= <b>${toS(n,2)}</b> (vedoucí nuly pryč)</p>`}
-    else{const b=toS(n,2),g=groups(b,k(to));h+=`<p>Přes dvojkovou: ${s} = ${b}</p><p>Po ${k(to)} bitech zprava: ${g.join(' | ')} → <b>${toS(n,to)}</b></p>`}
-  }
-  const chk=to===10?'':`<p>Kontrola zpět do desítkové: ${parseInt(toS(n,to),to)}</p>`;
-  return h+chk;
-}
-function newConv(){
-  let m=cmode==='all'?pick(Object.keys(SPEC)):cmode,from,to,s;
-  if(m==='d2z'){from=10;to=pick([2,2,8,16]);s=String(rnd(10,to===2?200:900))}
-  else if(m==='z2d'){from=pick([2,8,16]);to=10;s=toS(rnd(10,from===2?200:900),from)}
-  else{[from,to]=SPEC[m];s=toS(rnd(16,from===2?250:700),from)}
-  ctask={s,from,to,ans:toS(parseInt(s,from),to)};cdone=false;
-}
-function viewConv(){
-  const v=document.getElementById('view');if(!ctask)newConv();
-  const t=ctask;
-  v.innerHTML=`<div class="card">
-    <div class="row"><select id="mode" aria-label="Směr převodu">${Object.entries(MODES).map(([k,l])=>`<option value="${k}"${k===cmode?' selected':''}>${l}</option>`).join('')}</select></div>
-    <div class="meta"><span>správně ${cstat.ok} / ${cstat.all}</span><span>piš na papír, pak zadej výsledek</span></div>
-    <p class="task">${sub(t.s,t.from)} → (?)<sub>${t.to}</sub></p>
-    <input type="text" id="inp" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Výsledek" placeholder="výsledek v soustavě ${t.to}" ${cdone?'disabled':''}>
-    <div id="out"></div>
-    <div class="row">${cdone?'<button class="btn primary" id="next">Další příklad</button>':'<button class="btn primary" id="chk">Zkontrolovat</button><button class="btn" id="giveup">Ukázat postup</button>'}</div>
-  </div>`;
-  document.getElementById('mode').onchange=e=>{cmode=e.target.value;try{localStorage.setItem('tzi-mode',cmode)}catch(_){}newConv();viewConv()};
-  const inp=document.getElementById('inp');
-  const finish=ok=>{cdone=true;cstat.all++;if(ok)cstat.ok++;
-    viewConv();
-    document.getElementById('out').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Správně':'Správná odpověď: '+sub(t.ans,t.to)}</div><div class="ans steps">${steps(t.s,t.from,t.to)}</div>`;
-    document.getElementById('inp').value=lastIn;document.getElementById('next').focus()};
-  let lastIn='';
-  if(cdone){return}
-  const check=()=>{lastIn=inp.value;if(!inp.value.trim())return;finish(clean(inp.value)===t.ans)};
-  document.getElementById('chk').onclick=check;
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter')check()});
-  document.getElementById('giveup').onclick=()=>{lastIn=inp.value;finish(false)};
-  inp.focus();
-}
-
-/* ---------- Aritmetika ---------- */
-let atask=null,adone=false,astat={ok:0,all:0};
-const B=n=>n.toString(2);
-function newAr(){
-  const op=pick(['+','+','−','×','÷']);let a,b;
-  if(op==='+'){a=rnd(5,40);b=rnd(3,30)}
-  else if(op==='−'){a=rnd(10,45);b=rnd(3,a-1)}
-  else if(op==='×'){a=rnd(3,15);b=rnd(2,7)}
-  else{b=rnd(2,7);const q=rnd(2,12);a=b*q}
-  const r=op==='+'?a+b:op==='−'?a-b:op==='×'?a*b:a/b;
-  atask={op,a,b,r};adone=false;
-}
-function arSteps(t){
-  const {op,a,b,r}=t,A=B(a),Bb=B(b),R=B(r);
-  let h=`<p>${a} ${op} ${b} = ${r} (v desítkové), tedy <b>${R}</b>.</p>`;
-  if(op==='×'){
-    const parts=[...Bb].reverse().map((c,i)=>c==='1'?A+'0'.repeat(i):null).filter(Boolean);
-    h+=`<p>Dílčí součiny (posun o řád): ${parts.join(' + ')}</p>`;
-  }
-  if(op==='+'){h+=`<p>Sčítej zprava, 1+1 = 10 (zapiš 0, přenos 1).</p>`}
-  if(op==='−'){h+=`<p>Kontrola sčítáním: ${R} + ${Bb} = ${A}</p>`}
-  if(op==='÷'){h+=`<p>Kontrola násobením: ${R} · ${Bb} = ${A}</p>`}
-  return h;
-}
-function viewAr(){
-  const v=document.getElementById('view');if(!atask)newAr();
-  const t=atask;
-  v.innerHTML=`<div class="card">
-    <div class="meta"><span>správně ${astat.ok} / ${astat.all}</span><span>výsledek zadej dvojkově</span></div>
-    <p class="task">${sub(B(t.a),2)} ${t.op} ${sub(B(t.b),2)}</p>
-    <input type="text" id="inp" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Výsledek ve dvojkové soustavě" placeholder="výsledek ve dvojkové soustavě" ${adone?'disabled':''}>
-    <div id="out"></div>
-    <div class="row">${adone?'<button class="btn primary" id="next">Další příklad</button>':'<button class="btn primary" id="chk">Zkontrolovat</button><button class="btn" id="giveup">Ukázat postup</button>'}</div>
-  </div>`;
-  const inp=document.getElementById('inp');let lastIn='';
-  const finish=ok=>{adone=true;astat.all++;if(ok)astat.ok++;viewAr();
-    document.getElementById('out').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'Správně':'Správná odpověď: '+sub(B(t.r),2)}</div><div class="ans steps">${arSteps(t)}</div>`;
-    document.getElementById('inp').value=lastIn;document.getElementById('next').focus()};
-  if(adone){return}
-  const check=()=>{lastIn=inp.value;if(!inp.value.trim())return;finish(clean(inp.value)===B(t.r))};
-  document.getElementById('chk').onclick=check;
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter')check()});
-  document.getElementById('giveup').onclick=()=>{lastIn=inp.value;finish(false)};
-  inp.focus();
-}
-
-/* ---------- Tabs ---------- */
-const tabs={ 't-cards':viewCards,'t-conv':viewConv,'t-arit':viewAr };
-document.addEventListener('click',e=>{
-  const id=e.target.id;
-  if(e.target.closest('nav')&&tabs[id]){
-    document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.id===id));
-    tabs[id]();
-  }
-  if(id==='next'){ if(document.getElementById('t-conv').getAttribute('aria-selected')==='true'){newConv();viewConv()}else{newAr();viewAr()} }
-});
-newDeck(true);if(!deck.length)newDeck(false);
-viewCards();
-</script>
-"""
-
-DIGITS = "0123456789ABCDEF"
-SUBS = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-SAVE = Path.home() / ".tzi_trener.json"
-
-CARDS = [
-    ("Co je číselná soustava? Jak se dělí?",
-     "Způsob reprezentace čísel. Čísla se tvoří z uspořádaných souborů znaků = číslic.\n"
-     "Dělí se na poziční a nepoziční."),
-    ("Čím se liší poziční a nepoziční soustava? Příklady?",
-     "Poziční má základ Z > 1 a hodnota číslice závisí na pozici (dvojková, osmičková, desítková, šestnáctková).\n"
-     "Nepoziční základ nemá, příklad: římská soustava (I, II, III, IV, V, VI...)."),
-    ("Co udává základ soustavy?",
-     "Max. počet číslic, které jsou v soustavě k dispozici. Soustava o základu Z má číslice 0 až Z-1.\n"
-     "V osmičkové neexistují 8 a 9, po 7 následuje 10."),
-    ("Napiš obecný zápis čísla v poziční soustavě o základu Z.",
-     "a = a_n·Z^n + a_(n-1)·Z^(n-1) + ... + a_1·Z^1 + a_0·Z^0\n"
-     "Nejvyšší mocnina = počet číslic - 1."),
-    ("Rozepiš (251)₁₀ a (101)₂ podle obecného zápisu.",
-     "(251)₁₀ = 2·10² + 5·10¹ + 1·10⁰ = 200 + 50 + 1 = 251\n"
-     "(101)₂  = 1·2² + 0·2¹ + 1·2⁰ = 4 + 0 + 1 = 5"),
-    ("Jak se zapisují číslice 10 až 15 v šestnáctkové soustavě?",
-     "A=10, B=11, C=12, D=13, E=14, F=15."),
-    ("Proč jde převod 2 <-> 16 po čtveřicích bitů a 2 <-> 8 po trojicích?",
-     "16 = 2^4 a 8 = 2^3. Jedna hex číslice nese přesně 4 bity, jedna osmičková 3 bity.\n"
-     "Např. (1010 1111)₂ = (AF)₁₆. Skupiny se dělí zprava."),
-    ("Postup převodu 10 -> Z a Z -> 10?",
-     "10 -> Z: dělím základem Z, zapisuji zbytky, dokud podíl není 0; zbytky čtu zdola nahoru.\n"
-     "Z -> 10: rozvoj podle obecného zápisu (číslice · Z^pozice, sečíst)."),
-    ("Jak se převádí 8 <-> 16?",
-     "Oklikou přes dvojkovou: osmičkové číslice na trojice bitů, pak bity po čtveřicích zprava (a naopak)."),
-    ("Pravidla sčítání ve dvojkové soustavě?",
-     "0+0=0, 0+1=1, 1+0=1, 1+1=(10)₂ -> zapíšu 0, přenos 1 do vyššího řádu.\n"
-     "1+1+1=(11)₂ -> zapíšu 1, přenos 1."),
-    ("Jak se násobí a dělí ve dvojkové soustavě?",
-     "Násobení jako na papíře: pro každou 1 opíšu první číslo posunuté o řád doleva, pak sečtu.\n"
-     "Dělení písemně jako v desítkové (odčítám dělitele nebo 0). Dělení nulou není definováno."),
-    ("Co znamená N ⊂ Z ⊂ Q ⊂ R ⊂ C?",
-     "Každý obor je částí dalšího: přirozená (0, 1, 2...), celá, racionální (zlomky),\n"
-     "reálná (i √2, π), komplexní (a + ib)."),
-    ("Vysvětli značení n!, |x|, Σ, Π.",
-     "n! = 1·2·3·...·n, 0! = 1 (5! = 120)\n"
-     "|x| absolutní hodnota: |-5| = 5\n"
-     "Σ součet a_1 + ... + a_n, Π součin a_1·...·a_n"),
-    ("Čemu se rovná a⁰ a co je zvláštní případ?",
-     "a⁰ = 1. Zvláštní případ je 0⁰ (na přednášce naznačeno na tabuli, ověřit)."),
-]
+BASE = Path(__file__).resolve().parent
+BANKS = BASE / "banky"
+PROGRESS_FILE = BASE / "progress.json"
+PORT = 5051
+ALL = "_all"
+lock = threading.Lock()
 
 
-# ---------- pomocné funkce ----------
-def to_base(n, z):
-    if n == 0:
-        return "0"
-    out = ""
-    while n:
-        out = DIGITS[n % z] + out
-        n //= z
+def load_banks():
+    """Vrátí {id: {title, date, lecture, questions}} seřazené podle čísla přednášky."""
+    banks = {}
+    for p in sorted(BANKS.glob("*.json")):
+        d = json.loads(p.read_text(encoding="utf-8"))
+        banks[p.stem] = d
+    return dict(sorted(banks.items(), key=lambda kv: kv[1].get("lecture", 0)))
+
+
+def source_label(d):
+    y, m, day = d["date"].split("-")
+    return f'{d["lecture"]}. přednáška ({int(day)}. {int(m)}. {y}): {d["title"]}'
+
+
+def list_sources():
+    banks = load_banks()
+    out = [{"id": k, "label": source_label(d), "count": len(d["questions"])} for k, d in banks.items()]
+    if len(out) > 1:
+        out.append({"id": ALL, "label": "Všechny přednášky dohromady",
+                    "count": sum(s["count"] for s in out)})
     return out
 
 
-def num(s, z):
-    return f"({s}){str(z).translate(SUBS)}"
+def load_questions(source):
+    banks = load_banks()
+    if source == ALL:
+        return [q for d in banks.values() for q in d["questions"]]
+    return banks[source]["questions"]
 
 
-def clean(s):
-    s = s.upper().replace(" ", "").replace("_", "")
-    return s.lstrip("0") or "0"
-
-
-def groups(s, k):
-    s = s.zfill(-(-len(s) // k) * k)
-    return [s[i:i + k] for i in range(0, len(s), k)]
-
-
-def ask(prompt):
+def load_progress():
     try:
-        return input(prompt).strip()
-    except (EOFError, KeyboardInterrupt):
-        print()
-        raise SystemExit(0)
-
-
-def load():
-    try:
-        return json.loads(SAVE.read_text())
+        return json.loads(PROGRESS_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return {"known": []}
+        return {"seen": {}, "sessions": {}}
 
 
-def save(data):
-    try:
-        SAVE.write_text(json.dumps(data))
-    except OSError:
-        pass
+def save_progress(data):
+    PROGRESS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
-# ---------- postupy ----------
-def steps(s, frm, to):
-    n = int(s, frm)
-    lines = []
-    if frm == 10:
-        lines.append(f"{'dělení':>12} | {'podíl':>7} | zbytek")
-        m = n
-        while m > 0:
-            r = m % to
-            extra = f" = {DIGITS[r]}" if r > 9 else ""
-            lines.append(f"{m:>7} : {to:<2} | {m // to:>7} | {r}{extra}")
-            m //= to
-        lines.append(f"Zbytky zdola nahoru: {to_base(n, to)}")
-    elif to == 10:
-        L = len(s)
-        terms = [f"{DIGITS.index(c)}·{frm}^{L - 1 - i}" for i, c in enumerate(s)]
-        vals = [str(DIGITS.index(c) * frm ** (L - 1 - i)) for i, c in enumerate(s)]
-        lines.append(" + ".join(terms))
-        lines.append("= " + " + ".join(vals) + f" = {n}")
-    else:
-        k = {2: 1, 8: 3, 16: 4}
-        if frm == 2:
-            g = groups(s, k[to])
-            lines.append(f"Zprava po {k[to]} bitech: " + " | ".join(g))
-            lines.append("-> " + " ".join(DIGITS[int(x, 2)] for x in g) + f" = {to_base(n, to)}")
-        elif to == 2:
-            g = [bin(DIGITS.index(c))[2:].zfill(k[frm]) for c in s]
-            lines.append(f"Každá číslice na {k[frm]} bity: " + " | ".join(g))
-            lines.append(f"= {to_base(n, 2)} (vedoucí nuly pryč)")
-        else:
-            b = to_base(n, 2)
-            g = groups(b, k[to])
-            lines.append(f"Přes dvojkovou: {s} = {b}")
-            lines.append(f"Po {k[to]} bitech zprava: " + " | ".join(g) + f" -> {to_base(n, to)}")
-    if to != 10:
-        lines.append(f"Kontrola zpět do desítkové: {int(to_base(n, to), to)}")
-    return "\n".join("   " + x for x in lines)
+HTML = r"""
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TZI Trenér</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f4f6f9; color: #1f2937; min-height: 100vh; }
+  #app { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
 
+  #menu { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 40px; }
+  #menu h1 { font-size: 2.2rem; color: #3b82f6; margin-bottom: 4px; }
+  #menu .sub { color: #6b7280; font-size: 1rem; margin-bottom: 8px; text-align: center; }
+  .source-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; width: 100%; max-width: 520px; }
+  .source-row label { color: #374151; font-weight: 600; white-space: nowrap; }
+  .source-row select { flex: 1; min-width: 0; padding: 8px 12px; border-radius: 8px; border: 2px solid #d1d5db; font-size: 1rem; cursor: pointer; background: white; }
+  .progress-summary { background: white; border-radius: 10px; padding: 10px 20px; font-size: .9rem;
+    color: #374151; box-shadow: 0 1px 4px rgba(0,0,0,.1); margin-bottom: 4px; text-align: center; }
+  .ps-good { color: #16a34a; font-weight: 700; }
+  .ps-bad  { color: #dc2626; font-weight: 700; }
+  .ps-new  { color: #6b7280; }
+  .menu-btn {
+    width: 320px; padding: 14px; font-size: 1.05rem; border: none;
+    border-radius: 10px; background: white; cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,.12); transition: transform .1s, box-shadow .1s;
+  }
+  .menu-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+  .menu-btn.danger  { background: #111827; color: #ef4444; }
+  .menu-btn.quit    { background: #fef2f2; color: #ef4444; }
+  .menu-btn.resume  { background: #eff6ff; color: #1d4ed8; border: 2px solid #93c5fd; }
+  .menu-btn.unseen  { background: #f0fdf4; color: #166534; }
+  .menu-btn.wrongs  { background: #fff7ed; color: #9a3412; }
+  .menu-btn:disabled { opacity: .4; cursor: default; }
+  .menu-sep { width: 320px; border: none; border-top: 1px solid #e5e7eb; margin: 4px 0; }
+  .type-row { display: flex; gap: 6px; }
+  .type-row button { padding: 6px 12px; border: 2px solid #d1d5db; border-radius: 99px; background: white; cursor: pointer; font-size: .85rem; }
+  .type-row button.on { border-color: #3b82f6; background: #dbeafe; color: #1d4ed8; font-weight: 600; }
 
-# ---------- režimy ----------
-def mode_cards(data):
-    known = set(data["known"])
-    todo = [i for i in range(len(CARDS)) if i not in known] or list(range(len(CARDS)))
-    if not [i for i in range(len(CARDS)) if i not in known]:
-        data["known"] = []
-        known = set()
-        print("Všechno umíš, začínám znovu.")
-    random.shuffle(todo)
-    total = len(todo)
-    pos = 0
-    while pos < len(todo):
-        idx = todo[pos]
-        print(f"\n[{pos + 1}/{total}] umím: {len(known)}/{len(CARDS)}")
-        print(CARDS[idx][0])
-        r = ask("   (Enter = ukázat odpověď, q = konec) ")
-        if r.lower() == "q":
-            break
-        print()
-        for line in CARDS[idx][1].split("\n"):
-            print("   " + line)
-        r = ask("   Uměl jsem? [a/n, q = konec] ").lower()
-        if r == "q":
-            break
-        if r.startswith("a"):
-            known.add(idx)
-        else:
-            known.discard(idx)
-            todo.append(idx)
-        data["known"] = sorted(known)
-        save(data)
-        pos += 1
-    else:
-        print(f"\nBalíček hotový. Umíš {len(known)} z {len(CARDS)} kartiček.")
+  #chunks { display: none; padding-top: 24px; }
+  #chunks h1 { font-size: 1.6rem; color: #3b82f6; text-align: center; margin-bottom: 16px; }
+  .chunk-list { display: flex; flex-direction: column; gap: 10px; max-width: 420px; margin: 0 auto; }
+  .chunk-btn {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    background: white; border: none; border-radius: 10px; padding: 14px 18px;
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.12); font-size: 1rem; text-align: left;
+  }
+  .chunk-btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+  .chunk-name { font-weight: 700; }
+  .chunk-stats { font-size: .85rem; white-space: nowrap; }
+  .chunk-stats span { margin-left: 8px; }
+  .chunk-back { display: block; margin: 20px auto 0; padding: 10px 20px; border: none; border-radius: 8px; background: #e5e7eb; cursor: pointer; }
+  .chunk-size-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; font-size: .9rem; }
+  .chunk-size-row input { width: 70px; padding: 6px 8px; border-radius: 8px; border: 2px solid #d1d5db; font-size: 1rem; text-align: center; }
+  .chunk-size-row button { padding: 7px 14px; border: none; border-radius: 8px; cursor: pointer; background: #3b82f6; color: white; font-weight: 600; }
 
+  #chunk-detail { display: none; padding-top: 24px; }
+  #chunk-detail h1 { font-size: 1.4rem; color: #3b82f6; text-align: center; margin-bottom: 16px; }
+  .chunk-detail-wrap { max-width: 480px; margin: 0 auto; }
+  .chunk-detail-btns { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+  .chunk-detail-btns button { padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: .85rem; background: white; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .cd-section { margin-bottom: 14px; }
+  .cd-section h3 { font-size: .9rem; margin: 0 0 6px; }
+  .cd-section.good h3 { color: #16a34a; }
+  .cd-section.bad h3 { color: #dc2626; }
+  .cd-section.new h3 { color: #6b7280; }
+  .cd-qlist { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cd-qlist span { background: white; border-radius: 6px; padding: 3px 8px; font-size: .8rem; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .cd-qlist .q-pill { border: none; cursor: pointer; font: inherit; background: white; border-radius: 6px; padding: 3px 8px; font-size: .8rem; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .cd-qlist .q-pill:hover { background: #dbeafe; }
 
-MODES = {
-    "1": ("Všechny směry", None), "2": ("Z desítkové (2, 8, 16)", "d2z"),
-    "3": ("Do desítkové", "z2d"), "4": ("2 -> 8", (2, 8)), "5": ("8 -> 2", (8, 2)),
-    "6": ("2 -> 16", (2, 16)), "7": ("16 -> 2", (16, 2)), "8": ("8 -> 16", (8, 16)),
-    "9": ("16 -> 8", (16, 8)),
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; align-items: center; justify-content: center; }
+  .overlay.show { display: flex; }
+  .modal { background: white; padding: 32px; border-radius: 14px; min-width: 320px; text-align: center; }
+  .modal h2 { margin-bottom: 20px; }
+  .modal input[type=number] { width: 120px; font-size: 1.3rem; text-align: center; padding: 8px; border: 2px solid #d1d5db; border-radius: 8px; }
+  .modal-btns { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+  .modal-btns button { padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+  .btn-ok { background: #3b82f6; color: white; }
+  .btn-cancel { background: #e5e7eb; }
+
+  #quiz { display: none; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+  .header .prog  { color: #6b7280; font-size: .95rem; font-weight: 600; }
+  .header .score { font-weight: 700; color: #3b82f6; }
+  .progress-bar { height: 8px; background: #e5e7eb; border-radius: 99px; margin-bottom: 24px; }
+  .progress-bar .fill { height: 100%; background: #3b82f6; border-radius: 99px; transition: width .3s; }
+  .sudden-banner { background: #111827; color: #ef4444; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 16px; font-weight: 700; }
+  .question-box { background: white; border-radius: 12px; padding: 24px 28px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+  .question-box .hint { font-size: .85rem; color: #9ca3af; margin-top: 6px; }
+  .qsrc { font-size: .8rem; color: #9ca3af; margin-bottom: 6px; }
+  .question-text { font-size: 1.15rem; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere; }
+  .question-text.calc { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.5rem; }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: white; border: 2px solid #e5e7eb; border-radius: 10px;
+    padding: 14px 18px; cursor: pointer; transition: border-color .15s, background .15s;
+    font-size: 1rem; line-height: 1.4; user-select: none;
+  }
+  .opt:hover:not(.disabled) { border-color: #93c5fd; background: #eff6ff; }
+  .opt.selected { border-color: #3b82f6; background: #dbeafe; }
+  .opt.correct  { border-color: #22c55e; background: #dcfce7; }
+  .opt.wrong    { border-color: #ef4444; background: #fee2e2; }
+  .opt.missed   { border-color: #f59e0b; background: #fef9c3; }
+  .opt.disabled { cursor: default; }
+  .opt .letter { font-weight: 800; color: #3b82f6; min-width: 20px; }
+  .opt.correct .letter { color: #16a34a; }
+  .opt.wrong .letter { color: #dc2626; }
+  .opt.missed .letter { color: #d97706; }
+  .ans-input { width: 100%; font: 1.4rem ui-monospace, Menlo, Consolas, monospace; padding: 12px 16px; border: 2px solid #d1d5db; border-radius: 10px; margin-bottom: 20px; background: white; }
+  .ans-input:focus { outline: none; border-color: #3b82f6; }
+  .ans-input.correct { border-color: #22c55e; background: #dcfce7; }
+  .ans-input.wrong { border-color: #ef4444; background: #fee2e2; }
+  .feedback { font-size: 1.05rem; font-weight: 700; min-height: 28px; margin-bottom: 12px; overflow-wrap: anywhere; }
+  .feedback.ok  { color: #22c55e; }
+  .feedback.bad { color: #ef4444; }
+  .solution { background: white; border-radius: 10px; padding: 14px 18px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.1);
+    white-space: pre-wrap; font: .95rem/1.5 ui-monospace, Menlo, Consolas, monospace; overflow-x: auto; display: none; }
+  .solution.explain { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 1rem; }
+  .nav { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .nav button { padding: 12px 24px; border: none; border-radius: 9px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+  .nav button:disabled { opacity: .35; cursor: default; }
+  .btn-prev { background: #e5e7eb; color: #374151; }
+  .btn-end { background: #fff3cd; color: #856404; font-size: .9rem; }
+  .btn-next { background: #3b82f6; color: white; }
+
+  #results { display: none; text-align: center; padding-top: 40px; }
+  #results h1 { font-size: 2rem; margin-bottom: 8px; }
+  .big-pct { font-size: 5rem; font-weight: 900; margin: 12px 0; }
+  .big-pct.good { color: #22c55e; }
+  .big-pct.bad { color: #ef4444; }
+  .res-detail { color: #6b7280; margin-bottom: 30px; }
+  .res-btns { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .res-btns button { width: 300px; padding: 13px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; background: white; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .res-btns .primary { background: #3b82f6; color: white; }
+  .res-btns .warning-btn { background: #ffebee; }
+
+  @media (max-width: 600px) {
+    #app { padding: 12px; }
+    #menu { padding-top: 20px; gap: 10px; }
+    #menu h1 { font-size: 1.6rem; }
+    .menu-btn, .menu-sep { width: 100%; }
+    .source-row { flex-wrap: wrap; }
+    .modal { min-width: unset; width: 90vw; padding: 24px 16px; }
+    .question-box { padding: 16px; }
+    .question-text { font-size: 1rem; }
+    .question-text.calc { font-size: 1.2rem; }
+    .opt { padding: 12px 14px; gap: 10px; font-size: .95rem; }
+    .nav { flex-wrap: wrap; }
+    .nav button { flex: 1 1 auto; padding: 12px 10px; font-size: .9rem; }
+    .btn-end { flex-basis: 100%; order: 3; }
+    .big-pct { font-size: 3.5rem; }
+    .res-btns button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="menu">
+    <h1>TZI Trenér</h1>
+    <p class="sub" id="total-label">Načítám...</p>
+
+    <div class="source-row">
+      <label for="source-sel">Přednáška:</label>
+      <select id="source-sel" onchange="onSourceChange()"></select>
+    </div>
+    <div class="type-row" id="type-row">
+      <button data-t="all" class="on" onclick="setType('all')">vše</button>
+      <button data-t="choice" onclick="setType('choice')">teorie (A/B/C)</button>
+      <button data-t="input" onclick="setType('input')">příklady (výsledek)</button>
+    </div>
+
+    <div class="progress-summary" id="prog-summary"></div>
+
+    <button class="menu-btn resume" id="btn-resume" onclick="resumeSession()" style="display:none">▶ Pokračovat od otázky <span id="resume-label"></span></button>
+    <button class="menu-btn" onclick="showChunks()">📦 Po <span id="menu-chunk-size">10</span> (postupně)</button>
+    <button class="menu-btn" onclick="startAll()">🚀 Vše popořadě</button>
+    <button class="menu-btn unseen" id="btn-unseen" onclick="startUnseen()">🆕 Jen neprozkoumané (<span id="unseen-count">?</span>)</button>
+    <button class="menu-btn wrongs" id="btn-wrongs" onclick="startWrongs()">⚠️ Jen chybné (<span id="wrongs-count">?</span>)</button>
+    <button class="menu-btn" id="btn-correct" onclick="startCorrect()">✅ Zopakovat správné (<span id="correct-count">?</span>)</button>
+    <button class="menu-btn" onclick="showRandomModal('random')">🎲 Náhodný výběr</button>
+    <button class="menu-btn" onclick="showRandomModal('study')">📖 Studuj pak testuj</button>
+    <button class="menu-btn danger" onclick="startExam()">🎯 Ostrý test (<span id="exam-n">15</span> ot. / <span id="exam-min">30</span> min)</button>
+    <button class="menu-btn danger" onclick="startSuddenDeath()">💀 Sudden Death (náhodné)</button>
+    <hr class="menu-sep">
+    <button class="menu-btn" onclick="clearSourceProgress()" style="font-size:.9rem;color:#6b7280">🗑 Smazat progress této přednášky</button>
+    <button class="menu-btn quit" onclick="shutdown()">❌ Ukončit server</button>
+  </div>
+
+  <div id="chunks">
+    <h1>📦 Otázky po <span id="chunks-size-label">10</span></h1>
+    <div class="chunk-size-row">
+      <label for="chunk-size-input">Velikost úseku:</label>
+      <input type="number" id="chunk-size-input" min="1" step="1">
+      <button onclick="applyChunkSize()">Použít</button>
+    </div>
+    <div class="chunk-list" id="chunk-list"></div>
+    <button class="chunk-back" onclick="showMenu()">← Zpět do menu</button>
+  </div>
+
+  <div id="chunk-detail">
+    <h1 id="chunk-detail-title"></h1>
+    <div class="chunk-detail-wrap">
+      <div class="chunk-detail-btns">
+        <button onclick="startChunkSubset('all')">🚀 Vše</button>
+        <button onclick="startChunkSubset(undefined)">🆕 Neznámé</button>
+        <button onclick="startChunkSubset('wrong')">⚠️ Chybné</button>
+        <button onclick="startChunkSubset('correct')">✅ Správné</button>
+        <button onclick="startChunkStudy()">📖 Studuj pak testuj</button>
+      </div>
+      <div class="cd-section good"><h3>✅ Správné</h3><div class="cd-qlist" id="cd-good"></div></div>
+      <div class="cd-section bad"><h3>✗ Chybné</h3><div class="cd-qlist" id="cd-bad"></div></div>
+      <div class="cd-section new"><h3>— Neznámé</h3><div class="cd-qlist" id="cd-new"></div></div>
+    </div>
+    <button class="chunk-back" onclick="showChunks()">← Zpět na bloky</button>
+  </div>
+
+  <div class="overlay" id="random-modal">
+    <div class="modal">
+      <h2>Kolik otázek?</h2>
+      <input type="number" id="rand-count" min="1" value="10">
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Zrušit</button>
+        <button class="btn-ok" onclick="startRandom()">Spustit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="quiz">
+    <div id="sudden-banner" class="sudden-banner" style="display:none">💀 SUDDEN DEATH: jedna chyba = konec!</div>
+    <div class="header">
+      <span class="prog" id="prog-label"></span>
+      <span class="score" id="score-label"></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="pbar"></div></div>
+    <div class="question-box">
+      <div class="qsrc" id="q-src"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="hint" id="q-hint"></div>
+    </div>
+    <div class="options" id="opts"></div>
+    <input type="text" class="ans-input" id="ans-input" autocomplete="off" autocapitalize="characters" spellcheck="false" style="display:none" oninput="onInput()">
+    <div class="feedback" id="feedback"></div>
+    <div class="solution" id="solution"></div>
+    <div class="nav">
+      <button class="btn-prev" id="btn-prev" onclick="prevQ()">← Předchozí</button>
+      <button class="btn-end" onclick="finishEarly()">🏳 Ukončit předčasně</button>
+      <button class="btn-next" id="btn-action" onclick="handleAction()">✔ Potvrdit (Enter)</button>
+    </div>
+  </div>
+
+  <div id="results">
+    <h1 id="res-title"></h1>
+    <div class="big-pct" id="res-pct"></div>
+    <div class="res-detail" id="res-detail"></div>
+    <div class="res-btns">
+      <button class="primary" onclick="restartSame()">🔄 Restartovat stejný výběr</button>
+      <button id="btn-wrong" onclick="practiceWrong()" style="display:none" class="warning-btn"></button>
+      <button onclick="backFromResults()">🏠 Hlavní menu</button>
+    </div>
+  </div>
+
+</div>
+<script>
+let FULL = [];        // všechny otázky zdroje
+let ALL = [];         // po filtru typu
+let currentSource = '';
+let sources = [];
+let progress = {};    // {qid: "correct"|"wrong"}
+let session = null;
+let typeFilter = 'all';
+
+let queue = [], idx = 0, history = [], checked = false, suddenDeath = false;
+let selected = new Set(), modalMode = 'random', studyMode = false, studyPicks = [];
+let examMode = false, examTimer = null, examEndTime = 0;
+
+const $ = id => document.getElementById(id);
+const show = id => {
+  for (const s of ['menu','chunks','chunk-detail','quiz','results']) $(s).style.display = (s === id) ? (s === 'menu' ? 'flex' : 'block') : 'none';
+};
+const norm = s => { s = (s || '').toUpperCase().replace(/[\s_]/g, ''); return s.replace(/^0+(?=.)/, ''); };
+const isInput = q => q.type === 'input';
+const shuffle = a => [...a].sort(() => Math.random() - .5);
+
+async function init() {
+  const r = await fetch('/api/sources');
+  const data = await r.json();
+  sources = data.sources;
+  currentSource = data.default;
+  $('source-sel').innerHTML = sources.map(s =>
+    `<option value="${s.id}" ${s.id === currentSource ? 'selected' : ''}>${s.label} (${s.count})</option>`).join('');
+  await loadSource(currentSource);
 }
 
+async function onSourceChange() { currentSource = $('source-sel').value; await loadSource(currentSource); }
 
-def conv_task(kind):
-    if kind is None:
-        kind = random.choice(["d2z", "z2d", (2, 8), (8, 2), (2, 16), (16, 2), (8, 16), (16, 8)])
-    if kind == "d2z":
-        to = random.choice([2, 2, 8, 16])
-        return str(random.randint(10, 200 if to == 2 else 900)), 10, to
-    if kind == "z2d":
-        frm = random.choice([2, 8, 16])
-        return to_base(random.randint(10, 200 if frm == 2 else 900), frm), frm, 10
-    frm, to = kind
-    return to_base(random.randint(16, 250 if frm == 2 else 700), frm), frm, to
+async function loadSource(source) {
+  const [qr, pr] = await Promise.all([
+    fetch(`/api/questions?source=${encodeURIComponent(source)}`),
+    fetch(`/api/progress?source=${encodeURIComponent(source)}`)
+  ]);
+  FULL = await qr.json();
+  const pd = await pr.json();
+  progress = pd.seen || {};
+  session = pd.session || null;
+  applyFilter();
+}
+
+function setType(t) {
+  typeFilter = t;
+  document.querySelectorAll('#type-row button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  applyFilter();
+}
+
+function applyFilter() {
+  ALL = typeFilter === 'all' ? FULL : FULL.filter(q => q.type === typeFilter);
+  $('rand-count').max = ALL.length;
+  $('rand-count').value = Math.min(10, ALL.length);
+  updateMenuStats();
+}
+
+function updateMenuStats() {
+  const total = ALL.length;
+  const good = ALL.filter(q => progress[q.id] === 'correct').length;
+  const bad = ALL.filter(q => progress[q.id] === 'wrong').length;
+  const unseen = total - good - bad;
+  $('total-label').textContent = `Otázek ve výběru: ${total}`;
+  $('prog-summary').innerHTML =
+    `<span class="ps-good">✓ ${good} správně</span> &nbsp;·&nbsp; ` +
+    `<span class="ps-bad">✗ ${bad} chybně</span> &nbsp;·&nbsp; ` +
+    `<span class="ps-new">— ${unseen} nových</span>`;
+  $('unseen-count').textContent = unseen;
+  $('wrongs-count').textContent = bad;
+  $('correct-count').textContent = good;
+  $('btn-unseen').disabled = unseen === 0;
+  $('btn-wrongs').disabled = bad === 0;
+  $('btn-correct').disabled = good === 0;
+  const n = Math.min(15, total);
+  $('exam-n').textContent = n;
+  $('exam-min').textContent = Math.max(5, Math.round(n * 2));
+  if (session && session.idx < session.queue_ids.length) {
+    const q = FULL.find(x => x.id === session.queue_ids[session.idx]);
+    $('resume-label').textContent = q ? q.number : '';
+    $('btn-resume').style.display = q ? 'block' : 'none';
+  } else $('btn-resume').style.display = 'none';
+}
+
+async function saveProgress() {
+  const m = {};
+  for (const h of history) m[h.id] = h.isCorrect ? 'correct' : 'wrong';
+  const newProgress = Object.assign({}, progress, m);
+  const newSession = (idx < queue.length && !examMode) ? {queue_ids: queue.map(q => q.id), idx, sudden_death: suddenDeath, history} : null;
+  await fetch(`/api/progress?source=${encodeURIComponent(currentSource)}`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({seen: newProgress, session: newSession})
+  });
+  progress = newProgress; session = newSession;
+}
+
+let fromChunks = false;
+function showMenu() { updateMenuStats(); show('menu'); }
+function showResults() { show('results'); renderResults(); }
+
+// ── bloky ──
+let CHUNK_SIZE = parseInt(localStorage.getItem('tzi_chunk_size'), 10) || 10;
+function syncChunkSizeUI() {
+  $('menu-chunk-size').textContent = CHUNK_SIZE;
+  $('chunks-size-label').textContent = CHUNK_SIZE;
+  $('chunk-size-input').value = CHUNK_SIZE;
+}
+function applyChunkSize() {
+  const n = parseInt($('chunk-size-input').value, 10);
+  if (!n || n < 1) return;
+  CHUNK_SIZE = n; localStorage.setItem('tzi_chunk_size', String(n));
+  syncChunkSizeUI(); renderChunks();
+}
+function showChunks() { fromChunks = false; syncChunkSizeUI(); renderChunks(); show('chunks'); }
+function getChunks() { const out = []; for (let i = 0; i < ALL.length; i += CHUNK_SIZE) out.push(ALL.slice(i, i + CHUNK_SIZE)); return out; }
+function renderChunks() {
+  const list = $('chunk-list'); list.innerHTML = '';
+  getChunks().forEach((qs, i) => {
+    const done = qs.filter(q => progress[q.id] === 'correct').length;
+    const wrong = qs.filter(q => progress[q.id] === 'wrong').length;
+    const btn = document.createElement('button');
+    btn.className = 'chunk-btn';
+    btn.innerHTML = `<span class="chunk-name">Blok ${i + 1} (${i * CHUNK_SIZE + 1}–${i * CHUNK_SIZE + qs.length})</span>` +
+      `<span class="chunk-stats"><span class="ps-new">— ${qs.length - done - wrong}</span><span class="ps-bad">✗ ${wrong}</span><span class="ps-good">✓ ${done}</span></span>`;
+    btn.onclick = () => showChunkDetail(qs, i);
+    list.appendChild(btn);
+  });
+}
+let currentChunk = [];
+function showChunkDetail(qs, i) {
+  currentChunk = qs;
+  $('chunk-detail-title').textContent = `Blok ${i + 1} (${i * CHUNK_SIZE + 1}–${i * CHUNK_SIZE + qs.length})`;
+  const pills = (el, list) => $(el).innerHTML = list.map(q => `<button class="q-pill" onclick="startChunkQuestion('${q.id}')">${q.number}${isInput(q) ? ' ✎' : ''}</button>`).join('') || '<span>—</span>';
+  pills('cd-good', qs.filter(q => progress[q.id] === 'correct'));
+  pills('cd-bad', qs.filter(q => progress[q.id] === 'wrong'));
+  pills('cd-new', qs.filter(q => !progress[q.id]));
+  show('chunk-detail');
+}
+function startChunkQuestion(id) { const q = currentChunk.find(q => q.id === id); if (q) { fromChunks = true; beginSession([q], false); } }
+function startChunkSubset(status) {
+  let qs;
+  if (status === 'all') qs = currentChunk;
+  else if (status === undefined) qs = currentChunk.filter(q => !progress[q.id]);
+  else qs = currentChunk.filter(q => progress[q.id] === status);
+  if (!qs.length) return;
+  fromChunks = true; beginSession([...qs], false);
+}
+function startChunkStudy() {
+  const pool = currentChunk.filter(q => !progress[q.id] || progress[q.id] === 'wrong');
+  if (!pool.length) return;
+  fromChunks = true; showRandomModal('chunk-study', pool);
+}
+
+// ── režimy ──
+function startAll() { beginSession([...ALL], false); }
+function startUnseen() { beginSession(ALL.filter(q => !progress[q.id]), false); }
+function startWrongs() { beginSession(ALL.filter(q => progress[q.id] === 'wrong'), false); }
+function startCorrect() { beginSession(ALL.filter(q => progress[q.id] === 'correct'), false); }
+
+function resumeSession() {
+  if (!session) return;
+  const idMap = Object.fromEntries(FULL.map(q => [q.id, q]));
+  queue = session.queue_ids.map(id => idMap[id]).filter(Boolean);
+  idx = session.idx; history = session.history || []; suddenDeath = session.sudden_death || false;
+  studyMode = false; examMode = false; fromChunks = false;
+  $('sudden-banner').style.display = suddenDeath ? 'block' : 'none';
+  show('quiz'); renderQ();
+}
+
+let modalPool = null;
+function showRandomModal(mode, pool) {
+  modalMode = mode || 'random';
+  if (modalMode === 'study' && !pool) pool = ALL.filter(q => !progress[q.id] || progress[q.id] === 'wrong');
+  modalPool = pool || null;
+  $('random-modal').querySelector('h2').textContent = (modalMode === 'study' || modalMode === 'chunk-study') ? 'Kolik otázek nastudovat?' : 'Kolik otázek?';
+  const maxN = modalPool ? modalPool.length : ALL.length;
+  const input = $('rand-count'); input.max = maxN; input.value = Math.min(10, maxN);
+  $('random-modal').classList.add('show');
+  setTimeout(() => input.focus(), 50);
+}
+function closeModal() { $('random-modal').classList.remove('show'); }
+function startRandom() {
+  const maxN = modalPool ? modalPool.length : ALL.length;
+  const n = Math.min(Math.max(1, parseInt($('rand-count').value) || 1), maxN);
+  closeModal();
+  if (modalMode === 'study' || modalMode === 'chunk-study') startStudy(shuffle(modalPool || ALL).slice(0, n));
+  else beginSession(shuffle(ALL).slice(0, n), false);
+}
+function startStudy(qs) {
+  if (!qs.length) return;
+  studyPicks = [...qs]; studyMode = true; examMode = false;
+  queue = [...qs]; idx = 0; history = []; suddenDeath = false;
+  $('sudden-banner').style.display = 'none';
+  show('quiz'); renderQ();
+}
+function startSuddenDeath() { beginSession(shuffle(ALL), true); }
+
+function startExam() {
+  const n = Math.min(15, ALL.length);
+  if (!n) return;
+  examMode = true; studyMode = false;
+  queue = shuffle(ALL).slice(0, n); idx = 0; history = []; suddenDeath = false;
+  $('sudden-banner').style.display = 'none';
+  show('quiz');
+  startExamTimer(Math.max(5, n * 2) * 60);
+  renderQ();
+}
+function startExamTimer(sec) { clearExamTimer(); examEndTime = Date.now() + sec * 1000; updateExamTimer(); examTimer = setInterval(updateExamTimer, 1000); }
+function clearExamTimer() { if (examTimer) clearInterval(examTimer); examTimer = null; }
+function updateExamTimer() {
+  const remain = Math.max(0, Math.round((examEndTime - Date.now()) / 1000));
+  $('score-label').textContent = `⏱ ${String(Math.floor(remain / 60)).padStart(2, '0')}:${String(remain % 60).padStart(2, '0')}`;
+  if (remain <= 0) { clearExamTimer(); saveProgress(); showResults(); }
+}
+
+function beginSession(qs, sd) {
+  if (!qs.length) return;
+  queue = qs; idx = 0; history = []; suddenDeath = sd; studyMode = false; examMode = false;
+  $('sudden-banner').style.display = sd ? 'block' : 'none';
+  show('quiz'); renderQ();
+}
+
+// ── otázka ──
+function evaluate(q) {
+  if (isInput(q)) {
+    const v = norm($('ans-input').value);
+    return {userKeys: [v], correctKeys: [norm(q.answer)], isCorrect: v === norm(q.answer)};
+  }
+  const cs = new Set(q.correct);
+  return {userKeys: [...selected], correctKeys: [...cs],
+    isCorrect: selected.size === cs.size && [...selected].every(k => cs.has(k))};
+}
+function record(q) {
+  const rec = Object.assign({id: q.id}, evaluate(q));
+  const i = history.findIndex(h => h.id === q.id);
+  if (i >= 0) history[i] = rec; else history.push(rec);
+  return rec;
+}
+function hasAnswer() { return isInput(queue[idx]) ? $('ans-input').value.trim() !== '' : selected.size > 0; }
+function syncAction() { $('btn-action').disabled = !hasAnswer(); }
+function onInput() { if (!checked && !studyMode) syncAction(); }
+
+function renderQ() {
+  const q = queue[idx];
+  checked = false; selected = new Set();
+  const total = queue.length;
+  const correct = history.filter(h => h.isCorrect).length;
+  const pct = history.length ? Math.round(correct / history.length * 100) : 0;
+
+  $('prog-label').textContent = `Otázka ${idx + 1} / ${total}`;
+  if (!examMode) $('score-label').textContent = history.length ? `Úspěšnost: ${pct} %` : 'Úspěšnost: – %';
+  $('pbar').style.width = `${(idx / total) * 100}%`;
+
+  const src = sources.find(s => s.id === currentSource);
+  const lec = q.id.split('-')[0];
+  $('q-src').textContent = `${lec}. přednáška · otázka ${q.number}` + (isInput(q) ? ' · příklad na výsledek' : ' · teorie');
+  const t = $('q-text'); t.textContent = q.text; t.className = 'question-text' + (isInput(q) ? ' calc' : '');
+  $('q-hint').textContent = isInput(q) ? (q.hint || '') : (q.correct.length > 1 ? '(Vyberte více správných odpovědí)' : '');
+  $('feedback').textContent = ''; $('feedback').className = 'feedback';
+  const sol = $('solution'); sol.style.display = 'none'; sol.textContent = '';
+
+  const optsEl = $('opts'); optsEl.innerHTML = '';
+  const inp = $('ans-input'); inp.value = ''; inp.disabled = false; inp.className = 'ans-input';
+  inp.style.display = isInput(q) ? 'block' : 'none';
+  if (!isInput(q)) {
+    for (const [letter, text] of Object.entries(q.options)) {
+      const div = document.createElement('div');
+      div.className = 'opt'; div.id = 'opt-' + letter;
+      div.innerHTML = `<span class="letter">${letter}</span><span></span>`;
+      div.lastChild.textContent = text;
+      div.addEventListener('click', () => toggleOpt(letter));
+      optsEl.appendChild(div);
+    }
+  }
+
+  $('btn-prev').disabled = (idx === 0) || suddenDeath || studyMode;
+  $('btn-action').textContent = '✔ Potvrdit (Enter)';
+  $('btn-action').disabled = true;
+
+  if (studyMode) { renderStudy(q); return; }
+  const rec = history.find(h => h.id === q.id);
+  if (examMode) {
+    if (rec) {
+      if (isInput(q)) inp.value = rec.userKeys[0] || '';
+      else { selected = new Set(rec.userKeys); rec.userKeys.forEach(l => $('opt-' + l)?.classList.add('selected')); }
+    }
+    $('btn-action').textContent = idx < total - 1 ? 'Další →  (Enter)' : '📊 Odeslat test (Enter)';
+    syncAction();
+    if (isInput(q)) inp.focus();
+    return;
+  }
+  if (rec) restoreState(rec); else if (isInput(q)) inp.focus();
+}
+
+function renderStudy(q) {
+  $('prog-label').textContent = `📖 Studium ${idx + 1} / ${queue.length}`;
+  $('score-label').textContent = '';
+  if (isInput(q)) {
+    $('ans-input').value = q.answer; $('ans-input').disabled = true; $('ans-input').classList.add('correct');
+    showSolution(q);
+  } else {
+    const cs = new Set(q.correct);
+    for (const l of Object.keys(q.options)) { const el = $('opt-' + l); if (cs.has(l)) el.classList.add('correct'); el.classList.add('disabled'); }
+    showSolution(q);
+  }
+  $('feedback').textContent = '📖 Studijní režim: správná odpověď je zvýrazněna';
+  $('feedback').className = 'feedback ok';
+  $('btn-action').textContent = idx < queue.length - 1 ? '📖 Další (studium) →' : '▶ Spustit test bez klíče';
+  $('btn-action').disabled = false;
+}
+
+function showSolution(q) {
+  const el = $('solution');
+  const text = isInput(q) ? q.solution : q.explanation;
+  if (!text) return;
+  el.className = 'solution' + (isInput(q) ? '' : ' explain');
+  el.textContent = text; el.style.display = 'block';
+}
+
+function toggleOpt(letter) {
+  if (checked || studyMode) return;
+  const q = queue[idx];
+  if (isInput(q)) return;
+  if (selected.has(letter)) { selected.delete(letter); $('opt-' + letter).classList.remove('selected'); }
+  else {
+    if (selected.size >= q.correct.length) return;
+    selected.add(letter); $('opt-' + letter).classList.add('selected');
+  }
+  syncAction();
+}
+
+function handleAction() {
+  if (studyMode) { studyNext(); return; }
+  if (examMode) { examNext(); return; }
+  if (!checked) confirmAnswer(); else nextQ();
+}
+
+function studyNext() {
+  idx++;
+  if (idx < queue.length) renderQ();
+  else { studyMode = false; queue = shuffle(studyPicks); idx = 0; history = []; renderQ(); }
+}
+
+function examNext() {
+  if (!hasAnswer()) return;
+  record(queue[idx]);
+  idx++;
+  if (idx < queue.length) renderQ();
+  else { clearExamTimer(); saveProgress(); showResults(); }
+}
+
+function confirmAnswer() {
+  if (!hasAnswer()) return;
+  checked = true;
+  const q = queue[idx];
+  const rec = record(q);
+  restoreState(rec);
+  saveProgress();
+  if (suddenDeath && !rec.isCorrect) {
+    setTimeout(() => { alert(`☠️ GAME OVER!\nSprávně bylo: ${isInput(q) ? q.answer : rec.correctKeys.join(', ')}`); showResults(); }, 600);
+  }
+}
+
+function restoreState(rec) {
+  checked = true;
+  const q = queue[idx];
+  const fb = $('feedback');
+  if (isInput(q)) {
+    const inp = $('ans-input'); inp.value = rec.userKeys[0] || ''; inp.disabled = true;
+    inp.classList.add(rec.isCorrect ? 'correct' : 'wrong');
+    fb.textContent = rec.isCorrect ? '✅  Správně!' : `❌  Špatně!   Správně: ${q.answer}`;
+  } else {
+    const cs = new Set(rec.correctKeys), us = new Set(rec.userKeys);
+    for (const l of Object.keys(q.options)) {
+      const el = $('opt-' + l); if (!el) continue;
+      el.classList.remove('selected', 'correct', 'wrong', 'missed'); el.classList.add('disabled');
+      if (us.has(l) && cs.has(l)) el.classList.add('correct');
+      else if (us.has(l)) el.classList.add('wrong');
+      else if (cs.has(l)) el.classList.add('missed');
+    }
+    fb.textContent = rec.isCorrect ? '✅  Správně!' : `❌  Špatně!   Správně: ${rec.correctKeys.join(', ')}`;
+  }
+  fb.className = 'feedback ' + (rec.isCorrect ? 'ok' : 'bad');
+  showSolution(q);
+  const correct = history.filter(h => h.isCorrect).length;
+  $('score-label').textContent = `Úspěšnost: ${Math.round(correct / history.length * 100)} %`;
+  const btn = $('btn-action');
+  btn.textContent = idx < queue.length - 1 ? 'Další →  (Enter)' : '📊 Výsledky (Enter)';
+  btn.disabled = false;
+  btn.focus();
+}
+
+function prevQ() {
+  if (studyMode || idx === 0) return;
+  if (examMode && hasAnswer()) record(queue[idx]);
+  idx--; renderQ();
+}
+function nextQ() { idx++; if (idx < queue.length) { renderQ(); saveProgress(); } else { saveProgress(); showResults(); } }
+
+function finishEarly() {
+  if (!history.length) { if (confirm('Žádné odpovědi. Zpět do menu?')) { clearExamTimer(); examMode = false; backFromResults(); } return; }
+  if (confirm('Ukončit předčasně a uložit progress?')) { clearExamTimer(); saveProgress(); showResults(); }
+}
+
+function renderResults() {
+  const correct = history.filter(h => h.isCorrect).length;
+  const pct = Math.round(correct / Math.max(history.length, 1) * 100);
+  $('res-title').textContent = examMode ? (pct >= 60 ? '✅ Ostrý test SPLNĚN' : '❌ Ostrý test NESPLNĚN')
+    : (suddenDeath && pct < 100 ? '☠️ GAME OVER ☠️' : 'Výsledky testu');
+  const p = $('res-pct'); p.textContent = pct + ' %'; p.className = 'big-pct ' + (pct >= 60 ? 'good' : 'bad');
+  $('res-detail').textContent = `Správně ${correct} z ${history.length} zodpovězených` + (examMode ? ' · orientační hranice 60 %' : '');
+  const wrongIds = new Set(history.filter(h => !h.isCorrect).map(h => h.id));
+  const wrongQ = FULL.filter(q => wrongIds.has(q.id));
+  const wb = $('btn-wrong');
+  if (wrongQ.length && !suddenDeath) { wb.style.display = 'block'; wb.textContent = `⚠️ Procvičit jen chyby (${wrongQ.length})`; wb._wrongQ = wrongQ; }
+  else wb.style.display = 'none';
+  examMode = false;
+}
+
+function backFromResults() { if (fromChunks) showChunks(); else showMenu(); }
+function restartSame() { beginSession([...queue], suddenDeath); }
+function practiceWrong() { beginSession([...$('btn-wrong')._wrongQ], false); }
+
+async function clearSourceProgress() {
+  if (!confirm('Smazat progress pro vybranou přednášku?')) return;
+  const ids = new Set(FULL.map(q => q.id));
+  const keep = Object.fromEntries(Object.entries(progress).filter(([k]) => !ids.has(k)));
+  await fetch(`/api/progress?source=${encodeURIComponent(currentSource)}`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({seen: keep, session: null})
+  });
+  progress = keep; session = null; updateMenuStats();
+}
+
+document.addEventListener('keydown', e => {
+  if ($('quiz').style.display === 'none') return;
+  const inField = e.target.tagName === 'INPUT';
+  if (e.key === 'Enter') { if (!$('btn-action').disabled) { e.preventDefault(); handleAction(); } }
+  else if (inField) return;
+  else if (e.key === 'ArrowRight') { if (!$('btn-action').disabled) handleAction(); }
+  else if (e.key === 'ArrowLeft') { if (!$('btn-prev').disabled) prevQ(); }
+  else { const k = e.key.toUpperCase(); if (/^[A-D]$/.test(k)) toggleOpt(k); }
+});
+$('rand-count').addEventListener('keydown', e => { if (e.key === 'Enter') startRandom(); if (e.key === 'Escape') closeModal(); });
+
+async function shutdown() {
+  if (!confirm('Ukončit TZI Trenér server?')) return;
+  document.body.innerHTML = '<div style="text-align:center;padding:80px;font-family:sans-serif"><h2>Server zastaven.</h2><p style="color:#6b7280">Zavři tuto záložku.</p></div>';
+  try { await fetch('/shutdown', {method: 'POST'}); } catch {}
+}
+
+init();
+</script>
+</body>
+</html>
+"""
 
 
-def mode_conv(data):
-    print("\nSměr převodu:")
-    for k, (name, _) in MODES.items():
-        print(f"  {k}) {name}")
-    kind = MODES.get(ask("Volba [1]: ") or "1", MODES["1"])[1]
-    ok = total = 0
-    print("\nPiš na papír, výsledek zadej sem. Prázdný řádek = ukázat postup, q = konec.")
-    while True:
-        s, frm, to = conv_task(kind)
-        ans = to_base(int(s, frm), to)
-        print(f"\n{num(s, frm)} -> (?){str(to).translate(SUBS)}")
-        r = ask("   výsledek: ")
-        if r.lower() == "q":
-            break
-        total += 1
-        good = bool(r) and clean(r) == ans
-        ok += good
-        print("   Správně." if good else f"   Správná odpověď: {num(ans, to)}")
-        print(steps(s, frm, to))
-        print(f"   [správně {ok}/{total}]")
-
-
-def mode_arit(data):
-    ok = total = 0
-    print("\nVýsledek zadej dvojkově. Prázdný řádek = ukázat postup, q = konec.")
-    while True:
-        op = random.choice(["+", "+", "-", "*", "/"])
-        if op == "+":
-            a, b = random.randint(5, 40), random.randint(3, 30)
-            r = a + b
-        elif op == "-":
-            a = random.randint(10, 45)
-            b = random.randint(3, a - 1)
-            r = a - b
-        elif op == "*":
-            a, b = random.randint(3, 15), random.randint(2, 7)
-            r = a * b
-        else:
-            b = random.randint(2, 7)
-            r = random.randint(2, 12)
-            a = b * r
-        sym = {"+": "+", "-": "−", "*": "·", "/": ":"}[op]
-        A, B, R = bin(a)[2:], bin(b)[2:], bin(r)[2:]
-        print(f"\n{num(A, 2)} {sym} {num(B, 2)} = ?")
-        ans = ask("   výsledek (dvojkově): ")
-        if ans.lower() == "q":
-            break
-        total += 1
-        good = bool(ans) and clean(ans) == R
-        ok += good
-        print("   Správně." if good else f"   Správná odpověď: {num(R, 2)}")
-        print(f"   Desítkově: {a} {sym} {b} = {r}")
-        if op == "*":
-            parts = [A + "0" * i for i, c in enumerate(reversed(B)) if c == "1"]
-            print("   Dílčí součiny (posun o řád): " + " + ".join(parts))
-        elif op == "-":
-            print(f"   Kontrola sčítáním: {R} + {B} = {A}")
-        elif op == "/":
-            print(f"   Kontrola násobením: {R} · {B} = {A}")
-        else:
-            print("   Sčítej zprava, 1+1 = 10 (zapiš 0, přenos 1).")
-        print(f"   [správně {ok}/{total}]")
-
-
-def cli_main():
-    data = load()
-    print("TZI Trenér: KI/TIN, 1. přednáška (číselné soustavy)")
-    while True:
-        print("\n1) Teorie (kartičky)\n2) Převody\n3) Aritmetika ve dvojkové soustavě\nq) Konec")
-        c = ask("Volba: ").lower()
-        if c == "1":
-            mode_cards(data)
-        elif c == "2":
-            mode_conv(data)
-        elif c == "3":
-            mode_arit(data)
-        elif c == "q":
-            break
-
-
-class Handler(http.server.BaseHTTPRequestHandler):
-    def do_GET(self):
-        body = HTML.encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
+class Handler(BaseHTTPRequestHandler):
+    def _send(self, code, body, ctype="application/json; charset=utf-8"):
+        data = body if isinstance(body, bytes) else body.encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
-        self.wfile.write(body)
+        self.wfile.write(data)
+
+    def _json(self, obj, code=200):
+        self._send(code, json.dumps(obj, ensure_ascii=False))
+
+    def do_GET(self):
+        u = urlparse(self.path)
+        q = parse_qs(u.query)
+        source = q.get("source", [""])[0]
+        if u.path == "/":
+            return self._send(200, HTML, "text/html; charset=utf-8")
+        if u.path == "/api/sources":
+            srcs = list_sources()
+            real = [s for s in srcs if s["id"] != ALL]
+            default = real[-1]["id"] if real else ""
+            return self._json({"sources": srcs, "default": default})
+        if u.path == "/api/questions":
+            try:
+                return self._json(load_questions(source))
+            except (KeyError, OSError, ValueError) as e:
+                return self._json({"error": str(e)}, 404)
+        if u.path == "/api/progress":
+            with lock:
+                d = load_progress()
+            return self._json({"seen": d.get("seen", {}), "session": d.get("sessions", {}).get(source)})
+        self._send(404, "not found", "text/plain")
+
+    def do_POST(self):
+        u = urlparse(self.path)
+        if u.path == "/api/progress":
+            source = parse_qs(u.query).get("source", [""])[0]
+            n = int(self.headers.get("Content-Length", 0))
+            try:
+                payload = json.loads(self.rfile.read(n) or b"{}")
+            except ValueError:
+                return self._json({"error": "bad json"}, 400)
+            with lock:
+                d = load_progress()
+                d["seen"] = payload.get("seen", {})
+                d.setdefault("sessions", {})[source] = payload.get("session")
+                save_progress(d)
+            return self._json({"ok": True})
+        if u.path == "/shutdown":
+            self._send(200, "bye", "text/plain")
+            threading.Timer(0.2, lambda: os._exit(0)).start()
+            return
+        self._send(404, "not found", "text/plain")
 
     def log_message(self, *args):
         pass
 
 
-def serve(port=8000):
-    """Spustí lokální server s webovým rozhraním a otevře prohlížeč."""
-    for p in range(port, port + 20):
+def lan_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("10.255.255.255", 1))
+        return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+
+def main():
+    if not list(BANKS.glob("*.json")):
+        raise SystemExit(f"V {BANKS} nejsou žádné banky otázek. Spusť: python3 build_bank.py")
+    lan = "--lan" in sys.argv
+    host = "0.0.0.0" if lan else "127.0.0.1"
+    for port in range(PORT, PORT + 20):
         try:
-            httpd = http.server.ThreadingHTTPServer(("127.0.0.1", p), Handler)
+            httpd = ThreadingHTTPServer((host, port), Handler)
             break
         except OSError:
             continue
     else:
-        raise SystemExit("Nenašel jsem volný port (8000-8019).")
-    url = f"http://127.0.0.1:{p}/"
-    print(f"TZI Trenér běží na {url}\nUkončíš ho přes Ctrl+C.")
-    threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+        raise SystemExit(f"Nenašel jsem volný port ({PORT}-{PORT + 19}).")
+    url = f"http://127.0.0.1:{port}"
+    print(f"TZI Trenér → {url}")
+    if lan:
+        print(f"V síti (telefon):   http://{lan_ip()}:{port}")
+    print("Ukončíš ho tlačítkem v menu nebo přes Ctrl+C.")
+    threading.Timer(0.8, lambda: webbrowser.open(url)).start()
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -553,7 +884,4 @@ def serve(port=8000):
 
 
 if __name__ == "__main__":
-    if "--cli" in sys.argv:
-        cli_main()
-    else:
-        serve()
+    main()
