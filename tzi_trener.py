@@ -353,6 +353,7 @@ const show = id => {
 };
 const norm = s => { s = (s || '').toUpperCase().replace(/[\s_]/g, ''); return s.replace(/^0+(?=.)/, ''); };
 const isInput = q => q.type === 'input';
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const shuffle = a => [...a].sort(() => Math.random() - .5);
 // Zápis z banky (a_n, Z^n, a_(n-1), ->) převede na HTML s dolními/horními indexy a šipkami.
 function fmt(s) {
@@ -370,7 +371,7 @@ async function init() {
   sources = data.sources;
   currentSource = data.default;
   $('source-sel').innerHTML = sources.map(s =>
-    `<option value="${s.id}" ${s.id === currentSource ? 'selected' : ''}>${s.label} (${s.count})</option>`).join('');
+    `<option value="${esc(s.id)}" ${s.id === currentSource ? 'selected' : ''}>${esc(s.label)} (${s.count})</option>`).join('');
   await loadSource(currentSource);
 }
 
@@ -433,7 +434,7 @@ async function saveProgress() {
   const newProgress = Object.assign({}, progress, m);
   const newSession = (idx < queue.length && !examMode) ? {queue_ids: queue.map(q => q.id), idx, sudden_death: suddenDeath, history} : null;
   await fetch(`/api/progress?source=${encodeURIComponent(currentSource)}`, {
-    method: 'POST', headers: {'Content-Type': 'application/json'},
+    method: 'POST', headers: {'Content-Type': 'application/json', 'X-TZI': '1'},
     body: JSON.stringify({seen: newProgress, session: newSession})
   });
   progress = newProgress; session = newSession;
@@ -770,7 +771,7 @@ async function clearSourceProgress() {
   const ids = new Set(FULL.map(q => q.id));
   const keep = Object.fromEntries(Object.entries(progress).filter(([k]) => !ids.has(k)));
   await fetch(`/api/progress?source=${encodeURIComponent(currentSource)}`, {
-    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({seen: keep, session: null})
+    method: 'POST', headers: {'Content-Type': 'application/json', 'X-TZI': '1'}, body: JSON.stringify({seen: keep, session: null})
   });
   progress = keep; session = null; updateMenuStats();
 }
@@ -789,7 +790,7 @@ $('rand-count').addEventListener('keydown', e => { if (e.key === 'Enter') startR
 async function shutdown() {
   if (!confirm('Ukončit TZI Trenér server?')) return;
   document.body.innerHTML = '<div style="text-align:center;padding:80px;font-family:sans-serif"><h2>Server zastaven.</h2><p style="color:#6b7280">Zavři tuto záložku.</p></div>';
-  try { await fetch('/shutdown', {method: 'POST'}); } catch {}
+  try { await fetch('/shutdown', {method: 'POST', headers: {'X-TZI': '1'}}); } catch {}
 }
 
 init();
@@ -799,7 +800,32 @@ init();
 """
 
 
+MAX_BODY = 1_000_000
+
+
+def host_ok(host_header):
+    """Povolí localhost a IP adresy, odmítne cizí jména (ochrana proti DNS rebinding)."""
+    host = (host_header or "").rsplit(":", 1)[0] if not (host_header or "").startswith("[") else ""
+    if host in ("localhost", "127.0.0.1"):
+        return True
+    try:
+        socket.inet_aton(host)
+        return True
+    except OSError:
+        return False
+
+
 class Handler(BaseHTTPRequestHandler):
+    def _guard(self, post=False):
+        """Vrátí True, když je požadavek v pořádku; jinak pošle chybu."""
+        if not host_ok(self.headers.get("Host")):
+            self._send(403, "forbidden host", "text/plain")
+            return False
+        if post and self.headers.get("X-TZI") != "1":
+            self._send(403, "forbidden", "text/plain")
+            return False
+        return True
+
     def _send(self, code, body, ctype="application/json; charset=utf-8"):
         data = body if isinstance(body, bytes) else body.encode("utf-8")
         self.send_response(code)
@@ -813,6 +839,8 @@ class Handler(BaseHTTPRequestHandler):
         self._send(code, json.dumps(obj, ensure_ascii=False))
 
     def do_GET(self):
+        if not self._guard():
+            return
         u = urlparse(self.path)
         q = parse_qs(u.query)
         source = q.get("source", [""])[0]
@@ -835,10 +863,12 @@ class Handler(BaseHTTPRequestHandler):
         self._send(404, "not found", "text/plain")
 
     def do_POST(self):
+        if not self._guard(post=True):
+            return
         u = urlparse(self.path)
         if u.path == "/api/progress":
             source = parse_qs(u.query).get("source", [""])[0]
-            n = int(self.headers.get("Content-Length", 0))
+            n = min(int(self.headers.get("Content-Length") or 0), MAX_BODY)
             try:
                 payload = json.loads(self.rfile.read(n) or b"{}")
             except ValueError:
