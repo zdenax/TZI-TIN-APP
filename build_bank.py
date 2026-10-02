@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Vygeneruje banku otázek pro 1. přednášku (číselné soustavy) do banky/.
 
+Deklarace využití AI: vytvořeno s pomocí nástroje Claude Sonnet 5.5 (Anthropic, 2026),
+uvedeno v souladu se Směrnicí rektora UJEP č. 7/2026 (dobrovolně).
+
 Otázky na výpočty se počítají zde (ne ručně), takže správné odpovědi i postupy jsou ověřené.
 Spuštění:  python3 build_bank.py
 """

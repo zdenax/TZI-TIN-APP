@@ -1,5 +1,9 @@
 # TZI Trenér
 
+> **Deklarace využití AI**
+> Tento projekt (aplikaci, banky otázek a dokumentaci) vytvořil autor s pomocí nástroje **Claude Sonnet 5.5** (Anthropic, https://claude.ai, 2026). Obsah otázek vychází z autorových poznámek z přednášek KI/TIN. Správnost výpočetních příkladů je ověřena výpočtem, teoretické části doplněné AI je třeba kontrolovat proti sylabu předmětu.
+> Uvedeno v souladu se Směrnicí rektora UJEP č. 7/2026 (pro studijní pomůcky povinné není, autor ji uvádí dobrovolně).
+
 Kvíz na opakování přednášek z Teoretické informatiky (KI/TIN), stylem podobný [MTCNA-app](https://github.com/zdenax/MTCNA-app). Běží v prohlížeči, spouští se jedním `.py` souborem bez závislostí.
 
 ## Spuštění
@@ -30,6 +34,34 @@ Nahoře v menu je rozbalovací seznam **Přednáška**. Každá přednáška má
 | 💀 Sudden Death | První chyba = konec |
 
 Postup (správně/chybně) se ukládá do `progress.json`, nabídne se **Pokračovat od poslední otázky**. U příkladů se po odpovědi ukáže celý postup (tabulka dělení, rozvoj, skupiny bitů).
+
+## Screenshoty
+
+### Desktop
+
+<table>
+<tr>
+<td align="center"><b>1. Hlavní menu</b><br><img src="docs/screenshots/desktop-menu.png" width="420"></td>
+<td align="center"><b>2. Bloky (Po 10)</b><br><img src="docs/screenshots/desktop-chunks.png" width="420"></td>
+</tr>
+<tr>
+<td align="center"><b>3. Detail bloku</b><br><img src="docs/screenshots/desktop-chunk-detail.png" width="420"></td>
+<td align="center"><b>4. Teoretická otázka</b><br><img src="docs/screenshots/desktop-question-choice.png" width="420"></td>
+</tr>
+<tr>
+<td align="center"><b>5. Příklad s postupem</b><br><img src="docs/screenshots/desktop-question-input.png" width="420"></td>
+<td align="center"><b>6. Studijní režim</b><br><img src="docs/screenshots/desktop-study.png" width="420"></td>
+</tr>
+</table>
+
+### Mobil (`--lan`)
+
+<table>
+<tr>
+<td align="center"><b>Menu</b><br><img src="docs/screenshots/mobile-menu.png" width="260"></td>
+<td align="center"><b>Příklad</b><br><img src="docs/screenshots/mobile-question.png" width="260"></td>
+</tr>
+</table>
 
 ## Banky otázek
 

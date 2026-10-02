@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """TZI Trenér: kvíz na opakování přednášek z Teoretické informatiky (KI/TIN).
 
+Deklarace využití AI: vytvořeno s pomocí nástroje Claude Sonnet 5.5 (Anthropic, 2026),
+uvedeno v souladu se Směrnicí rektora UJEP č. 7/2026 (dobrovolně).
+
 Spuštění:  python3 tzi_trener.py            # http://127.0.0.1:5051, otevře se prohlížeč
            python3 tzi_trener.py --lan      # navíc dostupné v místní síti (telefon)
 Bez závislostí (jen standardní knihovna). Banky otázek jsou v banky/*.json, jedna na přednášku.
