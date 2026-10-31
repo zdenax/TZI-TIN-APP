@@ -101,7 +101,7 @@
   },
   {
    "type": "choice",
-   "text": "Jak se v rukopisu rozepíše n!, aby se dal vykrátit faktoriál (n−k)! (k ≤ n)?",
+   "text": "Jak se rozepíše n!, aby se dal vykrátit faktoriál (n−k)! (k ≤ n)?",
    "options": {
     "A": "n! = (n−k)!·k!",
     "B": "n! = n·(n−1)·…·(n−k+1)·(n−k)!",
@@ -117,7 +117,7 @@
   },
   {
    "type": "choice",
-   "text": "Čemu se rovná C(n, k) po vykrácení (n−k)!?",
+   "text": "Čemu se rovná C(n, k) = n! / ((n−k)!·k!) po vykrácení (n−k)!?",
    "options": {
     "A": "n·(n−1)·…·(n−k+1)",
     "B": "n·(n−1)·…·(n−k) / k!",
@@ -133,7 +133,7 @@
   },
   {
    "type": "choice",
-   "text": "Čemu se rovná C(n, k) podle symetrie kombinačních čísel?",
+   "text": "Čemu se rovná C(n, k) podle symetrie kombinačních čísel? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "options": {
     "A": "C(n, k+1)",
     "B": "C(n−k, k)",
@@ -149,7 +149,7 @@
   },
   {
    "type": "choice",
-   "text": "Čemu se rovnají C(n, 0) a C(n, n)?",
+   "text": "Čemu se rovnají C(n, 0) a C(n, n)? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "options": {
     "A": "obě 0",
     "B": "C(n,0) = 1 a C(n,n) = n",
@@ -165,7 +165,7 @@
   },
   {
    "type": "choice",
-   "text": "Čemu se rovná C(n, 1)?",
+   "text": "Čemu se rovná C(n, 1)? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "options": {
     "A": "1",
     "B": "n",
@@ -181,7 +181,7 @@
   },
   {
    "type": "choice",
-   "text": "Pascalovo pravidlo (domácí úkol): čemu se rovná C(n, k) + C(n, k+1), kde k < n?",
+   "text": "Pascalovo pravidlo (domácí úkol): čemu se rovná C(n, k) + C(n, k+1), kde k < n? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "options": {
     "A": "C(n+1, k+1)",
     "B": "C(n+1, k)",
@@ -197,7 +197,7 @@
   },
   {
    "type": "choice",
-   "text": "Proč se v domácím úkolu C(n,k) + C(n,k+1) = C(n+1,k+1) předpokládá k < n?",
+   "text": "Proč se v domácím úkolu C(n,k) + C(n,k+1) = C(n+1,k+1) předpokládá k < n? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "options": {
     "A": "aby bylo C(n, k) rovno nule",
     "B": "aby C(n, k+1) bylo definováno (potřeba k+1 ≤ n)",
@@ -256,7 +256,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik je C(6, 2) = (6 nad 2)?",
+   "text": "Kolik je C(6, 2) = (6 nad 2)? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "15",
    "solution": "C(6,2) = 6!/((6-2)!·2!) = 6 · 5 / 2! = 15.",
@@ -265,7 +265,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik je C(7, 3) = (7 nad 3)?",
+   "text": "Kolik je C(7, 3) = (7 nad 3)? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "35",
    "solution": "C(7,3) = 7!/((7-3)!·3!) = 7 · 6 · 5 / 3! = 35.",
@@ -274,7 +274,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik je C(10, 8) = (10 nad 8)?",
+   "text": "Kolik je C(10, 8) = (10 nad 8)? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "45",
    "solution": "C(10,8) = 10!/((10-8)!·8!) = 10 · 9 · 8 · 7 · 6 · 5 · 4 · 3 / 8! = 45. Rychleji přes symetrii: C(10,8) = C(10,2) = 45.",
@@ -283,7 +283,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik je C(5,2) + C(5,3) (Pascalovo pravidlo: součet je C(6,3))?",
+   "text": "Kolik je C(5,2) + C(5,3) (Pascalovo pravidlo: součet je C(6,3))? (Vzorec: C(n, k) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "20",
    "solution": "C(5,2) = 10, C(5,3) = 10, součet 20 = C(6,3).",

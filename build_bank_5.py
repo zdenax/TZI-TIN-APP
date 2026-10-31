@@ -21,6 +21,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from formule import pripoj_vzorce
+
 HERE = Path(__file__).parent
 CHECKS = 0
 
@@ -529,7 +531,7 @@ def auto_choice():
           "tabulka, ve které řádky jsou stavy a sloupce znaky", "výčet všech δ(q, a) = q′ pod sebou",
           "seznam všech přijímaných slov"], [0],
          "„Tabulka jako orientovaný graf“: vrcholy = stavy, hrany podle δ; počáteční stav má šipku zvenku, přijímací "
-         "se zvýrazní (dvojitý kroužek). Tabulka a výčet δ jsou jiné zápisy téhož automatu."),
+         "se označí výstupní šipkou (jinde se kreslí dvojitý kroužek). Tabulka a výčet δ jsou jiné zápisy téhož automatu."),
         ("Kolik hran vede ve stavovém diagramu deterministického konečného automatu z každého vrcholu?",
          ["pro každý znak abecedy právě jedna", "právě jedna, bez ohledu na abecedu",
           "nejvýš jedna pro každý znak", "tolik, kolik je stavů"], [0],
@@ -563,14 +565,15 @@ def auto_choice():
          "funkce, tabulku a stavový strom."),
         ("Co je kořenem stavového stromu automatu?",
          ["počáteční stav q₀", "libovolný přijímací stav", "poslední přečtený znak", "stav s nejvíce přechody"], [0],
-         "Strom z přednášky začíná šipkou do q₀ a z q₀ vedou větve pro každý znak do stavu podle δ."),
+         "Kořen je počáteční stav q₀ a z něj vedou větve pro každý znak do stavu podle δ. V rukopisu má kořen šipku zvenku, "
+         "ale není nutná: počáteční stav je zřejmý z toho, že je kořenem (Vais, kap. 1.3, s. 11)."),
         ("Vstupní dveře jako konečný automat (příklad z přednášky): stavy jsou zavřeno a otevřeno. "
          "Co tvoří vstupní abecedu Σ?",
          ["události vstup a odchod", "stavy zavřeno a otevřeno", "jediný znak „dveře“", "počet lidí, kteří prošli"], [0],
          "Když vstoupíme, dveře se otevřou, když odejdeme, zavřou se. Události jsou vstupní znaky, Σ = {vstup, odchod}, "
          "Q = {zavřeno, otevřeno}, q₀ = zavřeno (zápis z výpisků)."),
-        ("Dveře: Q = {zavřeno, otevřeno}, Σ = {vstup, odchod}. Z přednášky jsou jen přechody "
-         "δ(zavřeno, vstup) = otevřeno a δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i "
+        ("Dveře: Q = {zavřeno, otevřeno}, Σ = {vstup, odchod}. Podle popisu z přednášky (vstoupíme → otevřou, "
+         "odejdeme → zavřou) jsou zadané jen přechody δ(zavřeno, vstup) = otevřeno a δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i "
          "δ(zavřeno, odchod) a δ(otevřeno, vstup)?",
          ["deterministický automat musí mít pro každý stav a každý znak právě jeden přechod",
           "aby měl automat víc přijímacích stavů", "protože každý stav musí mít smyčku",
@@ -646,12 +649,15 @@ def auto_reveal():
     return [
         (f"{TAB} Nakresli stavový diagram tohoto automatu.",
          "Vrcholy (stavy): q₀, q₁, q₂, q₃. Do q₀ vede šipka zvenku (počáteční stav), q₁ a q₂ jsou přijímací "
-         "(dvojitý kroužek).\n"
+         "(výstupní šipka ven; jinde se kreslí dvojitý kroužek).\n"
          f"Hrany ({len(AD)} = 4 stavy · 2 znaky, z každého vrcholu jedna pro 0 a jedna pro 1):\n{edges}"),
         (f"{TAB} Rozviň stavový strom tohoto automatu (stav, který už ve stromu je, se dál nerozvíjí).",
          f"Kořen je počáteční stav q₀, ← = přijímací stav.\n{tree_txt}\n"
-         "Strom podle přednášky; definici stavového stromu se zdrojem výpisky nemají, jak ho chce vyučující, "
-         "ověřit na cvičení."),
+         "Definice (Vais, kap. 1.3, s. 11): strom se kreslí shora dolů od počátečního stavu (kořen se neoznačuje), "
+         "z uzlu vede pro každý znak jedna hrana dolů k výskytu následujícího stavu, rozvíjí se, dokud v listech nejsou "
+         "jen stavy, které už jsou ve stromu rozvinuté, a přijímací stavy se značí u všech výskytů. Rozvíjí se po "
+         "úrovních a rozvinutý zůstává první výskyt stavu (podle obrázku, pořadí Vais nepíše). Popisky hran Vais "
+         "nekreslí; jak to chce vyučující, ověřit na cvičení."),
         ("Zapiš vstupní dveře (příklad z přednášky: když vstoupíme, otevřou se, když odejdeme, zavřou se) jako "
          "konečný automat: Q, Σ, q₀, přechodová funkce δ a F.",
          "Jeden možný zápis (návrh z výpisků, přesný model vyučujícího neznáme):\n"
@@ -675,6 +681,7 @@ BINOM = re.compile(r"\(([^()<>]+?) nad ([^()<>]+?)\)")
 def build(choice, inputs, reveal, rnd, prefix):
     qs = []
     for text, opts, correct, expl in choice:
+        text = pripoj_vzorce(text)
         check(len(set(opts)) == len(opts) == 4 and correct == [0], text)
         order = list(range(len(opts)))
         rnd.shuffle(order)
@@ -682,10 +689,11 @@ def build(choice, inputs, reveal, rnd, prefix):
                    "options": {"ABCD"[i]: opts[j] for i, j in enumerate(order)},
                    "correct": ["ABCD"[order.index(0)]], "explanation": expl})
     for text, hint, ans, sol in inputs:
+        text = pripoj_vzorce(text)
         check(norm(ans) != "" and sol, text)
         qs.append({"type": "input", "text": text, "hint": hint, "answer": ans, "solution": sol})
     for text, sol in reveal:
-        qs.append({"type": "input", "reveal": True, "text": text, "solution": sol})
+        qs.append({"type": "input", "reveal": True, "text": pripoj_vzorce(text), "solution": sol})
     for i, q in enumerate(qs, 1):
         q["number"] = i
         q["id"] = f"{prefix}-{i}"

@@ -17,6 +17,8 @@ import math
 import random
 from pathlib import Path
 
+from formule import pripoj_vzorce
+
 
 # ── pomocné funkce a ověření ─────────────────────────────────────────────────
 
@@ -204,12 +206,12 @@ def choice_questions():
         ("Jak je definováno kombinační číslo C(n, k) = (n nad k), kde 0 ≤ k ≤ n?",
          ["n! / ((n−k)! · k!)", "n! / (n−k)!", "n! / k!", "(n−k)! · k! / n!"], [0],
          "C(n,k) = n!/((n−k)!·k!) je počet kombinací k-té třídy z n prvků. n!/(n−k)! je počet variací."),
-        ("Jak se v rukopisu rozepíše n!, aby se dal vykrátit faktoriál (n−k)! (k ≤ n)?",
+        ("Jak se rozepíše n!, aby se dal vykrátit faktoriál (n−k)! (k ≤ n)?",
          ["n! = n·(n−1)·…·(n−k+1)·(n−k)!", "n! = n·(n−1)·…·(n−k)·k!",
           "n! = n·(n−1)·…·(n−k+1)·k!", "n! = (n−k)!·k!"], [0],
          "n! = n·(n−1)·…·2·1. Prvních k činitelů necháme rozepsaných, zbytek (n−k)·…·1 je (n−k)!. "
          "Příklad: 6! = 6·5·4!."),
-        ("Čemu se rovná C(n, k) po vykrácení (n−k)!?",
+        ("Čemu se rovná C(n, k) = n! / ((n−k)!·k!) po vykrácení (n−k)!?",
          ["n·(n−1)·…·(n−k+1) / k!", "n·(n−1)·…·(n−k+1)", "n·(n−1)·…·(n−k) / k!", "(n−k)! / k!"], [0],
          "C(n,k) = n!/((n−k)!·k!) = n·(n−1)·…·(n−k+1)·(n−k)! / ((n−k)!·k!) = n·(n−1)·…·(n−k+1)/k!. "
          "Čitatel má k činitelů."),
@@ -326,6 +328,7 @@ def input_questions():
 def build(choice, inputs, rnd, prefix):
     qs = []
     for text, opts, correct, expl in choice:
+        text = pripoj_vzorce(text)
         order = list(range(len(opts)))
         rnd.shuffle(order)
         opts = [opts[i] for i in order]
@@ -334,7 +337,7 @@ def build(choice, inputs, rnd, prefix):
                    "options": {"ABCD"[i]: o for i, o in enumerate(opts)},
                    "correct": ["ABCD"[i] for i in correct], "explanation": expl})
     for text, hint, ans, sol in inputs:
-        qs.append({"type": "input", "text": text, "hint": hint, "answer": ans, "solution": sol})
+        qs.append({"type": "input", "text": pripoj_vzorce(text), "hint": hint, "answer": ans, "solution": sol})
     for i, q in enumerate(qs, 1):
         q["number"] = i
         q["id"] = f"{prefix}-{i}"
