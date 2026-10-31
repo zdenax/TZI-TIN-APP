@@ -8,13 +8,14 @@ Otázky typu recall: odpověď se píše z hlavy, bez možností ABCD. accept = 
 (první je kanonická), words = očekávaný počet slov kanonické odpovědi (číslo nebo "1-2"),
 category = tematická kategorie napříč přednáškami. Velká/malá písmena, diakritiku a interpunkci
 sjednocuje UI, proto se varianty bez diakritiky nepíšou zvlášť.
-Obsah vychází z výpisků přednášek 1 až 4 (vault TZI1: Prednasky/*.md, Glosar.md) a z bank 1 až 4.
+Obsah vychází z výpisků přednášek 1 až 5 (vault TZI1: Prednasky/*.md, Glosar.md) a z bank 1 až 5.
 Kde se zdroje liší (podílová × faktorová množina, spočetná × spočetně nekonečná, slabá
 antisymetrie, neostré uspořádání), uznávají se obě varianty. Teorii kontrolovat proti sylabu KI/TIN.
 Banka je v podsložce, běžné režimy (banky/*.json) ji vůbec nenačtou.
 Spuštění:  python3 build_bank_recall.py
 """
 import json
+from itertools import combinations_with_replacement, permutations, product
 from math import comb, factorial
 from pathlib import Path
 
@@ -24,6 +25,9 @@ def q(text, accept, words, explanation):
 
 
 P1, P2, P3, P4 = "Přednáška 1. 10.", "Přednáška 8. 10.", "Přednáška 15. 10.", "Přednáška 22. 10."
+P5 = "Přednáška 29. 10."
+BINOM3 = [comb(3, k) for k in range(4)]  # koeficienty (a+b)^3
+AUT_STATES, AUT_SYMBOLS = 4, 2  # automat z přednášky 29. 10.: Q = {q0, q1, q2, q3}, Σ = {0, 1}
 
 CATS = [
     ("Matematický zápis", [
@@ -316,6 +320,112 @@ CATS = [
         q("Kolik je (5 nad 2)?", [str(comb(5, 2)), "deset"], 1, f"(5 nad 2) = 5 · 4 / 2! = 20 / 2 = 10. {P4}"),
         q("Kolik je 5!?", [str(factorial(5)), "sto dvacet"], 1,
           f"5! = 5 · 4 · 3 · 2 · 1 = 120 (na přednášce rozepsáno jako 5 · 4 · 3!). {P4}"),
+        # přednáška 29. 10.: variace, permutace, kombinace s opakováním, binomická věta
+        q("Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se žádný prvek neopakuje?",
+          ["variace bez opakování", "variace", "variace k-té třídy bez opakování", "variace k-té třídy",
+           "variation"], "1-3",
+          f"Variace k-té třídy z n prvků bez opakování, V_k(n) = n! / (n − k)!, 0 ≤ k ≤ n (cs.wikipedia). {P5}"),
+        q("Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se prvky mohou opakovat?",
+          ["variace s opakováním", "variace k-té třídy s opakováním", "variation with repetition"], 3,
+          f"Variace s opakováním, V′_k(n) = n^k; k může být i větší než n (cs.wikipedia). {P5}"),
+        q("Jak se nazývá uspořádaná n-tice, která obsahuje každý prvek n-prvkové množiny M právě jednou?",
+          ["permutace", "permutace bez opakování", "permutace množiny M", "permutation"], "1-3",
+          f"Permutace, P(n) = n! = V_n(n); proto 0! = 1 (cs.wikipedia). {P5}"),
+        q("Jak se nazývá uspořádaná k-tice, ve které je každý prvek a_i základní množiny M = {a_1, …, a_n} "
+          "přesně k_i-krát (k = k_1 + … + k_n)?", ["permutace s opakováním", "permutation with repetition"], 3,
+          f"Permutace s opakováním, P′_(k_1,…,k_n)(k) = k! / (k_1! · k_2! · … · k_n!) (cs.wikipedia). {P5}"),
+        q("Jak se nazývá k-prvková skupina prvků z n-prvkové množiny M, ve které se prvky mohou opakovat a "
+          "nezáleží na pořadí?", ["kombinace s opakováním", "kombinace k-té třídy s opakováním",
+          "combination with repetition"], 3,
+          f"Kombinace s opakováním, C′_k(n) = (n+k−1 nad k); k může být i větší než n (cs.wikipedia). {P5}"),
+        q("Co vyjadřuje čárka ve značení V′, P′, C′?", ["s opakováním", "opakování", "výběr s opakováním",
+          "prvky se opakují", "prvky se mohou opakovat"], 2,
+          f"V′, P′, C′ jsou variace, permutace a kombinace s opakováním. {P5}"),
+        q("Co udává n! / (n − k)! pro 0 ≤ k ≤ n?", ["variace bez opakování", "počet variací bez opakování",
+          "počet variací", "variace", "počet variací k-té třídy z n prvků"], "3-4",
+          f"Počet variací k-té třídy z n prvků bez opakování, V_k(n) = n · (n − 1) · … · (n − k + 1). "
+          f"Příklad z přednášky V_2(3) = {len(list(permutations('123', 2)))}. {P5}"),
+        q("Co udává n^k (n prvků, k-tá třída)?", ["variace s opakováním", "počet variací s opakováním",
+          "počet variací s opakováním k-té třídy"], "3-4",
+          f"Počet variací s opakováním, V′_k(n) = n^k (prvky kartézského součinu M^k). Příklad z přednášky "
+          f"V′_2(3) = {len(list(product('123', repeat=2)))}. {P5}"),
+        q("Co udává (n+k−1 nad k)?", ["kombinace s opakováním", "počet kombinací s opakováním",
+          "počet kombinací s opakováním k-té třídy"], "3-4",
+          f"Počet kombinací s opakováním C′_k(n). Příklad z přednášky C′_2(3) = (4 nad 2) = "
+          f"{len(list(combinations_with_replacement('123', 2)))}. {P5}"),
+        q("Co udává k! / (k_1! · k_2! · … · k_n!), kde k = k_1 + … + k_n?", ["permutace s opakováním",
+          "počet permutací s opakováním"], "3-4",
+          f"Počet permutací s opakováním P′_(k_1,…,k_n)(k): prohození stejných prvků nedá nové pořadí. {P5}"),
+        q("Kolik je P′_(1,1,2)(4), počet různých pořadí čísel 1, 2, 3, 3?", [str(len(set(permutations("1233")))),
+          "dvanáct"], 1, f"4! / (1! · 1! · 2!) = 24 / 2 = 12 (příklad z přednášky). {P5}"),
+        q("Jak se v binomické větě nazývá kombinační číslo (n nad k)?", ["binomický koeficient",
+          "binomial coefficient"], 2, f"Binomický koeficient, čte se „n nad k“ (cs.wikipedia). {P5}"),
+        q("Jak se nazývá vztah (a+b)^n = Σ (n nad k) · a^(n−k) · b^k pro k = 0, 1, …, n?",
+          ["binomická věta", "binomický rozvoj", "binomial theorem"], 2,
+          f"Binomická věta: rozvoj n-té mocniny dvojčlenu (cs.wikipedia). {P5}"),
+        q("Kolik sčítanců má rozvoj (a+b)^n podle binomické věty?", ["n+1", "n + 1", "n plus 1", "n plus jedna"],
+          "1-3", f"k = 0, 1, …, n, tedy n + 1 sčítanců; pro n = 3 jsou to {len(BINOM3)}. {P5}"),
+        q("Jaké koeficienty má rozvoj (a+b)^3, od a^3 po b^3?", [" ".join(map(str, BINOM3)), "".join(map(str, BINOM3)),
+          "jedna tři tři jedna"], 4,
+          f"(a+b)^3 = a^3 + 3a^2·b + 3a·b^2 + b^3, koeficienty (3 nad k) = 1, 3, 3, 1. {P5}"),
+    ]),
+    ("Konečné automaty", [
+        q("Jak se nazývá uspořádaná pětice A = (Q, Σ, δ, q₀, F)?", ["konečný automat",
+          "deterministický konečný automat", "konečný deterministický automat", "automat", "DKA", "DFA",
+          "finite automaton"], 2,
+          f"Konečný automat (deterministický): Q stavy, Σ abeceda, δ přechodová funkce, q₀ počáteční stav, "
+          f"F přijímací stavy (Mareš, Úvod do automatů, kap. 1.2). {P5}"),
+        q("Jak se nazývá množina Q v pětici konečného automatu A = (Q, Σ, δ, q₀, F)?", ["množina stavů", "stavy",
+          "konečná množina stavů", "konečná neprázdná množina stavů", "states", "set of states"], 2,
+          f"Q je konečná neprázdná množina stavů (Mareš, kap. 1.2). {P5}"),
+        q("Jak se nazývá Σ v pětici konečného automatu?", ["abeceda", "vstupní abeceda", "množina znaků",
+          "množina vstupních symbolů", "vstupní symboly", "alphabet"], "1-2",
+          f"Σ je konečná neprázdná množina znaků, (vstupní) abeceda, např. Σ = {{0, 1}} (Mareš, kap. 1.2). {P5}"),
+        q("Jak se nazývá δ : Q × Σ → Q v pětici konečného automatu?", ["přechodová funkce",
+          "přechodová funkce automatu", "funkce přechodů", "transition function"], 2,
+          f"Přechodová funkce: pro každý stav a znak ze vstupu určí, do jakého stavu automat přejde "
+          f"(Mareš, kap. 1.2). {P5}"),
+        q("Jak se nazývá q₀ v pětici konečného automatu?", ["počáteční stav", "startovní stav", "počáteční",
+          "initial state", "start state"], 2, f"q₀ ∈ Q je počáteční stav (Mareš, kap. 1.2). {P5}"),
+        q("Jak se nazývá F ⊆ Q v pětici konečného automatu?", ["množina přijímacích stavů", "přijímací stavy",
+          "množina koncových stavů", "koncové stavy", "accepting states", "final states"], 3,
+          f"F je množina přijímacích (koncových) stavů (Mareš, kap. 1.2). {P5}"),
+        q("Jak se čte symbol Σ v zápisu konečného automatu?", ["velká sigma", "sigma"], 2,
+          f"Σ = velká sigma, označuje abecedu. {P5}"),
+        q("Jak se čte symbol δ u přechodové funkce?", ["malá delta", "delta"], 2,
+          f"δ = malá delta, δ : Q × Σ → Q. {P5}"),
+        q("Jak se nazývá množina Q × Σ všech dvojic (stav, znak), na které je definovaná přechodová funkce?",
+          ["kartézský součin", "kartézský součin Q a Σ", "kartézský součin množin Q a Σ", "cartesian product"], 2,
+          f"Kartézský součin (přednáška 15. 10.), např. dvojice (q₀, 1). {P5}"),
+        q("Co je výsledkem δ(q, a) pro stav q ∈ Q a znak a ∈ Σ?", ["stav", "nový stav", "další stav",
+          "následující stav", "stav z Q", "stav automatu", "state"], 1,
+          f"δ(q, a) = q′, q′ ∈ Q: ve stavu q přečte znak a a přejde do stavu q′ (zápis z tabule). {P5}"),
+        q("Jaký je konečný automat, u kterého má každý stav pro každý vstupní symbol právě jeden přechod?",
+          ["deterministický", "deterministický automat", "deterministický konečný automat", "DKA", "DFA",
+           "deterministic"], 1,
+          f"Deterministický: z každého vrcholu stavového diagramu vede pro každý znak právě jedna hrana "
+          f"(Mareš, kap. 1.2). Automat z přednášky má {AUT_STATES} · {AUT_SYMBOLS} = {AUT_STATES * AUT_SYMBOLS} "
+          f"přechodů. {P5}"),
+        q("Jak se nazývá slovo, po jehož přečtení skončí výpočet automatu ve stavu z F?", ["přijaté slovo",
+          "přijaté", "přijímané slovo", "přijímané", "rozpoznané slovo", "slovo je přijato", "přijato",
+          "accepted"], 2,
+          f"Slovo je přijato, když výpočet skončí v přijímacím stavu (Mareš, kap. 1.2). Rozhoduje stav po přečtení "
+          f"celého slova. {P5}"),
+        q("Jak se nazývá zápis automatu, kde řádky jsou stavy, sloupce znaky abecedy a v políčku je δ(q, a)?",
+          ["tabulka přechodů", "tabulka", "přechodová tabulka", "tabulka přechodové funkce", "transition table"], 2,
+          f"Tabulka (přechodů): počáteční stav se označí →, přijímací ←, má |Q| · |Σ| políček. {P5}"),
+        q("Jak se nazývá orientovaný graf automatu, jehož vrcholy jsou stavy a hrana z q do q′ s popiskem a znamená "
+          "δ(q, a) = q′?", ["stavový diagram", "přechodový diagram", "diagram", "stavový graf", "state diagram"], 2,
+          f"Stavový (přechodový) diagram, „tabulka jako orientovaný graf“. Podle přednášky se automat navrhuje "
+          f"nejdřív stavovým diagramem. {P5}"),
+        q("Jak se nazývá zápis automatu z přednášky, ve kterém z počátečního stavu (kořene) vedou větve pro každý "
+          "znak do stavu podle δ a stav, který už se objevil, se dál nerozvíjí?", ["stavový strom",
+          "strom stavový", "strom", "strom stavů"], 2,
+          f"Stavový strom (v rukopisu „STROM STAVOVÝ“). Popis podle stromu z přednášky; definici se zdrojem "
+          f"výpisky nemají, ověřit na cvičení. {P5}"),
+        q("Jak se na náčrtu konečného automatu z přednášky nazývá část Ř. J., ke které patří množina stavů Q?",
+          ["řídicí jednotka"], 2,
+          f"Řídicí jednotka (Ř. J.), Q = {{q₀, …, qₙ}}; od ní vede čára k hlavě nad páskou a₁ | a₂ | … | aₘ. {P5}"),
     ]),
 ]
 
@@ -338,6 +448,10 @@ def self_check(qs):
         assert x["category"] and x["explanation"], x["id"]
     # číselné odpovědi napsané ručně (ostatní se počítají přímo v CATS)
     assert int("F", 16) == 15 and 16 == 2 ** 4 and comb(7, 1) == 7
+    # přednáška 29. 10.: n + 1 sčítanců, BINOM3 jako (4 nad 2) = 6 z výčtu, rozvoj (a+b)^3 roznásobením
+    assert BINOM3 == [1, 3, 3, 1] and len(list(combinations_with_replacement('123', 2))) == comb(4, 2)
+    a, b = 2, 5
+    assert (a + b) ** 3 == sum(c * a ** (3 - k) * b ** k for k, c in enumerate(BINOM3))
 
 
 def main():
@@ -346,7 +460,7 @@ def main():
         x["number"] = i
         x["id"] = f"r-{i}"
     self_check(qs)
-    out = {"title": "Doplňovačka (na paměť), přednášky 1 až 4", "lecture": 4, "date": "2026-10-22", "questions": qs}
+    out = {"title": "Doplňovačka (na paměť), přednášky 1 až 5", "lecture": 5, "date": "2026-10-29", "questions": qs}
     path = Path(__file__).parent / "banky" / "doplnovacka" / "04r-doplnovacka.json"
     path.parent.mkdir(exist_ok=True)
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")

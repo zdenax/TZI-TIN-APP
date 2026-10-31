@@ -1,7 +1,7 @@
 {
- "title": "Doplňovačka (na paměť), přednášky 1 až 4",
- "lecture": 4,
- "date": "2026-10-22",
+ "title": "Doplňovačka (na paměť), přednášky 1 až 5",
+ "lecture": 5,
+ "date": "2026-10-29",
  "questions": [
   {
    "type": "recall",
@@ -1580,6 +1580,474 @@
    "explanation": "5! = 5 · 4 · 3 · 2 · 1 = 120 (na přednášce rozepsáno jako 5 · 4 · 3!). Přednáška 22. 10.",
    "number": 103,
    "id": "r-103"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se žádný prvek neopakuje?",
+   "accept": [
+    "variace bez opakování",
+    "variace",
+    "variace k-té třídy bez opakování",
+    "variace k-té třídy",
+    "variation"
+   ],
+   "words": "1-3",
+   "explanation": "Variace k-té třídy z n prvků bez opakování, V_k(n) = n! / (n − k)!, 0 ≤ k ≤ n (cs.wikipedia). Přednáška 29. 10.",
+   "number": 104,
+   "id": "r-104"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se prvky mohou opakovat?",
+   "accept": [
+    "variace s opakováním",
+    "variace k-té třídy s opakováním",
+    "variation with repetition"
+   ],
+   "words": 3,
+   "explanation": "Variace s opakováním, V′_k(n) = n^k; k může být i větší než n (cs.wikipedia). Přednáška 29. 10.",
+   "number": 105,
+   "id": "r-105"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jak se nazývá uspořádaná n-tice, která obsahuje každý prvek n-prvkové množiny M právě jednou?",
+   "accept": [
+    "permutace",
+    "permutace bez opakování",
+    "permutace množiny M",
+    "permutation"
+   ],
+   "words": "1-3",
+   "explanation": "Permutace, P(n) = n! = V_n(n); proto 0! = 1 (cs.wikipedia). Přednáška 29. 10.",
+   "number": 106,
+   "id": "r-106"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jak se nazývá uspořádaná k-tice, ve které je každý prvek a_i základní množiny M = {a_1, …, a_n} přesně k_i-krát (k = k_1 + … + k_n)?",
+   "accept": [
+    "permutace s opakováním",
+    "permutation with repetition"
+   ],
+   "words": 3,
+   "explanation": "Permutace s opakováním, P′_(k_1,…,k_n)(k) = k! / (k_1! · k_2! · … · k_n!) (cs.wikipedia). Přednáška 29. 10.",
+   "number": 107,
+   "id": "r-107"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jak se nazývá k-prvková skupina prvků z n-prvkové množiny M, ve které se prvky mohou opakovat a nezáleží na pořadí?",
+   "accept": [
+    "kombinace s opakováním",
+    "kombinace k-té třídy s opakováním",
+    "combination with repetition"
+   ],
+   "words": 3,
+   "explanation": "Kombinace s opakováním, C′_k(n) = (n+k−1 nad k); k může být i větší než n (cs.wikipedia). Přednáška 29. 10.",
+   "number": 108,
+   "id": "r-108"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Co vyjadřuje čárka ve značení V′, P′, C′?",
+   "accept": [
+    "s opakováním",
+    "opakování",
+    "výběr s opakováním",
+    "prvky se opakují",
+    "prvky se mohou opakovat"
+   ],
+   "words": 2,
+   "explanation": "V′, P′, C′ jsou variace, permutace a kombinace s opakováním. Přednáška 29. 10.",
+   "number": 109,
+   "id": "r-109"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Co udává n! / (n − k)! pro 0 ≤ k ≤ n?",
+   "accept": [
+    "variace bez opakování",
+    "počet variací bez opakování",
+    "počet variací",
+    "variace",
+    "počet variací k-té třídy z n prvků"
+   ],
+   "words": "3-4",
+   "explanation": "Počet variací k-té třídy z n prvků bez opakování, V_k(n) = n · (n − 1) · … · (n − k + 1). Příklad z přednášky V_2(3) = 6. Přednáška 29. 10.",
+   "number": 110,
+   "id": "r-110"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Co udává n^k (n prvků, k-tá třída)?",
+   "accept": [
+    "variace s opakováním",
+    "počet variací s opakováním",
+    "počet variací s opakováním k-té třídy"
+   ],
+   "words": "3-4",
+   "explanation": "Počet variací s opakováním, V′_k(n) = n^k (prvky kartézského součinu M^k). Příklad z přednášky V′_2(3) = 9. Přednáška 29. 10.",
+   "number": 111,
+   "id": "r-111"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Co udává (n+k−1 nad k)?",
+   "accept": [
+    "kombinace s opakováním",
+    "počet kombinací s opakováním",
+    "počet kombinací s opakováním k-té třídy"
+   ],
+   "words": "3-4",
+   "explanation": "Počet kombinací s opakováním C′_k(n). Příklad z přednášky C′_2(3) = (4 nad 2) = 6. Přednáška 29. 10.",
+   "number": 112,
+   "id": "r-112"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Co udává k! / (k_1! · k_2! · … · k_n!), kde k = k_1 + … + k_n?",
+   "accept": [
+    "permutace s opakováním",
+    "počet permutací s opakováním"
+   ],
+   "words": "3-4",
+   "explanation": "Počet permutací s opakováním P′_(k_1,…,k_n)(k): prohození stejných prvků nedá nové pořadí. Přednáška 29. 10.",
+   "number": 113,
+   "id": "r-113"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Kolik je P′_(1,1,2)(4), počet různých pořadí čísel 1, 2, 3, 3?",
+   "accept": [
+    "12",
+    "dvanáct"
+   ],
+   "words": 1,
+   "explanation": "4! / (1! · 1! · 2!) = 24 / 2 = 12 (příklad z přednášky). Přednáška 29. 10.",
+   "number": 114,
+   "id": "r-114"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jak se v binomické větě nazývá kombinační číslo (n nad k)?",
+   "accept": [
+    "binomický koeficient",
+    "binomial coefficient"
+   ],
+   "words": 2,
+   "explanation": "Binomický koeficient, čte se „n nad k“ (cs.wikipedia). Přednáška 29. 10.",
+   "number": 115,
+   "id": "r-115"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jak se nazývá vztah (a+b)^n = Σ (n nad k) · a^(n−k) · b^k pro k = 0, 1, …, n?",
+   "accept": [
+    "binomická věta",
+    "binomický rozvoj",
+    "binomial theorem"
+   ],
+   "words": 2,
+   "explanation": "Binomická věta: rozvoj n-té mocniny dvojčlenu (cs.wikipedia). Přednáška 29. 10.",
+   "number": 116,
+   "id": "r-116"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Kolik sčítanců má rozvoj (a+b)^n podle binomické věty?",
+   "accept": [
+    "n+1",
+    "n + 1",
+    "n plus 1",
+    "n plus jedna"
+   ],
+   "words": "1-3",
+   "explanation": "k = 0, 1, …, n, tedy n + 1 sčítanců; pro n = 3 jsou to 4. Přednáška 29. 10.",
+   "number": 117,
+   "id": "r-117"
+  },
+  {
+   "type": "recall",
+   "category": "Kombinatorika",
+   "text": "Jaké koeficienty má rozvoj (a+b)^3, od a^3 po b^3?",
+   "accept": [
+    "1 3 3 1",
+    "1331",
+    "jedna tři tři jedna"
+   ],
+   "words": 4,
+   "explanation": "(a+b)^3 = a^3 + 3a^2·b + 3a·b^2 + b^3, koeficienty (3 nad k) = 1, 3, 3, 1. Přednáška 29. 10.",
+   "number": 118,
+   "id": "r-118"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá uspořádaná pětice A = (Q, Σ, δ, q₀, F)?",
+   "accept": [
+    "konečný automat",
+    "deterministický konečný automat",
+    "konečný deterministický automat",
+    "automat",
+    "DKA",
+    "DFA",
+    "finite automaton"
+   ],
+   "words": 2,
+   "explanation": "Konečný automat (deterministický): Q stavy, Σ abeceda, δ přechodová funkce, q₀ počáteční stav, F přijímací stavy (Mareš, Úvod do automatů, kap. 1.2). Přednáška 29. 10.",
+   "number": 119,
+   "id": "r-119"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá množina Q v pětici konečného automatu A = (Q, Σ, δ, q₀, F)?",
+   "accept": [
+    "množina stavů",
+    "stavy",
+    "konečná množina stavů",
+    "konečná neprázdná množina stavů",
+    "states",
+    "set of states"
+   ],
+   "words": 2,
+   "explanation": "Q je konečná neprázdná množina stavů (Mareš, kap. 1.2). Přednáška 29. 10.",
+   "number": 120,
+   "id": "r-120"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá Σ v pětici konečného automatu?",
+   "accept": [
+    "abeceda",
+    "vstupní abeceda",
+    "množina znaků",
+    "množina vstupních symbolů",
+    "vstupní symboly",
+    "alphabet"
+   ],
+   "words": "1-2",
+   "explanation": "Σ je konečná neprázdná množina znaků, (vstupní) abeceda, např. Σ = {0, 1} (Mareš, kap. 1.2). Přednáška 29. 10.",
+   "number": 121,
+   "id": "r-121"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá δ : Q × Σ → Q v pětici konečného automatu?",
+   "accept": [
+    "přechodová funkce",
+    "přechodová funkce automatu",
+    "funkce přechodů",
+    "transition function"
+   ],
+   "words": 2,
+   "explanation": "Přechodová funkce: pro každý stav a znak ze vstupu určí, do jakého stavu automat přejde (Mareš, kap. 1.2). Přednáška 29. 10.",
+   "number": 122,
+   "id": "r-122"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá q₀ v pětici konečného automatu?",
+   "accept": [
+    "počáteční stav",
+    "startovní stav",
+    "počáteční",
+    "initial state",
+    "start state"
+   ],
+   "words": 2,
+   "explanation": "q₀ ∈ Q je počáteční stav (Mareš, kap. 1.2). Přednáška 29. 10.",
+   "number": 123,
+   "id": "r-123"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá F ⊆ Q v pětici konečného automatu?",
+   "accept": [
+    "množina přijímacích stavů",
+    "přijímací stavy",
+    "množina koncových stavů",
+    "koncové stavy",
+    "accepting states",
+    "final states"
+   ],
+   "words": 3,
+   "explanation": "F je množina přijímacích (koncových) stavů (Mareš, kap. 1.2). Přednáška 29. 10.",
+   "number": 124,
+   "id": "r-124"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se čte symbol Σ v zápisu konečného automatu?",
+   "accept": [
+    "velká sigma",
+    "sigma"
+   ],
+   "words": 2,
+   "explanation": "Σ = velká sigma, označuje abecedu. Přednáška 29. 10.",
+   "number": 125,
+   "id": "r-125"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se čte symbol δ u přechodové funkce?",
+   "accept": [
+    "malá delta",
+    "delta"
+   ],
+   "words": 2,
+   "explanation": "δ = malá delta, δ : Q × Σ → Q. Přednáška 29. 10.",
+   "number": 126,
+   "id": "r-126"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá množina Q × Σ všech dvojic (stav, znak), na které je definovaná přechodová funkce?",
+   "accept": [
+    "kartézský součin",
+    "kartézský součin Q a Σ",
+    "kartézský součin množin Q a Σ",
+    "cartesian product"
+   ],
+   "words": 2,
+   "explanation": "Kartézský součin (přednáška 15. 10.), např. dvojice (q₀, 1). Přednáška 29. 10.",
+   "number": 127,
+   "id": "r-127"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Co je výsledkem δ(q, a) pro stav q ∈ Q a znak a ∈ Σ?",
+   "accept": [
+    "stav",
+    "nový stav",
+    "další stav",
+    "následující stav",
+    "stav z Q",
+    "stav automatu",
+    "state"
+   ],
+   "words": 1,
+   "explanation": "δ(q, a) = q′, q′ ∈ Q: ve stavu q přečte znak a a přejde do stavu q′ (zápis z tabule). Přednáška 29. 10.",
+   "number": 128,
+   "id": "r-128"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jaký je konečný automat, u kterého má každý stav pro každý vstupní symbol právě jeden přechod?",
+   "accept": [
+    "deterministický",
+    "deterministický automat",
+    "deterministický konečný automat",
+    "DKA",
+    "DFA",
+    "deterministic"
+   ],
+   "words": 1,
+   "explanation": "Deterministický: z každého vrcholu stavového diagramu vede pro každý znak právě jedna hrana (Mareš, kap. 1.2). Automat z přednášky má 4 · 2 = 8 přechodů. Přednáška 29. 10.",
+   "number": 129,
+   "id": "r-129"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá slovo, po jehož přečtení skončí výpočet automatu ve stavu z F?",
+   "accept": [
+    "přijaté slovo",
+    "přijaté",
+    "přijímané slovo",
+    "přijímané",
+    "rozpoznané slovo",
+    "slovo je přijato",
+    "přijato",
+    "accepted"
+   ],
+   "words": 2,
+   "explanation": "Slovo je přijato, když výpočet skončí v přijímacím stavu (Mareš, kap. 1.2). Rozhoduje stav po přečtení celého slova. Přednáška 29. 10.",
+   "number": 130,
+   "id": "r-130"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá zápis automatu, kde řádky jsou stavy, sloupce znaky abecedy a v políčku je δ(q, a)?",
+   "accept": [
+    "tabulka přechodů",
+    "tabulka",
+    "přechodová tabulka",
+    "tabulka přechodové funkce",
+    "transition table"
+   ],
+   "words": 2,
+   "explanation": "Tabulka (přechodů): počáteční stav se označí →, přijímací ←, má |Q| · |Σ| políček. Přednáška 29. 10.",
+   "number": 131,
+   "id": "r-131"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá orientovaný graf automatu, jehož vrcholy jsou stavy a hrana z q do q′ s popiskem a znamená δ(q, a) = q′?",
+   "accept": [
+    "stavový diagram",
+    "přechodový diagram",
+    "diagram",
+    "stavový graf",
+    "state diagram"
+   ],
+   "words": 2,
+   "explanation": "Stavový (přechodový) diagram, „tabulka jako orientovaný graf“. Podle přednášky se automat navrhuje nejdřív stavovým diagramem. Přednáška 29. 10.",
+   "number": 132,
+   "id": "r-132"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se nazývá zápis automatu z přednášky, ve kterém z počátečního stavu (kořene) vedou větve pro každý znak do stavu podle δ a stav, který už se objevil, se dál nerozvíjí?",
+   "accept": [
+    "stavový strom",
+    "strom stavový",
+    "strom",
+    "strom stavů"
+   ],
+   "words": 2,
+   "explanation": "Stavový strom (v rukopisu „STROM STAVOVÝ“). Popis podle stromu z přednášky; definici se zdrojem výpisky nemají, ověřit na cvičení. Přednáška 29. 10.",
+   "number": 133,
+   "id": "r-133"
+  },
+  {
+   "type": "recall",
+   "category": "Konečné automaty",
+   "text": "Jak se na náčrtu konečného automatu z přednášky nazývá část Ř. J., ke které patří množina stavů Q?",
+   "accept": [
+    "řídicí jednotka"
+   ],
+   "words": 2,
+   "explanation": "Řídicí jednotka (Ř. J.), Q = {q₀, …, qₙ}; od ní vede čára k hlavě nad páskou a₁ | a₂ | … | aₘ. Přednáška 29. 10.",
+   "number": 134,
+   "id": "r-134"
   }
  ]
 }

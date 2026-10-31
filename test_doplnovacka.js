@@ -25,6 +25,16 @@ const SYMETRIE = byText('Podle symetrie kombinačních čísel platí (n nad k) 
 const C52 = byText('Kolik je (5 nad 2)?'), TRIDY = byText('Kolik tříd ekvivalence má relace „stejný zbytek po dělení 3“ na M = {1, …, 8}?');
 const ZBYTKY = byText('Převod z desítkové soustavy opakovaným dělením základem: v jakém pořadí se čtou zbytky?');
 const NA = byText('Jak se nazývá zobrazení f: M → P, pro které H_f = P (každý prvek P je obrazem)?');
+// přednáška 29. 10. (variace, permutace, kombinace s opakováním, binomická věta, konečné automaty)
+const VAR = byText('Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se žádný prvek neopakuje?');
+const VAR_O = byText('Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se prvky mohou opakovat?');
+const PERM_O = byText('Jak se nazývá uspořádaná k-tice, ve které je každý prvek a_i základní množiny M = {a_1, …, a_n} přesně k_i-krát (k = k_1 + … + k_n)?');
+const CLENY = byText('Kolik sčítanců má rozvoj (a+b)^n podle binomické věty?');
+const KOEF3 = byText('Jaké koeficienty má rozvoj (a+b)^3, od a^3 po b^3?');
+const DET = byText('Jaký je konečný automat, u kterého má každý stav pro každý vstupní symbol právě jeden přechod?');
+const START = byText('Jak se nazývá q₀ v pětici konečného automatu?');
+const STROM = byText('Jak se nazývá zápis automatu z přednášky, ve kterém z počátečního stavu (kořene) vedou větve pro každý znak do stavu podle δ a stav, který už se objevil, se dál nerozvíjí?');
+const RJ = byText('Jak se na náčrtu konečného automatu z přednášky nazývá část Ř. J., ke které patří množina stavů Q?');
 
 // [odpověď, varianty, očekávání]: 'ok' přesná shoda, 'typo' překlep, null neuznáno
 const cases = [
@@ -40,6 +50,13 @@ const cases = [
   ['n-k', SYMETRIE, 'ok'], ['n − k', SYMETRIE, 'ok'], ['n - k', SYMETRIE, 'ok'], ['n+k', SYMETRIE, null], ['k', SYMETRIE, null],
   ['10', C52, 'ok'], ['deset', C52, 'ok'], ['20', C52, null], ['3', TRIDY, 'ok'], ['8', TRIDY, null],
   ['zdola nahoru', ZBYTKY, 'ok'], ['shora dolů', ZBYTKY, null], ['na', NA, 'ok'], ['do', NA, null], ['surjekce', NA, 'ok'],
+  ['variace', VAR, 'ok'], ['kombinace', VAR, null], ['permutace', VAR, null], ['variace s opakovanim', VAR_O, 'ok'],
+  ['kombinace s opakováním', VAR_O, null], ['permutace s opakováním', PERM_O, 'ok'], ['permutace', PERM_O, null],
+  ['n+1', CLENY, 'ok'], ['n + 1', CLENY, 'ok'], ['n', CLENY, null], ['n − 1', CLENY, null],
+  ['1, 3, 3, 1', KOEF3, 'ok'], ['1331', KOEF3, 'ok'], ['1 2 1', KOEF3, null],
+  ['deterministicky', DET, 'ok'], ['DFA', DET, 'ok'], ['nedeterministický', DET, null],
+  ['pocatecni stav', START, 'ok'], ['koncový stav', START, null], ['stavovy strom', STROM, 'ok'], ['stavový diagram', STROM, null],
+  ['řídící jednotka', RJ, 'ok'], ['ridici jednotka', RJ, 'ok'],
 ];
 let fail = 0;
 for (const [ans, acc, want] of cases) {
@@ -117,6 +134,12 @@ const fm = s => run('fmt')(s).replace(/<span class="frac"><span>(.*?)<\/span><sp
  ['(n+1 nad k+1)', '{n+1 nad k+1}'], ['např. 1/2, −3/4, 5', 'např. [1 ÷ 2], −[3 ÷ 4], 5'], ['(= 6!/3!).', '(= [6! ÷ 3!]).'],
  ['pravda (1) / nepravda (0)', 'pravda (1) / nepravda (0)'], ['množina A/∼?', 'množina A/∼?'], ['(M/E)', '(M/E)'],
  ['pro každé / pro všechna', 'pro každé / pro všechna'], ['a <b> / 2', 'a &lt;b&gt; / 2'],
+ // značení z přednášky 29. 10. (banky 05, 05a)
+ ['V′_k(n) = n! / (n−k)!', 'V′<sub>k</sub>(n) = [n! ÷ (n−k)!]'],
+ ['C′_2(3) = (3+2−1 nad 2) = (4 nad 2) = 6', 'C′<sub>2</sub>(3) = {3+2−1 nad 2} = {4 nad 2} = 6'],
+ ['P′_(1,1,2)(4) = 4! / (1! · 1! · 2!) = 24 / 2 = 12', 'P′<sub>1,1,2</sub>(4) = [4! ÷ 1! · 1! · 2!] = [24 ÷ 2] = 12'],
+ ['(a+b)^n = Σ (n nad k) · a^(n−k) · b^k', '(a+b)<sup>n</sup> = Σ {n nad k} · a<sup>n−k</sup> · b<sup>k</sup>'],
+ ['δ(q₀, 1) = q₂, q₀ –0→ q₀', 'δ(q<sub>0</sub>, 1) = q<sub>2</sub>, q<sub>0</sub> –0→ q<sub>0</sub>'],
 ].forEach(([s, want]) => { const got = fm(s); if (got !== want) { fail++; console.log(`FAIL fmt: ${s}\n  dostal: ${got}\n  čekal:  ${want}`); } });
 console.log(`chyb: ${fail}`);
 process.exit(fail ? 1 : 0);

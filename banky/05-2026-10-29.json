@@ -1,0 +1,647 @@
+{
+ "title": "Variace, permutace, kombinace a binomická věta",
+ "lecture": 5,
+ "date": "2026-10-29",
+ "questions": [
+  {
+   "type": "choice",
+   "text": "Co je variace k-té třídy z n prvků bez opakování?",
+   "options": {
+    "A": "neuspořádaná k-prvková skupina z prvků M, ve které se prvky mohou opakovat",
+    "B": "uspořádaná k-tice z prvků n-prvkové množiny M, ve které se prvky mohou opakovat",
+    "C": "neuspořádaná k-prvková podmnožina n-prvkové množiny M",
+    "D": "uspořádaná k-tice z prvků n-prvkové množiny M, ve které se žádný prvek neopakuje"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Variace: záleží na pořadí a žádný prvek se neopakuje (cs.wikipedia, výpisky 29. 10.). Neuspořádaná podmnožina je kombinace, uspořádaná k-tice s opakováním je variace s opakováním a neuspořádaná skupina s opakováním je kombinace s opakováním.",
+   "number": 1,
+   "id": "5-1"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký je vzorec pro počet variací bez opakování V_k(n), 0 ≤ k ≤ n?",
+   "options": {
+    "A": "(n+k−1 nad k)",
+    "B": "n^k",
+    "C": "n! / ((n−k)! · k!)",
+    "D": "n! / (n−k)!"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "V_k(n) = n! / (n−k)! = n · (n−1) · … · (n−k+1). n^k je V′_k(n), n! / ((n−k)! · k!) = (n nad k) je C_k(n) a (n+k−1 nad k) je C′_k(n). Příklad z přednášky: V_2(3) = 3! / 1! = 6.",
+   "number": 2,
+   "id": "5-2"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký je vzorec pro počet variací s opakováním V′_k(n)?",
+   "options": {
+    "A": "n! / (n−k)!",
+    "B": "n^k",
+    "C": "k^n",
+    "D": "n · k"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Na každé z k míst lze dát kterýkoli z n prvků nezávisle na ostatních: n · n · … · n = n^k. Příklad z přednášky: V′_2(3) = 3^2 = 9.",
+   "number": 3,
+   "id": "5-3"
+  },
+  {
+   "type": "choice",
+   "text": "Musí u variací s opakováním platit k ≤ n?",
+   "options": {
+    "A": "ano, pro k > n vzorec n^k neplatí",
+    "B": "ano, jinak by nebylo z čeho vybírat",
+    "C": "ne, ale k musí být sudé",
+    "D": "ne, prvky se smějí opakovat, takže k může být i větší než n"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Podmínka 0 ≤ k ≤ n patří k variacím bez opakování. S opakováním se na každé místo vybírá stále ze všech n prvků, např. V′_4(2) = 2^4 = 16 (ověřeno výčtem).",
+   "number": 4,
+   "id": "5-4"
+  },
+  {
+   "type": "choice",
+   "text": "Jak souvisí variace s opakováním k-té třídy z množiny M s kartézským součinem?",
+   "options": {
+    "A": "jsou to prvky potenční množiny Pot(M)",
+    "B": "jsou to přesně prvky kartézského součinu M × M × … × M = M^k (k-krát)",
+    "C": "jsou to třídy rozkladu množiny M",
+    "D": "jsou to všechny k-prvkové podmnožiny M"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Uspořádaná k-tice, ve které může být na každém místě libovolný prvek M, je prvek M^k. Pro M = {1,2,3}, k = 2: {1,2,3} × {1,2,3} má 9 dvojic, to je V′_2(3).",
+   "number": 5,
+   "id": "5-5"
+  },
+  {
+   "type": "choice",
+   "text": "Co je permutace (bez opakování) n-prvkové množiny M?",
+   "options": {
+    "A": "uspořádaná n-tice, která obsahuje každý prvek M právě jednou",
+    "B": "n-prvková podmnožina M, u níž nezáleží na pořadí",
+    "C": "uspořádaná n-tice, ve které se prvky mohou opakovat",
+    "D": "uspořádaná k-tice pro libovolné k < n"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Permutace = seřazení všech n prvků, každý právě jednou, P(n) = n!. Pro M = {1,2,3}: 123, 132, 213, 231, 312, 321, tedy 3! = 6.",
+   "number": 6,
+   "id": "5-6"
+  },
+  {
+   "type": "choice",
+   "text": "Proč je P(n) = V_n(n) = n!?",
+   "options": {
+    "A": "V_n(n) = n^n a to se rovná n!",
+    "B": "permutace je variace n-té třídy z n prvků a n! / (n−n)! = n! / 0! = n!, protože 0! = 1",
+    "C": "protože (n−n)! = n!",
+    "D": "permutace je kombinace n-té třídy a (n nad n) = n!"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Permutace je variace, ve které se vybírá všech n prvků (k = n). Dosazením do n! / (n−k)! vyjde n! / 0! a díky dohodě 0! = 1 je to n!. Kombinační číslo (n nad n) = 1.",
+   "number": 7,
+   "id": "5-7"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký je vzorec pro počet permutací s opakováním P′_(k_1,…,k_n)(k), kde k = k_1 + … + k_n?",
+   "options": {
+    "A": "k! / (k_1! · k_2! · … · k_n!)",
+    "B": "k^n",
+    "C": "(k nad n)",
+    "D": "k! · k_1! · k_2! · … · k_n!"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Všech k míst se seřadí k! způsoby a vydělí se počty prohození stejných prvků k_1!, …, k_n!. Příklad z přednášky (1, 2, 3, 3): 4! / (1! · 1! · 2!) = 24 / 2 = 12.",
+   "number": 8,
+   "id": "5-8"
+  },
+  {
+   "type": "choice",
+   "text": "Co znamená k ve vzorci P′_(k_1,…,k_n)(k) pro permutace s opakováním?",
+   "options": {
+    "A": "délku skupiny (počet míst), k = k_1 + k_2 + … + k_n",
+    "B": "počet všech permutací s opakováním",
+    "C": "kolikrát se opakuje prvek a_1",
+    "D": "počet různých prvků základní množiny M"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "M = {a_1, …, a_n} má n různých prvků, prvek a_i je ve skupině k_i-krát a k = k_1 + … + k_n je délka skupiny, proto n ≤ k. V příkladu 1, 2, 3, 3 je n = 3 a k = 4.",
+   "number": 9,
+   "id": "5-9"
+  },
+  {
+   "type": "choice",
+   "text": "Proč se ve vzorci pro permutace s opakováním dělí k_1! · k_2! · … · k_n!?",
+   "options": {
+    "A": "protože se odečítají skupiny, ve kterých se žádný prvek neopakuje",
+    "B": "prohození stejných prvků mezi sebou nedá nové pořadí, takže každé pořadí je v k! započítané k_1! · … · k_n!-krát",
+    "C": "protože u permutací s opakováním nezáleží na pořadí",
+    "D": "protože se každý prvek smí použít nejvýš jednou"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Příklad 1, 2, 3, 3: s rozlišenými trojkami 3_a, 3_b je 4! = 24 pořadí, ale 1 3_a 2 3_b a 1 3_b 2 3_a jsou obě 1323. Každé pořadí je tak započítané 2!-krát: 24 / 2 = 12. Na pořadí záleží, jen stejné prvky nejdou rozlišit.",
+   "number": 10,
+   "id": "5-10"
+  },
+  {
+   "type": "choice",
+   "text": "Co je kombinace k-té třídy z n prvků s opakováním?",
+   "options": {
+    "A": "uspořádaná k-tice z prvků M, ve které se prvky mohou opakovat",
+    "B": "k-prvková skupina z prvků n-prvkové množiny M, ve které se prvky mohou opakovat a nezáleží na pořadí",
+    "C": "k-prvková podmnožina M, ve které se žádný prvek neopakuje",
+    "D": "uspořádaná k-tice z prvků M bez opakování"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Kombinace s opakováním: každý prvek se může opakovat (až k-krát) a nezáleží na pořadí. Pro M = {1,2,3}, k = 2: {1,1}, {1,2}, {1,3}, {2,2}, {2,3}, {3,3}, tedy 6.",
+   "number": 11,
+   "id": "5-11"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký je vzorec pro počet kombinací s opakováním C′_k(n)?",
+   "options": {
+    "A": "(n+k−1 nad k)",
+    "B": "(n+k nad k)",
+    "C": "(n nad k)",
+    "D": "n^k"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "C′_k(n) = (n+k−1 nad k) = (n+k−1)! / (k! · (n−1)!). Příklad z přednášky: C′_2(3) = (3+2−1 nad 2) = (4 nad 2) = 6.",
+   "number": 12,
+   "id": "5-12"
+  },
+  {
+   "type": "choice",
+   "text": "Jak spolu souvisí počet kombinací C_k(n) a počet variací V_k(n) (bez opakování)?",
+   "options": {
+    "A": "C_k(n) = V_k(n) · k!",
+    "B": "C_k(n) = V_k(n) / k!, protože každou k-prvkovou skupinu lze seřadit k! způsoby",
+    "C": "C_k(n) = V_k(n) / n!",
+    "D": "C_k(n) = V_k(n) − k"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "U kombinací je {1,2} = {2,1} jedna skupina, u variací jsou (1,2) a (2,1) dvě. Pro n = 3, k = 2: V_2(3) = 6 a C_2(3) = 6 / 2 = 3.",
+   "number": 13,
+   "id": "5-13"
+  },
+  {
+   "type": "choice",
+   "text": "Podle čeho se u příkladu rozhoduje mezi variací a kombinací?",
+   "options": {
+    "A": "zda se řadí všechny prvky: ano → kombinace, ne → variace",
+    "B": "zda se prvky smějí opakovat: ano → variace, ne → kombinace",
+    "C": "zda záleží na pořadí vybraných prvků: ano → variace, ne → kombinace",
+    "D": "zda je k větší než n: ano → variace, ne → kombinace"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Pořadí rozhoduje mezi variací a kombinací (aby se omylem nepoužily variace místo kombinací). Opakování rozhoduje, zda je to výběr s opakováním (čárka), a řazení všech prvků vede k permutaci.",
+   "number": 14,
+   "id": "5-14"
+  },
+  {
+   "type": "choice",
+   "text": "Úloha chce seřadit všechny prvky množiny, každý právě jednou. Co použiješ?",
+   "options": {
+    "A": "permutaci P(n) = n!",
+    "B": "kombinaci s opakováním C′_n(n)",
+    "C": "variaci s opakováním V′_n(n) = n^n",
+    "D": "kombinaci C_n(n) = (n nad n)"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Řadím všechny prvky → permutace (s opakováním, když se některé prvky opakují). C_n(n) = 1 a V′_n(n) = n^n počítá i n-tice, ve kterých se prvky opakují.",
+   "number": 15,
+   "id": "5-15"
+  },
+  {
+   "type": "choice",
+   "text": "Co vyjadřuje čárka ve značení V′, P′, C′?",
+   "options": {
+    "A": "že jde o doplněk množiny",
+    "B": "že nezáleží na pořadí",
+    "C": "že se vybírají všechny prvky",
+    "D": "že jde o výběr s opakováním (prvky se mohou opakovat)"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "V′, P′, C′ = variace, permutace a kombinace s opakováním. (Doplněk množiny A′ z 15. 10. je jiný význam čárky.)",
+   "number": 16,
+   "id": "5-16"
+  },
+  {
+   "type": "choice",
+   "text": "Jak zní binomická věta?",
+   "options": {
+    "A": "(a+b)^n = součet přes k = 0, 1, …, n členů (n nad k) · a^(n−k) · b^k",
+    "B": "(a+b)^n = součet přes k = 0, 1, …, n členů (n nad k) · a^n · b^k",
+    "C": "(a+b)^n = součet přes k = 0, 1, …, n členů k · a^(n−k) · b^k",
+    "D": "(a+b)^n = a^n + b^n"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "cs.wikipedia (Binomická věta), výpisky 29. 10.: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k pro k = 0, …, n. Pro n = 3: a^3 + 3a^2·b + 3a·b^2 + b^3.",
+   "number": 17,
+   "id": "5-17"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se v rozvoji (a+b)^n = Σ (n nad k) · a^(n−k) · b^k mění exponenty?",
+   "options": {
+    "A": "u a je stále n, u b roste od 0 do n",
+    "B": "u a klesá od n do 0, u b roste od 0 do n a součet exponentů je v každém členu n",
+    "C": "u a i u b roste od 0 do n",
+    "D": "součet exponentů v členu je k"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Člen (n nad k) · a^(n−k) · b^k má součet exponentů (n−k) + k = n. Koeficient (n nad k) patří k exponentu k u b.",
+   "number": 18,
+   "id": "5-18"
+  },
+  {
+   "type": "choice",
+   "text": "Proč je u členu a^(n−k) · b^k v rozvoji (a+b)^n koeficient (n nad k)?",
+   "options": {
+    "A": "protože každý člen vznikne při roznásobení právě jednou",
+    "B": "při roznásobení n závorek (a+b) se vybírá, ze kterých k závorek se vezme b, a na pořadí závorek nezáleží",
+    "C": "protože exponenty u a klesají",
+    "D": "protože b^k vznikne k! způsoby"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Z každé závorky se bere a nebo b. Člen a^(n−k) · b^k vznikne tolikrát, kolika způsoby lze vybrat k závorek z n (kombinace k-té třídy), tedy (n nad k). Pro n = 3, k = 1: 3 způsoby, proto 3a^2·b.",
+   "number": 19,
+   "id": "5-19"
+  },
+  {
+   "type": "choice",
+   "text": "Čtyřmístný PIN se skládá z číslic 0 až 9 a číslice se mohou opakovat. Čím se spočítá počet PINů?",
+   "options": {
+    "A": "variace bez opakování V_4(10) = 10! / 6!",
+    "B": "kombinace s opakováním C′_4(10) = (13 nad 4)",
+    "C": "variace s opakováním V′_4(10) = 10^4",
+    "D": "kombinace C_4(10) = (10 nad 4)"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Záleží na pořadí (1234 ≠ 4321) a číslice se smějí opakovat → variace s opakováním: 10^4 = 10000.",
+   "number": 20,
+   "id": "5-20"
+  },
+  {
+   "type": "choice",
+   "text": "Ze 20 studentů se volí předseda, místopředseda a pokladník (každý nejvýš jednu funkci). Čím se spočítá počet možností?",
+   "options": {
+    "A": "variace s opakováním V′_3(20) = 20^3",
+    "B": "variace bez opakování V_3(20) = 20! / 17!",
+    "C": "kombinace C_3(20) = (20 nad 3)",
+    "D": "permutace P(20) = 20!"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Záleží na pořadí (funkce se liší) a nikdo nemá dvě funkce → variace bez opakování: 20 · 19 · 18 = 6840.",
+   "number": 21,
+   "id": "5-21"
+  },
+  {
+   "type": "choice",
+   "text": "Ze 20 studentů se vybírá tříčlenná komise, členové jsou si rovni. Čím se spočítá počet možností?",
+   "options": {
+    "A": "kombinace s opakováním C′_3(20) = (22 nad 3)",
+    "B": "variace bez opakování V_3(20) = 20! / 17!",
+    "C": "kombinace C_3(20) = (20 nad 3)",
+    "D": "permutace P(3) = 3!"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Na pořadí nezáleží a nikdo nemůže být v komisi dvakrát → kombinace: (20 nad 3) = 1140.",
+   "number": 22,
+   "id": "5-22"
+  },
+  {
+   "type": "choice",
+   "text": "V cukrárně mají 5 druhů zákusků a kupuješ 3 zákusky. Druhy se mohou opakovat a na pořadí nezáleží. Čím se spočítá počet možností?",
+   "options": {
+    "A": "kombinace C_3(5) = (5 nad 3)",
+    "B": "variace s opakováním V′_3(5) = 5^3",
+    "C": "variace bez opakování V_3(5) = 5! / 2!",
+    "D": "kombinace s opakováním C′_3(5) = (7 nad 3)"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Nezáleží na pořadí a druhy se opakují → kombinace s opakováním: (5+3−1 nad 3) = (7 nad 3) = 35.",
+   "number": 23,
+   "id": "5-23"
+  },
+  {
+   "type": "choice",
+   "text": "Kolika způsoby lze seřadit 6 různých knih na poličku? Čím se to spočítá?",
+   "options": {
+    "A": "variace s opakováním V′_6(6) = 6^6",
+    "B": "permutace s opakováním P′_(3,3)(6) = 6! / (3! · 3!)",
+    "C": "permutace P(6) = 6!",
+    "D": "kombinace C_6(6) = (6 nad 6)"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Řadí se všechny knihy, každá jednou → permutace: 6! = 720.",
+   "number": 24,
+   "id": "5-24"
+  },
+  {
+   "type": "choice",
+   "text": "Kolik různých pořadí písmen má slovo MAMA? Čím se to spočítá?",
+   "options": {
+    "A": "permutace P(4) = 4!",
+    "B": "variace s opakováním V′_4(2) = 2^4",
+    "C": "variace bez opakování V_2(4) = 4! / 2!",
+    "D": "permutace s opakováním P′_(2,2)(4) = 4! / (2! · 2!)"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Řadí se všechna 4 písmena, M i A jsou dvakrát → permutace s opakováním: 4! / (2! · 2!) = 24 / 4 = 6 (AAMM, AMAM, AMMA, MAAM, MAMA, MMAA).",
+   "number": 25,
+   "id": "5-25"
+  },
+  {
+   "type": "input",
+   "text": "Kolik je V_3(5), počet variací 3. třídy z 5 prvků bez opakování?",
+   "hint": "číslo",
+   "answer": "60",
+   "solution": "V_3(5) = 5! / (5−3)! = 5 · 4 · 3 = 60.",
+   "number": 26,
+   "id": "5-26"
+  },
+  {
+   "type": "input",
+   "text": "Kolik je V′_3(4), počet variací 3. třídy ze 4 prvků s opakováním?",
+   "hint": "číslo",
+   "answer": "64",
+   "solution": "V′_3(4) = 4^3 = 64.",
+   "number": 27,
+   "id": "5-27"
+  },
+  {
+   "type": "input",
+   "text": "Kolik je V′_4(2), počet uspořádaných čtveřic ze 2 prvků s opakováním? (k může být větší než n)",
+   "hint": "číslo",
+   "answer": "16",
+   "solution": "V′_4(2) = 2^4 = 16. S opakováním podmínka k ≤ n neplatí.",
+   "number": 28,
+   "id": "5-28"
+  },
+  {
+   "type": "input",
+   "text": "Kolik je P(5), počet permutací 5 prvků?",
+   "hint": "číslo",
+   "answer": "120",
+   "solution": "P(5) = 5! = 5 · 4 · 3 · 2 · 1 = 120.",
+   "number": 29,
+   "id": "5-29"
+  },
+  {
+   "type": "input",
+   "text": "Základní množina M = {1, 2, 3}, první prvek se opakuje jednou, druhý také jednou a třetí dvakrát. Kolik je permutací s opakováním P′_(1,1,2)(4)?",
+   "hint": "číslo",
+   "answer": "12",
+   "solution": "P′_(1,1,2)(4) = 4! / (1! · 1! · 2!) = 24 / 2 = 12:\n1233, 1323, 1332, 2133, 2313, 2331, 3123, 3132, 3213, 3231, 3312, 3321",
+   "number": 30,
+   "id": "5-30"
+  },
+  {
+   "type": "input",
+   "text": "Kolik různých pořadí mají čísla 1, 1, 2, 2, 2 (P′_(2,3)(5))?",
+   "hint": "číslo",
+   "answer": "10",
+   "solution": "P′_(2,3)(5) = 5! / (2! · 3!) = 120 / 12 = 10.",
+   "number": 31,
+   "id": "5-31"
+  },
+  {
+   "type": "input",
+   "text": "Kolik je C′_2(3), počet kombinací 2. třídy s opakováním z M = {1, 2, 3}?",
+   "hint": "číslo",
+   "answer": "6",
+   "solution": "C′_2(3) = (3+2−1 nad 2) = (4 nad 2) = 6: {1,1}, {1,2}, {1,3}, {2,2}, {2,3}, {3,3}.",
+   "number": 32,
+   "id": "5-32"
+  },
+  {
+   "type": "input",
+   "text": "Kolik je C′_3(5), počet kombinací 3. třídy s opakováním z 5 prvků?",
+   "hint": "číslo",
+   "answer": "35",
+   "solution": "C′_3(5) = (5+3−1 nad 3) = (7 nad 3) = 7 · 6 · 5 / 3! = 35.",
+   "number": 33,
+   "id": "5-33"
+  },
+  {
+   "type": "input",
+   "text": "Kolik je C′_3(2), počet kombinací 3. třídy s opakováním ze 2 prvků? (k může být větší než n)",
+   "hint": "číslo",
+   "answer": "4",
+   "solution": "C′_3(2) = (2+3−1 nad 3) = (4 nad 3) = 4: {1,1,1}, {1,1,2}, {1,2,2}, {2,2,2}.",
+   "number": 34,
+   "id": "5-34"
+  },
+  {
+   "type": "input",
+   "text": "Vypiš všechny variace 2. třídy bez opakování z M = {1, 2, 3}.",
+   "hint": "každou dvojici jako dvojčíslí (např. (4,5) jako 45), dvojice vzestupně, oddělené mezerou",
+   "answer": "12 13 21 23 31 32",
+   "solution": "V_2(3) = {(1,2), (1,3), (2,1), (2,3), (3,1), (3,2)}, celkem 3! / 1! = 6.",
+   "number": 35,
+   "id": "5-35"
+  },
+  {
+   "type": "input",
+   "text": "Vypiš všechny variace 2. třídy s opakováním z M = {1, 2, 3}.",
+   "hint": "každou dvojici jako dvojčíslí (např. (4,5) jako 45), dvojice vzestupně, oddělené mezerou",
+   "answer": "11 12 13 21 22 23 31 32 33",
+   "solution": "V′_2(3) = {1,2,3} × {1,2,3} = {(1,1), (1,2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3)}, celkem 3^2 = 9.",
+   "number": 36,
+   "id": "5-36"
+  },
+  {
+   "type": "input",
+   "text": "Vypiš všechny permutace množiny M = {1, 2, 3}.",
+   "hint": "každou trojici jako trojčíslí (např. (4,5,6) jako 456), vzestupně, oddělené mezerou",
+   "answer": "123 132 213 231 312 321",
+   "solution": "P(3) = {(1,2,3), (1,3,2), (2,1,3), (2,3,1), (3,1,2), (3,2,1)}, celkem 3! = 6.",
+   "number": 37,
+   "id": "5-37"
+  },
+  {
+   "type": "input",
+   "text": "Vypiš všechny kombinace 2. třídy bez opakování z M = {1, 2, 3}.",
+   "hint": "každou dvojici od menšího čísla (např. {4,5} jako 45), dvojice vzestupně, oddělené mezerou",
+   "answer": "12 13 23",
+   "solution": "C_2(3) = {1,2}, {1,3}, {2,3}, celkem (3 nad 2) = 3.",
+   "number": 38,
+   "id": "5-38"
+  },
+  {
+   "type": "input",
+   "text": "Vypiš všechny kombinace 2. třídy s opakováním z M = {1, 2, 3}.",
+   "hint": "každou dvojici od menšího čísla (např. {4,5} jako 45), dvojice vzestupně, oddělené mezerou",
+   "answer": "11 12 13 22 23 33",
+   "solution": "C′_2(3) = {1,1}, {1,2}, {1,3}, {2,2}, {2,3}, {3,3}, celkem (4 nad 2) = 6. Na pořadí nezáleží, {1,2} a {2,1} je tatáž skupina.",
+   "number": 39,
+   "id": "5-39"
+  },
+  {
+   "type": "input",
+   "text": "Kolik z 9 variací s opakováním V′_2(3) z M = {1, 2, 3} má oba prvky stejné?",
+   "hint": "číslo",
+   "answer": "3",
+   "solution": "(1,1), (2,2), (3,3). Bez nich zbude 6 variací bez opakování V_2(3).",
+   "number": 40,
+   "id": "5-40"
+  },
+  {
+   "type": "input",
+   "text": "Kolik trojmístných kódů lze sestavit z číslic 1 až 5, když se číslice mohou opakovat?",
+   "hint": "číslo",
+   "answer": "125",
+   "solution": "Záleží na pořadí, opakování povoleno → V′_3(5) = 5^3 = 125.",
+   "number": 41,
+   "id": "5-41"
+  },
+  {
+   "type": "input",
+   "text": "Závodu se účastní 8 běžců. Kolika způsoby lze rozdělit zlatou, stříbrnou a bronzovou medaili?",
+   "hint": "číslo",
+   "answer": "336",
+   "solution": "Záleží na pořadí (zlato ≠ stříbro), nikdo nemá dvě medaile → V_3(8) = 8 · 7 · 6 = 336.",
+   "number": 42,
+   "id": "5-42"
+  },
+  {
+   "type": "input",
+   "text": "Kolika způsoby lze z 10 otázek vybrat 4 do testu, když na pořadí nezáleží?",
+   "hint": "číslo",
+   "answer": "210",
+   "solution": "Nezáleží na pořadí, bez opakování → C_4(10) = (10 nad 4) = 10 · 9 · 8 · 7 / 4! = 210.",
+   "number": 43,
+   "id": "5-43"
+  },
+  {
+   "type": "input",
+   "text": "V pekárně mají 3 druhy koláčů a kupuješ 4 koláče. Druhy se mohou opakovat a na pořadí nezáleží. Kolik je možností?",
+   "hint": "číslo",
+   "answer": "15",
+   "solution": "Kombinace s opakováním (k > n je tu v pořádku): C′_4(3) = (3+4−1 nad 4) = (6 nad 4) = 15.",
+   "number": 44,
+   "id": "5-44"
+  },
+  {
+   "type": "input",
+   "text": "Kolik různých pořadí písmen má slovo KOLO?",
+   "hint": "číslo",
+   "answer": "12",
+   "solution": "Řadí se všechna 4 písmena, O je dvakrát → P′_(1,2,1)(4) = 4! / (1! · 2! · 1!) = 24 / 2 = 12.",
+   "number": 45,
+   "id": "5-45"
+  },
+  {
+   "type": "input",
+   "text": "Jaký koeficient má člen a^2 · b^3 v rozvoji (a+b)^5?",
+   "hint": "číslo",
+   "answer": "10",
+   "solution": "Exponent u b je k = 3: (5 nad 3) = 5 · 4 · 3 / 3! = 10.",
+   "number": 46,
+   "id": "5-46"
+  },
+  {
+   "type": "input",
+   "text": "Napiš koeficienty rozvoje (a+b)^4 od členu a^4 po b^4.",
+   "hint": "čísla oddělená mezerou",
+   "answer": "1 4 6 4 1",
+   "solution": "(4 nad 0), (4 nad 1), …, (4 nad 4) = 1, 4, 6, 4, 1.\n(a+b)^4 = a^4 + 4a^3·b + 6a^2·b^2 + 4a·b^3 + b^4",
+   "number": 47,
+   "id": "5-47"
+  },
+  {
+   "type": "input",
+   "text": "Kolik sčítanců má rozvoj (a+b)^7 podle binomické věty?",
+   "hint": "číslo",
+   "answer": "8",
+   "solution": "k = 0, 1, …, 7, tedy n + 1 = 8 sčítanců.",
+   "number": 48,
+   "id": "5-48"
+  },
+  {
+   "type": "input",
+   "text": "Spočítej člen pro k = 2 v rozvoji (2+3)^3 podle binomické věty.",
+   "hint": "číslo",
+   "answer": "54",
+   "solution": "(3 nad 2) · 2^1 · 3^2 = 3 · 2 · 9 = 54. Celý rozvoj: 8 + 36 + 54 + 27 = 125 = 5^3.",
+   "number": 49,
+   "id": "5-49"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Ukaž na příkladu M = {1, 2, 3}, k = 2, proč je variací bez opakování 6, a vypiš je.",
+   "solution": "První místo lze obsadit 3 způsoby, druhé už jen 2 (prvek se nesmí opakovat): 3 · 2 = 6.\nV_2(3) = {(1,2), (1,3), (2,1), (2,3), (3,1), (3,2)}\nObecně n · (n−1) · … · (n−k+1) = n! / (n−k)!, tady 3! / 1! = 6.",
+   "number": 50,
+   "id": "5-50"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Vysvětli na příkladu řazení čísel 1, 2, 3, 3, proč je permutací s opakováním 12, a ne 4! = 24.",
+   "solution": "1. Kdyby byly trojky různé (3_a, 3_b), byla by to obyčejná permutace 4 prvků: 4! = 24 pořadí.\n2. Trojky ale rozlišit nejde: 1 3_a 2 3_b a 1 3_b 2 3_a jsou obě 1323. Každé pořadí je tak započítané tolikrát, kolika způsoby lze mezi sebou proházet stejné prvky: 2! = 2krát.\n3. Proto 4! / (1! · 1! · 2!) = 24 / 2 = 12. Prvky, které tam jsou jednou, dávají 1! = 1.\nVšech 12 pořadí: 1233, 1323, 1332, 2133, 2313, 2331, 3123, 3132, 3213, 3231, 3312, 3321.",
+   "number": 51,
+   "id": "5-51"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Rozepiš (a+b)^4 podle binomické věty.",
+   "solution": "(a+b)^4 = (4 nad 0) · a^4 · b^0 + (4 nad 1) · a^3 · b^1 + (4 nad 2) · a^2 · b^2 + (4 nad 3) · a^1 · b^3 + (4 nad 4) · a^0 · b^4\n= a^4 + 4a^3·b + 6a^2·b^2 + 4a·b^3 + b^4\nExponent u a klesá od 4 do 0, u b roste od 0 do 4, koeficienty jsou (4 nad k).",
+   "number": 52,
+   "id": "5-52"
+  }
+ ]
+}
