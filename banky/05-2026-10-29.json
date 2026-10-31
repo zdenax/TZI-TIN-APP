@@ -459,7 +459,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik je C′_2(3), počet kombinací 2. třídy s opakováním z M = {1, 2, 3}? (Vzorec: C′_k(n) = (n+k−1 nad k))",
+   "text": "Kolik je C′_2(3), počet kombinací 2. třídy s opakováním z M = {1, 2, 3}? (Vzorec: C′_k(n) = (n+k−1 nad k); C_k(n) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "6",
    "solution": "C′_2(3) = (3+2−1 nad 2) = (4 nad 2) = 6: {1,1}, {1,2}, {1,3}, {2,2}, {2,3}, {3,3}.",
@@ -468,7 +468,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik je C′_3(5), počet kombinací 3. třídy s opakováním z 5 prvků? (Vzorec: C′_k(n) = (n+k−1 nad k))",
+   "text": "Kolik je C′_3(5), počet kombinací 3. třídy s opakováním z 5 prvků? (Vzorec: C′_k(n) = (n+k−1 nad k); C_k(n) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "35",
    "solution": "C′_3(5) = (5+3−1 nad 3) = (7 nad 3) = 7 · 6 · 5 / 3! = 35.",
@@ -477,7 +477,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik je C′_3(2), počet kombinací 3. třídy s opakováním ze 2 prvků? (k může být větší než n) (Vzorec: C′_k(n) = (n+k−1 nad k))",
+   "text": "Kolik je C′_3(2), počet kombinací 3. třídy s opakováním ze 2 prvků? (k může být větší než n) (Vzorec: C′_k(n) = (n+k−1 nad k); C_k(n) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "4",
    "solution": "C′_3(2) = (2+3−1 nad 3) = (4 nad 3) = 4: {1,1,1}, {1,1,2}, {1,2,2}, {2,2,2}.",
@@ -540,7 +540,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik trojmístných kódů lze sestavit z číslic 1 až 5, když se číslice mohou opakovat?",
+   "text": "Kolik trojmístných kódů lze sestavit z číslic 1 až 5, když se číslice mohou opakovat? (Vzorce: V_k(n) = n! / (n−k)! (záleží na pořadí, bez opakování); V′_k(n) = n^k (záleží na pořadí, s opakováním); C_k(n) = n! / ((n−k)!·k!) (nezáleží na pořadí, bez opakování); C′_k(n) = (n+k−1 nad k) (nezáleží na pořadí, s opakováním); P(n) = n! (seřadit všech n prvků); P′_(k_1,…,k_n)(k) = k! / (k_1!·…·k_n!) (seřadit, některé prvky se opakují))",
    "hint": "číslo",
    "answer": "125",
    "solution": "Záleží na pořadí, opakování povoleno → V′_3(5) = 5^3 = 125.",
@@ -549,7 +549,7 @@
   },
   {
    "type": "input",
-   "text": "Závodu se účastní 8 běžců. Kolika způsoby lze rozdělit zlatou, stříbrnou a bronzovou medaili?",
+   "text": "Závodu se účastní 8 běžců. Kolika způsoby lze rozdělit zlatou, stříbrnou a bronzovou medaili? (Vzorce: V_k(n) = n! / (n−k)! (záleží na pořadí, bez opakování); V′_k(n) = n^k (záleží na pořadí, s opakováním); C_k(n) = n! / ((n−k)!·k!) (nezáleží na pořadí, bez opakování); C′_k(n) = (n+k−1 nad k) (nezáleží na pořadí, s opakováním); P(n) = n! (seřadit všech n prvků); P′_(k_1,…,k_n)(k) = k! / (k_1!·…·k_n!) (seřadit, některé prvky se opakují))",
    "hint": "číslo",
    "answer": "336",
    "solution": "Záleží na pořadí (zlato ≠ stříbro), nikdo nemá dvě medaile → V_3(8) = 8 · 7 · 6 = 336.",
@@ -558,7 +558,7 @@
   },
   {
    "type": "input",
-   "text": "Kolika způsoby lze z 10 otázek vybrat 4 do testu, když na pořadí nezáleží?",
+   "text": "Kolika způsoby lze z 10 otázek vybrat 4 do testu, když na pořadí nezáleží? (Vzorce: V_k(n) = n! / (n−k)! (záleží na pořadí, bez opakování); V′_k(n) = n^k (záleží na pořadí, s opakováním); C_k(n) = n! / ((n−k)!·k!) (nezáleží na pořadí, bez opakování); C′_k(n) = (n+k−1 nad k) (nezáleží na pořadí, s opakováním); P(n) = n! (seřadit všech n prvků); P′_(k_1,…,k_n)(k) = k! / (k_1!·…·k_n!) (seřadit, některé prvky se opakují))",
    "hint": "číslo",
    "answer": "210",
    "solution": "Nezáleží na pořadí, bez opakování → C_4(10) = (10 nad 4) = 10 · 9 · 8 · 7 / 4! = 210.",
@@ -567,7 +567,7 @@
   },
   {
    "type": "input",
-   "text": "V pekárně mají 3 druhy koláčů a kupuješ 4 koláče. Druhy se mohou opakovat a na pořadí nezáleží. Kolik je možností?",
+   "text": "V pekárně mají 3 druhy koláčů a kupuješ 4 koláče. Druhy se mohou opakovat a na pořadí nezáleží. Kolik je možností? (Vzorce: V_k(n) = n! / (n−k)! (záleží na pořadí, bez opakování); V′_k(n) = n^k (záleží na pořadí, s opakováním); C_k(n) = n! / ((n−k)!·k!) (nezáleží na pořadí, bez opakování); C′_k(n) = (n+k−1 nad k) (nezáleží na pořadí, s opakováním); P(n) = n! (seřadit všech n prvků); P′_(k_1,…,k_n)(k) = k! / (k_1!·…·k_n!) (seřadit, některé prvky se opakují))",
    "hint": "číslo",
    "answer": "15",
    "solution": "Kombinace s opakováním (k > n je tu v pořádku): C′_4(3) = (3+4−1 nad 4) = (6 nad 4) = 15.",
@@ -576,7 +576,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik různých pořadí písmen má slovo KOLO?",
+   "text": "Kolik různých pořadí písmen má slovo KOLO? (Vzorce: V_k(n) = n! / (n−k)! (záleží na pořadí, bez opakování); V′_k(n) = n^k (záleží na pořadí, s opakováním); C_k(n) = n! / ((n−k)!·k!) (nezáleží na pořadí, bez opakování); C′_k(n) = (n+k−1 nad k) (nezáleží na pořadí, s opakováním); P(n) = n! (seřadit všech n prvků); P′_(k_1,…,k_n)(k) = k! / (k_1!·…·k_n!) (seřadit, některé prvky se opakují))",
    "hint": "číslo",
    "answer": "12",
    "solution": "Řadí se všechna 4 písmena, O je dvakrát → P′_(1,2,1)(4) = 4! / (1! · 2! · 1!) = 24 / 2 = 12.",

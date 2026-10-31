@@ -229,7 +229,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik uspořádaných dvojic (bez opakování) lze vybrat z množiny {a,b,c,d,e}?",
+   "text": "Kolik uspořádaných dvojic (bez opakování) lze vybrat z množiny {a,b,c,d,e}? (Vzorec: V_k(n) = n! / (n−k)!)",
    "hint": "číslo",
    "answer": "20",
    "solution": "První prvek 5 způsoby, druhý 4 způsoby: 5 · 4 = 20. Pořadí záleží, (a,b) ≠ (b,a).",
@@ -238,7 +238,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik různých dvouprvkových skupin (kombinací 2. třídy, na pořadí nezáleží) lze vybrat z {a,b,c,d}?",
+   "text": "Kolik různých dvouprvkových skupin (kombinací 2. třídy, na pořadí nezáleží) lze vybrat z {a,b,c,d}? (Vzorec: C_k(n) = n! / ((n−k)!·k!))",
    "hint": "číslo",
    "answer": "6",
    "solution": "ab, ac, ad, bc, bd, cd, tedy 6.",
@@ -292,7 +292,7 @@
   },
   {
    "type": "input",
-   "text": "Kolik uspořádaných trojic (bez opakování) lze vybrat ze 6 prvků? (6·5·4! = 6!, k = 3: n·(n−1)·…·(n−k+1))",
+   "text": "Kolik uspořádaných trojic (bez opakování) lze vybrat ze 6 prvků? (6·5·4! = 6!, k = 3: n·(n−1)·…·(n−k+1)) (Vzorec: V_k(n) = n! / (n−k)!)",
    "hint": "číslo",
    "answer": "120",
    "solution": "6 · 5 · 4 = 120 (= 6!/3!).",
