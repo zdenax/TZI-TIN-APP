@@ -2015,6 +2015,7 @@
     "přechodový diagram",
     "diagram",
     "stavový graf",
+    "přechodový graf",
     "state diagram"
    ],
    "words": 2,
@@ -2033,7 +2034,7 @@
     "strom stavů"
    ],
    "words": 2,
-   "explanation": "Stavový strom (v rukopisu „STROM STAVOVÝ“). Popis podle stromu z přednášky; definici se zdrojem výpisky nemají, ověřit na cvičení. Přednáška 29. 10.",
+   "explanation": "Stavový strom (v rukopisu „STROM STAVOVÝ“). Definice: Vais, kap. 1.3, s. 11 (strom shora dolů od počátečního stavu, pro každý znak jedna hrana, rozvíjí se, dokud v listech nejsou jen už rozvinuté stavy). Přednáška 29. 10.",
    "number": 133,
    "id": "r-133"
   },

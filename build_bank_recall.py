@@ -415,14 +415,14 @@ CATS = [
           ["tabulka přechodů", "tabulka", "přechodová tabulka", "tabulka přechodové funkce", "transition table"], 2,
           f"Tabulka (přechodů): počáteční stav se označí →, přijímací ←, má |Q| · |Σ| políček. {P5}"),
         q("Jak se nazývá orientovaný graf automatu, jehož vrcholy jsou stavy a hrana z q do q′ s popiskem a znamená "
-          "δ(q, a) = q′?", ["stavový diagram", "přechodový diagram", "diagram", "stavový graf", "state diagram"], 2,
+          "δ(q, a) = q′?", ["stavový diagram", "přechodový diagram", "diagram", "stavový graf", "přechodový graf", "state diagram"], 2,
           f"Stavový (přechodový) diagram, „tabulka jako orientovaný graf“. Podle přednášky se automat navrhuje "
           f"nejdřív stavovým diagramem. {P5}"),
         q("Jak se nazývá zápis automatu z přednášky, ve kterém z počátečního stavu (kořene) vedou větve pro každý "
           "znak do stavu podle δ a stav, který už se objevil, se dál nerozvíjí?", ["stavový strom",
           "strom stavový", "strom", "strom stavů"], 2,
-          f"Stavový strom (v rukopisu „STROM STAVOVÝ“). Popis podle stromu z přednášky; definici se zdrojem "
-          f"výpisky nemají, ověřit na cvičení. {P5}"),
+          f"Stavový strom (v rukopisu „STROM STAVOVÝ“). Definice: Vais, kap. 1.3, s. 11 (strom shora dolů "
+          f"od počátečního stavu, pro každý znak jedna hrana, rozvíjí se, dokud v listech nejsou jen už rozvinuté stavy). {P5}"),
         q("Jak se na náčrtu konečného automatu z přednášky nazývá část Ř. J., ke které patří množina stavů Q?",
           ["řídicí jednotka"], 2,
           f"Řídicí jednotka (Ř. J.), Q = {{q₀, …, qₙ}}; od ní vede čára k hlavě nad páskou a₁ | a₂ | … | aₘ. {P5}"),

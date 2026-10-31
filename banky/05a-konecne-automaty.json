@@ -191,7 +191,7 @@
    "correct": [
     "B"
    ],
-   "explanation": "„Tabulka jako orientovaný graf“: vrcholy = stavy, hrany podle δ; počáteční stav má šipku zvenku, přijímací se zvýrazní (dvojitý kroužek). Tabulka a výčet δ jsou jiné zápisy téhož automatu.",
+   "explanation": "„Tabulka jako orientovaný graf“: vrcholy = stavy, hrany podle δ; počáteční stav má šipku zvenku, přijímací se označí výstupní šipkou (jinde se kreslí dvojitý kroužek). Tabulka a výčet δ jsou jiné zápisy téhož automatu.",
    "number": 12,
    "id": "5a-12"
   },
@@ -303,7 +303,7 @@
    "correct": [
     "C"
    ],
-   "explanation": "Strom z přednášky začíná šipkou do q₀ a z q₀ vedou větve pro každý znak do stavu podle δ.",
+   "explanation": "Kořen je počáteční stav q₀ a z něj vedou větve pro každý znak do stavu podle δ. V rukopisu má kořen šipku zvenku, ale není nutná: počáteční stav je zřejmý z toho, že je kořenem (Vais, kap. 1.3, s. 11).",
    "number": 19,
    "id": "5a-19"
   },
@@ -325,7 +325,7 @@
   },
   {
    "type": "choice",
-   "text": "Dveře: Q = {zavřeno, otevřeno}, Σ = {vstup, odchod}. Z přednášky jsou jen přechody δ(zavřeno, vstup) = otevřeno a δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i δ(zavřeno, odchod) a δ(otevřeno, vstup)?",
+   "text": "Dveře: Q = {zavřeno, otevřeno}, Σ = {vstup, odchod}. Podle popisu z přednášky (vstoupíme → otevřou, odejdeme → zavřou) jsou zadané jen přechody δ(zavřeno, vstup) = otevřeno a δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i δ(zavřeno, odchod) a δ(otevřeno, vstup)?",
    "options": {
     "A": "protože každý stav musí mít smyčku",
     "B": "deterministický automat musí mít pro každý stav a každý znak právě jeden přechod",
@@ -485,7 +485,7 @@
    "type": "input",
    "reveal": true,
    "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Nakresli stavový diagram tohoto automatu.",
-   "solution": "Vrcholy (stavy): q₀, q₁, q₂, q₃. Do q₀ vede šipka zvenku (počáteční stav), q₁ a q₂ jsou přijímací (dvojitý kroužek).\nHrany (8 = 4 stavy · 2 znaky, z každého vrcholu jedna pro 0 a jedna pro 1):\nq₀ –0→ q₀ (smyčka)\nq₀ –1→ q₂\nq₁ –0→ q₁ (smyčka)\nq₁ –1→ q₃\nq₂ –0→ q₁\nq₂ –1→ q₃\nq₃ –0→ q₁\nq₃ –1→ q₃ (smyčka)",
+   "solution": "Vrcholy (stavy): q₀, q₁, q₂, q₃. Do q₀ vede šipka zvenku (počáteční stav), q₁ a q₂ jsou přijímací (výstupní šipka ven; jinde se kreslí dvojitý kroužek).\nHrany (8 = 4 stavy · 2 znaky, z každého vrcholu jedna pro 0 a jedna pro 1):\nq₀ –0→ q₀ (smyčka)\nq₀ –1→ q₂\nq₁ –0→ q₁ (smyčka)\nq₁ –1→ q₃\nq₂ –0→ q₁\nq₂ –1→ q₃\nq₃ –0→ q₁\nq₃ –1→ q₃ (smyčka)",
    "number": 37,
    "id": "5a-37"
   },
@@ -493,7 +493,7 @@
    "type": "input",
    "reveal": true,
    "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Rozviň stavový strom tohoto automatu (stav, který už ve stromu je, se dál nerozvíjí).",
-   "solution": "Kořen je počáteční stav q₀, ← = přijímací stav.\nq₀: 0 → q₀ (už ve stromu, dál se nerozvíjí), 1 → q₂ ←\nq₂ ←: 0 → q₁ ←, 1 → q₃\nq₁ ←: 0 → q₁ ← (už ve stromu, dál se nerozvíjí), 1 → q₃ (už ve stromu, dál se nerozvíjí)\nq₃: 0 → q₁ ← (už ve stromu, dál se nerozvíjí), 1 → q₃ (už ve stromu, dál se nerozvíjí)\nStrom podle přednášky; definici stavového stromu se zdrojem výpisky nemají, jak ho chce vyučující, ověřit na cvičení.",
+   "solution": "Kořen je počáteční stav q₀, ← = přijímací stav.\nq₀: 0 → q₀ (už ve stromu, dál se nerozvíjí), 1 → q₂ ←\nq₂ ←: 0 → q₁ ←, 1 → q₃\nq₁ ←: 0 → q₁ ← (už ve stromu, dál se nerozvíjí), 1 → q₃ (už ve stromu, dál se nerozvíjí)\nq₃: 0 → q₁ ← (už ve stromu, dál se nerozvíjí), 1 → q₃ (už ve stromu, dál se nerozvíjí)\nDefinice (Vais, kap. 1.3, s. 11): strom se kreslí shora dolů od počátečního stavu (kořen se neoznačuje), z uzlu vede pro každý znak jedna hrana dolů k výskytu následujícího stavu, rozvíjí se, dokud v listech nejsou jen stavy, které už jsou ve stromu rozvinuté, a přijímací stavy se značí u všech výskytů. Rozvíjí se po úrovních a rozvinutý zůstává první výskyt stavu (podle obrázku, pořadí Vais nepíše). Popisky hran Vais nekreslí; jak to chce vyučující, ověřit na cvičení.",
    "number": 38,
    "id": "5a-38"
   },
