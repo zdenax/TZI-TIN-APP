@@ -21,6 +21,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from formule import pripoj_vzorce
+
 HERE = Path(__file__).parent
 CHECKS = 0
 
@@ -679,6 +681,7 @@ BINOM = re.compile(r"\(([^()<>]+?) nad ([^()<>]+?)\)")
 def build(choice, inputs, reveal, rnd, prefix):
     qs = []
     for text, opts, correct, expl in choice:
+        text = pripoj_vzorce(text)
         check(len(set(opts)) == len(opts) == 4 and correct == [0], text)
         order = list(range(len(opts)))
         rnd.shuffle(order)
@@ -686,10 +689,11 @@ def build(choice, inputs, reveal, rnd, prefix):
                    "options": {"ABCD"[i]: opts[j] for i, j in enumerate(order)},
                    "correct": ["ABCD"[order.index(0)]], "explanation": expl})
     for text, hint, ans, sol in inputs:
+        text = pripoj_vzorce(text)
         check(norm(ans) != "" and sol, text)
         qs.append({"type": "input", "text": text, "hint": hint, "answer": ans, "solution": sol})
     for text, sol in reveal:
-        qs.append({"type": "input", "reveal": True, "text": text, "solution": sol})
+        qs.append({"type": "input", "reveal": True, "text": pripoj_vzorce(text), "solution": sol})
     for i, q in enumerate(qs, 1):
         q["number"] = i
         q["id"] = f"{prefix}-{i}"
