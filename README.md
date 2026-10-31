@@ -45,6 +45,18 @@ Aplikace má dva vzhledy. Výchozí je **nový** (postup je zobrazený jako bin�
 
 Soubory: `ui/novy.html`, `ui/klasicky.html`. Záloha celého původního skriptu je v `zaloha/tzi_trener_v1.py` (`python3 zaloha/tzi_trener_v1.py`) a v git tagu `ui-v1-klasicky` (`git checkout ui-v1-klasicky`).
 
+## Návrhář automatů
+
+Na adrese **`/automat`** (odkaz je v úvodu kvízu) se konečný automat nakreslí a hned zkontroluje:
+
+- stavy a přechody se kreslí myší, dotykem i perem (přidání stavu dvojklikem, přechod tažením od stavu ke stavu, smyčky, přejmenování), počáteční stav je šipka zvenku a přijímací šipka ven jako na přednášce,
+- vedle se sama přepisuje **tabulka přechodů** a hláška, jestli je automat deterministický a úplný,
+- **čtení slova** po znacích se zvýrazněním aktuálního stavu a **stavový strom** podle Vaise,
+- **7 úloh s přesnou kontrolou** (např. končí nulou, sudý počet jedniček, bez 11, automat z přednášky): návrh se porovná s referenčním automatem na všech možných slovech a ukáže se nejkratší slovo, na kterém se liší,
+- **hotové příklady** (řešení úloh) se dají načíst do volného návrhu.
+
+Čistý JavaScript bez knihoven, logika je v `ui/automat-core.js` a testuje se `node test_automat.js`. Rozpracovaný návrh se ukládá v prohlížeči po úlohách.
+
 ## Screenshoty
 
 ### Desktop
@@ -80,6 +92,19 @@ Soubory: `ui/novy.html`, `ui/klasicky.html`. Záloha celého původního skriptu
 <tr>
 <td align="center"><b>Odpověď uznána jako překlep</b><br><img src="docs/screenshots/desktop-recall-answered.png" width="420"></td>
 <td align="center"><b>Na mobilu</b><br><img src="docs/screenshots/mobile-recall-answered.png" width="260"></td>
+</tr>
+</table>
+
+### Návrhář automatů
+
+<table>
+<tr>
+<td align="center"><b>Hotový příklad: automat z přednášky</b><br><img src="docs/screenshots/automat/automat-priklad.png" width="420"></td>
+<td align="center"><b>Úloha: návrh se nepovedl, ukáže se protipříklad</b><br><img src="docs/screenshots/automat/automat-uloha.png" width="420"></td>
+</tr>
+<tr>
+<td align="center"><b>Čtení slova a stavový strom</b><br><img src="docs/screenshots/automat/automat-slovo.png" width="420"></td>
+<td></td>
 </tr>
 </table>
 
