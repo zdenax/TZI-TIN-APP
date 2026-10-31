@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Návrhář automatů · TZI Trenér</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --paper: #EEF2F6; --paper-2: #E2E8F0; --card: #FFFFFF; --ink: #13203A; --muted: #55627A; --line: #C5CEDB;
+  --blue: #2538D8; --blue-ink: #FFFFFF; --ok: #12754E; --bad: #C2255C; --warn: #B45309; --active: #FFE08A;
+  --font: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #0F1729; --paper-2: #1A2540; --card: #141E36; --ink: #E8EDF5; --muted: #9AA7BF; --line: #2C3957;
+    --blue: #6F7DFF; --blue-ink: #0F1729; --ok: #4CC38A; --bad: #FF7BA5; --warn: #F5A524; --active: #7A5C00; }
+}
+body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+header { display: flex; align-items: baseline; gap: 18px; padding: 16px 24px; border-bottom: 1px solid var(--line); }
+header a { color: var(--blue); text-decoration: none; font-weight: 500; }
+header h1 { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 20px; padding: 20px 24px; align-items: start; }
+@media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+.card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; font-weight: 700; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: center; }
+.tools button, .btn { border: 1px solid var(--line); background: var(--card); padding: 6px 12px; border-radius: 8px; }
+.tools button[aria-pressed="true"] { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); }
+.btn.primary { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); font-weight: 700; }
+.hint { color: var(--muted); font-size: 14px; }
+svg#board { width: 100%; height: auto; aspect-ratio: 800 / 520; background: var(--card); border: 1px solid var(--line); border-radius: 10px; touch-action: none; user-select: none; }
+svg .st circle { fill: var(--card); stroke: var(--ink); stroke-width: 2; }
+svg .st.sel circle { stroke: var(--blue); stroke-width: 4; }
+svg .st.cur circle { fill: var(--active); }
+svg .st text { fill: var(--ink); font: 700 17px var(--mono); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+svg .ed path { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg .ed.sel path { stroke: var(--blue); stroke-width: 3.5; }
+svg .ed.bad path { stroke: var(--warn); }
+svg .ed rect { fill: var(--card); }
+svg .ed text { fill: var(--ink); font: 700 16px var(--mono); text-anchor: middle; dominant-baseline: central; }
+svg .mark { stroke: var(--ink); stroke-width: 2; fill: none; }
+svg .rubber { stroke: var(--blue); stroke-width: 2; stroke-dasharray: 6 4; pointer-events: none; }
+#arrow path { fill: var(--ink); }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+input[type=text] { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 6px 10px; min-width: 0; }
+select { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 6px 10px; max-width: 100%; }
+table { border-collapse: collapse; font-family: var(--mono); font-size: 15px; }
+th, td { border: 1px solid var(--line); padding: 4px 12px; text-align: center; }
+td.miss { color: var(--bad); } td.multi { color: var(--warn); }
+.status.ok { color: var(--ok); } .status.bad { color: var(--bad); } .status.warn { color: var(--warn); }
+.trace { font-family: var(--mono); font-size: 15px; word-break: break-word; }
+.result { margin-top: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); }
+.result.ok { border-color: var(--ok); color: var(--ok); } .result.bad { border-color: var(--bad); }
+.tree, .tree ul { list-style: none; font-family: var(--mono); font-size: 14px; }
+.tree ul { margin-left: 18px; border-left: 1px solid var(--line); padding-left: 10px; }
+.tree .seen { color: var(--muted); }
+.floating { position: fixed; z-index: 10; border: 2px solid var(--blue); background: var(--card); border-radius: 8px; padding: 4px 8px; width: 120px; }
+code { font-family: var(--mono); }
+</style>
+</head>
+<body>
+<header><a href="/">← Kvíz</a><h1>Návrhář automatů</h1><span class="hint">Konečný automat nakreslíš sám a aplikace ti k němu ukáže tabulku, přečte slovo a zkontroluje ho.</span></header>
+<main>
+  <section>
+    <div class="tools" id="tools">
+      <button data-mode="move" aria-pressed="true" title="Táhni stavy, klikni na stav nebo hranu pro výběr">Posun</button>
+      <button data-mode="state" aria-pressed="false" title="Klikni na plátno a přidáš stav">+ Stav</button>
+      <button data-mode="edge" aria-pressed="false" title="Táhni od stavu ke stavu a zadej znak">→ Přechod</button>
+      <button data-mode="erase" aria-pressed="false" title="Klikni na stav nebo hranu a smažeš ji">Smazat</button>
+      <button id="clear" class="btn" title="Vymaže celý návrh">Vyčistit vše</button>
+    </div>
+    <svg id="board" viewBox="0 0 800 520" aria-label="Plátno automatu"></svg>
+    <p class="hint" style="margin-top:8px">Dvojklik na prázdné místo přidá stav, dvojklik na stav ho přejmenuje, dvojklik na hranu změní znaky. Klávesa Delete smaže vybranou věc.</p>
+  </section>
+  <aside>
+    <div class="card">
+      <h2>Úloha</h2>
+      <select id="task"></select>
+      <p id="taskText" class="hint" style="margin-top:8px"></p>
+      <div class="row"><button id="grade" class="btn primary" hidden>Zkontrolovat</button></div>
+      <div id="gradeOut"></div>
+      <div class="row" id="exRow"><label for="ex">Hotový příklad</label><select id="ex"></select></div>
+      <p id="exText" class="hint"></p>
+    </div>
+    <div class="card">
+      <h2>Abeceda a vybraný stav</h2>
+      <div class="row"><label for="alpha">Abeceda Σ</label><input type="text" id="alpha" size="10" value="0, 1"></div>
+      <div id="selBox" class="hint">Klikni na stav (v režimu Posun) a půjde z něj udělat počáteční nebo přijímací.</div>
+    </div>
+    <div class="card">
+      <h2>Tabulka přechodů</h2>
+      <div id="table"></div>
+      <p id="status" class="status" style="margin-top:8px"></p>
+    </div>
+    <div class="card">
+      <h2>Přečti slovo</h2>
+      <div class="row"><input type="text" id="word" placeholder="např. 1011010" size="16" autocomplete="off">
+        <button class="btn" id="step">Krok</button><button class="btn" id="whole">Celé</button><button class="btn" id="reset">Znovu</button></div>
+      <div id="trace" class="trace"></div>
+    </div>
+    <div class="card">
+      <h2>Stavový strom</h2>
+      <div id="tree"></div>
+    </div>
+  </aside>
+</main>
+<script src="/automat-core.js"></script>
+<script>
+const svg = document.getElementById('board'), $ = id => document.getElementById(id);
+const R = 28, NS = 'http://www.w3.org/2000/svg';
+const sub = s => String(s).replace(/\d/g, d => '₀₁₂₃₄₅₆₇₈₉'[d]);
+const fresh = alphabet => ({ alphabet, states: [], start: null, accept: [], trans: [] });
+let M = fresh(['0', '1']), mode = 'move', selS = null, selE = null, task = null;
+let drag = null, rubber = null, sim = { word: '', pos: 0 };
+
+// ── ukládání (pro každou úlohu zvlášť) ───────────────────────────────────────
+const KEY = () => 'tzi_automat_' + (task ? task.id : 'volny');
+const save = () => { try { localStorage.setItem(KEY(), JSON.stringify(M)); } catch (e) { /* bez uložení */ } };
+function load(alphabet) {
+  try { const m = JSON.parse(localStorage.getItem(KEY())); if (m && Array.isArray(m.states) && Array.isArray(m.trans)) return { ...fresh(alphabet), ...m, alphabet }; } catch (e) { /* nový */ }
+  return fresh(alphabet);
+}
+
+// ── geometrie ────────────────────────────────────────────────────────────────
+const pos = id => M.states.find(s => s.id === id);
+function toSvg(ev) { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return { x: q.x, y: q.y }; }
+const hasBack = t => M.trans.some(u => u.from === t.to && u.to === t.from) && t.from !== t.to;
+function edgeGeom(t) {
+  const a = pos(t.from), b = pos(t.to);
+  if (t.from === t.to) {
+    return { d: `M ${a.x - 16} ${a.y - R + 4} C ${a.x - 40} ${a.y - R - 62}, ${a.x + 40} ${a.y - R - 62}, ${a.x + 16} ${a.y - R + 4}`, lx: a.x, ly: a.y - R - 46 };
+  }
+  const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len, nx = -uy, ny = ux;
+  const bend = hasBack(t) ? 34 : 0;
+  const cx = (a.x + b.x) / 2 + nx * bend * 2, cy = (a.y + b.y) / 2 + ny * bend * 2; // řídicí bod kvadratické křivky
+  const end = (p, q) => { const vx = cx - p.x, vy = cy - p.y, l = Math.hypot(vx, vy) || 1; return { x: p.x + vx / l * R, y: p.y + vy / l * R }; };
+  const s = end(a), e = (() => { const vx = cx - b.x, vy = cy - b.y, l = Math.hypot(vx, vy) || 1; return { x: b.x + vx / l * (R + 4), y: b.y + vy / l * (R + 4) }; })();
+  return { d: `M ${s.x} ${s.y} Q ${cx} ${cy} ${e.x} ${e.y}`, lx: (s.x + 2 * cx + e.x) / 4 + nx * 12, ly: (s.y + 2 * cy + e.y) / 4 + ny * 12 };
+}
+
+// ── vykreslení ───────────────────────────────────────────────────────────────
+function render() {
+  const d = Auto.delta(M), chk = Auto.check(M);
+  const cur = sim.cur;
+  let h = '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" style="fill:var(--ink)"/></marker></defs>';
+  M.trans.forEach((t, i) => {
+    const g = edgeGeom(t), label = t.symbols.join(', ');
+    const w = Math.max(24, label.length * 10 + 10);
+    h += `<g class="ed${selE === i ? ' sel' : ''}" data-e="${i}"><path d="${g.d}" marker-end="url(#arrow)"/>` +
+      `<path d="${g.d}" style="stroke:transparent;stroke-width:16" marker-end=""/>` +
+      `<rect x="${g.lx - w / 2}" y="${g.ly - 11}" width="${w}" height="22" rx="6"/><text x="${g.lx}" y="${g.ly}">${label}</text></g>`;
+  });
+  M.states.forEach(s => {
+    const acc = M.accept.includes(s.id);
+    if (M.start === s.id) h += `<line class="mark" x1="${s.x - R - 46}" y1="${s.y}" x2="${s.x - R - 2}" y2="${s.y}" marker-end="url(#arrow)"/>`;
+    if (acc) h += `<line class="mark" x1="${s.x + R}" y1="${s.y}" x2="${s.x + R + 44}" y2="${s.y}" marker-end="url(#arrow)"/>`;
+    h += `<g class="st${selS === s.id ? ' sel' : ''}${cur === s.id ? ' cur' : ''}" data-s="${s.id}"><circle cx="${s.x}" cy="${s.y}" r="${R}"/><text x="${s.x}" y="${s.y}">${s.id.replace(/\d+/g, sub)}</text></g>`;
+  });
+  if (rubber) h += `<line class="rubber" x1="${rubber.x1}" y1="${rubber.y1}" x2="${rubber.x2}" y2="${rubber.y2}"/>`;
+  svg.innerHTML = h;
+  renderSide(chk, d);
+}
+
+function renderSide(chk, d) {
+  // tabulka
+  let t = '<table><tr><th></th>' + M.alphabet.map(a => `<th>${a}</th>`).join('') + '</tr>';
+  for (const s of M.states) {
+    t += `<tr><th>${M.start === s.id ? '→ ' : ''}${M.accept.includes(s.id) ? '← ' : ''}${s.id.replace(/\d+/g, sub)}</th>`;
+    for (const a of M.alphabet) {
+      const c = d[s.id][a] || [];
+      t += `<td class="${!c.length ? 'miss' : c.length > 1 ? 'multi' : ''}">${c.length ? c.map(x => x.replace(/\d+/g, sub)).join(', ') : '–'}</td>`;
+    }
+    t += '</tr>';
+  }
+  $('table').innerHTML = M.states.length ? t + '</table>' : '<span class="hint">Zatím žádný stav. Přepni na „+ Stav" a klikni na plátno.</span>';
+  const st = $('status');
+  if (!M.states.length) st.textContent = '';
+  else if (chk.ok) { st.className = 'status ok'; st.textContent = 'Deterministický a úplný automat (pro každý stav a znak právě jeden přechod).'; }
+  else { st.className = 'status ' + (chk.multi.length ? 'bad' : 'warn'); st.textContent = chk.problems.map(p => p.text).join(' '); }
+  // vybraný stav
+  const s = selS && pos(selS);
+  $('selBox').innerHTML = s
+    ? `<div class="row"><b>${s.id.replace(/\d+/g, sub)}</b><label><input type="checkbox" id="isStart" ${M.start === s.id ? 'checked' : ''}> počáteční (→)</label><label><input type="checkbox" id="isAcc" ${M.accept.includes(s.id) ? 'checked' : ''}> přijímací (←)</label></div>`
+    : 'Klikni na stav (v režimu Posun) a půjde z něj udělat počáteční nebo přijímací.';
+  if (s) {
+    $('isStart').onchange = e => { M.start = e.target.checked ? s.id : (M.start === s.id ? null : M.start); changed(); };
+    $('isAcc').onchange = e => { M.accept = e.target.checked ? [...new Set([...M.accept, s.id])] : M.accept.filter(x => x !== s.id); changed(); };
+  }
+  // strom
+  const tr = Auto.tree(M);
+  const li = n => `<li class="${n.seen ? 'seen' : ''}">${n.sym !== undefined ? `<span class="hint">${n.sym}</span> → ` : ''}${n.state.replace(/\d+/g, sub)}${M.accept.includes(n.state) ? ' ←' : ''}${n.seen ? ' (už ve stromu)' : ''}${n.children.length ? '<ul>' + n.children.map(li).join('') + '</ul>' : ''}</li>`;
+  $('tree').innerHTML = tr ? `<ul class="tree">${li(tr)}</ul>` : '<span class="hint">Strom potřebuje počáteční stav.</span>';
+  renderTrace();
+}
+
+function renderTrace() {
+  const r = Auto.run(M, sim.word), out = $('trace');
+  if (!sim.active) { out.textContent = ''; sim.cur = null; svgCur(); return; }
+  const k = Math.min(sim.pos, r.steps.length);
+  const S = id => String(id).replace(/\d+/g, sub); // jen názvy stavů, znaky abecedy zůstanou
+  let txt = S(M.start || '?');
+  for (let i = 0; i < k; i++) txt += ` –${r.steps[i].read}→ ${S(r.steps[i].to)}`;
+  const done = k === sim.word.length || (r.stuck && k === r.steps.length);
+  const rest = [...sim.word].slice(k).join('');
+  let verdict = '';
+  if (r.stuck && k === r.steps.length && sim.pos > r.steps.length) verdict = `<br><b style="color:var(--bad)">Zaseknuto: ${r.stuck}</b>`;
+  else if (done) verdict = `<br><b style="color:var(--${r.accepted ? 'ok' : 'bad'})">${r.accepted ? 'Přijato ✓' : 'Nepřijato ✗'}</b> (skončil ve stavu ${(r.state || '?').replace(/\d+/g, sub)})`;
+  out.innerHTML = `${txt}${rest ? `<br><span class="hint">zbývá: ${rest}</span>` : ''}${verdict}`;
+  sim.cur = k === 0 ? M.start : r.steps[k - 1] ? r.steps[k - 1].to : r.state;
+  svgCur();
+}
+function svgCur() { svg.querySelectorAll('.st').forEach(g => g.classList.toggle('cur', g.dataset.s === sim.cur)); }
+function changed() { save(); sim.active = false; sim.cur = null; render(); }
+
+// ── akce ─────────────────────────────────────────────────────────────────────
+function nextId() { let i = 0; while (pos('q' + i)) i++; return 'q' + i; }
+function addState(x, y) {
+  const id = nextId();
+  M.states.push({ id, x: Math.round(x), y: Math.round(y) });
+  if (!M.start) M.start = id;
+  selS = id; selE = null; changed();
+}
+function removeState(id) {
+  M.states = M.states.filter(s => s.id !== id); M.trans = M.trans.filter(t => t.from !== id && t.to !== id);
+  M.accept = M.accept.filter(x => x !== id); if (M.start === id) M.start = null;
+  if (selS === id) selS = null; changed();
+}
+function removeEdge(i) { M.trans.splice(i, 1); selE = null; changed(); }
+function parseSymbols(text) { return [...new Set([...text].filter(c => !/[\s,;]/.test(c)))]; }
+function setSymbols(from, to, text, replaceIndex) {
+  const syms = parseSymbols(text), bad = syms.filter(a => !M.alphabet.includes(a));
+  if (bad.length) { alert(`Znak ${bad.join(', ')} není v abecedě {${M.alphabet.join(', ')}}. Abecedu změníš vpravo.`); return; }
+  if (replaceIndex !== undefined) M.trans.splice(replaceIndex, 1);
+  if (syms.length) {
+    const ex = M.trans.find(t => t.from === from && t.to === to);
+    if (ex) ex.symbols = [...new Set([...ex.symbols, ...syms])].sort(); else M.trans.push({ from, to, symbols: syms.sort() });
+  }
+  selE = null; changed();
+}
+function ask(x, y, initial, cb) {
+  document.querySelectorAll('.floating').forEach(n => n.remove());
+  const r = svg.getBoundingClientRect(), k = r.width / 800;
+  const inp = document.createElement('input');
+  inp.className = 'floating'; inp.type = 'text'; inp.value = initial; inp.autocomplete = 'off';
+  inp.style.left = Math.max(4, r.left + x * k - 60) + 'px'; inp.style.top = Math.max(4, r.top + y * k - 16) + 'px';
+  let done = false;
+  const finish = ok => { if (done) return; done = true; const v = inp.value; inp.remove(); if (ok) cb(v); };
+  inp.onkeydown = e => { if (e.key === 'Enter') finish(true); else if (e.key === 'Escape') finish(false); };
+  inp.onblur = () => finish(true);
+  document.body.appendChild(inp); inp.focus(); inp.select();
+}
+function renameState(id) {
+  const s = pos(id); if (!s) return;
+  ask(s.x, s.y, id, v => {
+    v = v.trim();
+    if (v === id) return;
+    if (!/^[A-Za-z0-9_′']{1,8}$/.test(v)) { alert('Název stavu: 1 až 8 znaků (písmena, čísla, _).'); return; }
+    if (pos(v)) { alert(`Stav ${v} už existuje.`); return; }
+    s.id = v; M.trans.forEach(t => { if (t.from === id) t.from = v; if (t.to === id) t.to = v; });
+    M.accept = M.accept.map(x => x === id ? v : x); if (M.start === id) M.start = v; if (selS === id) selS = v; changed();
+  });
+}
+
+// ── ukazatel (myš, dotyk i pero) ─────────────────────────────────────────────
+svg.addEventListener('pointerdown', ev => {
+  const st = ev.target.closest('[data-s]'), ed = ev.target.closest('[data-e]'), p = toSvg(ev);
+  if (st) {
+    const id = st.dataset.s;
+    if (mode === 'erase') return removeState(id);
+    if (mode === 'edge') { const s = pos(id); rubber = { from: id, x1: s.x, y1: s.y, x2: p.x, y2: p.y }; svg.setPointerCapture(ev.pointerId); return; }
+    selS = id; selE = null;
+    const s = pos(id); drag = { id, dx: s.x - p.x, dy: s.y - p.y, moved: false };
+    svg.setPointerCapture(ev.pointerId); render(); return;
+  }
+  if (ed) {
+    const i = +ed.dataset.e;
+    if (mode === 'erase') return removeEdge(i);
+    selE = i; selS = null; render(); return;
+  }
+  if (mode === 'state') return addState(p.x, p.y);
+  selS = null; selE = null; render();
+});
+svg.addEventListener('pointermove', ev => {
+  const p = toSvg(ev);
+  if (drag) { const s = pos(drag.id); s.x = Math.min(780, Math.max(30, Math.round(p.x + drag.dx))); s.y = Math.min(500, Math.max(30, Math.round(p.y + drag.dy))); drag.moved = true; render(); }
+  else if (rubber) { rubber.x2 = p.x; rubber.y2 = p.y; render(); }
+});
+svg.addEventListener('pointerup', ev => {
+  if (drag) { if (drag.moved) save(); drag = null; return; }
+  if (rubber) {
+    const from = rubber.from, tgt = document.elementFromPoint(ev.clientX, ev.clientY), to = tgt && tgt.closest && tgt.closest('[data-s]');
+    rubber = null; render();
+    if (to) { const b = pos(to.dataset.s); ask(b.x, b.y - R - 20, '', v => setSymbols(from, b.id, v)); }
+  }
+});
+svg.addEventListener('dblclick', ev => {
+  // ev.target už může být nový prvek po překreslení při prvním kliknutí, proto se hledá podle souřadnic
+  const at = document.elementFromPoint(ev.clientX, ev.clientY), st = at && at.closest('[data-s]'), ed = at && at.closest('[data-e]');
+  if (st) return renameState(st.dataset.s);
+  if (ed) { const i = +ed.dataset.e, t = M.trans[i], g = edgeGeom(t); return ask(g.lx, g.ly, t.symbols.join(', '), v => setSymbols(t.from, t.to, v, i)); }
+  const p = toSvg(ev); addState(p.x, p.y);
+});
+document.addEventListener('keydown', ev => {
+  if (ev.target.tagName === 'INPUT') return;
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { if (selS) removeState(selS); else if (selE !== null) removeEdge(selE); }
+});
+
+// ── ovládání vpravo ──────────────────────────────────────────────────────────
+$('tools').addEventListener('click', ev => {
+  const b = ev.target.closest('button[data-mode]'); if (!b) return;
+  mode = b.dataset.mode; rubber = null;
+  document.querySelectorAll('#tools button[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  svg.style.cursor = { move: 'default', state: 'copy', edge: 'crosshair', erase: 'not-allowed' }[mode];
+});
+$('clear').onclick = () => { if (!M.states.length || confirm('Smazat celý návrh?')) { M = fresh(M.alphabet); selS = selE = null; changed(); } };
+$('alpha').onchange = () => {
+  const a = parseSymbols($('alpha').value);
+  if (!a.length) { $('alpha').value = M.alphabet.join(', '); return; }
+  M.alphabet = a; M.trans = M.trans.map(t => ({ ...t, symbols: t.symbols.filter(x => a.includes(x)) })).filter(t => t.symbols.length);
+  $('alpha').value = a.join(', '); changed();
+};
+function startWord() { sim = { word: $('word').value.replace(/\s/g, ''), pos: 0, active: true, cur: M.start }; }
+$('word').oninput = () => { startWord(); sim.active = false; renderTrace(); };
+$('step').onclick = () => { if (!sim.active || sim.word !== $('word').value.replace(/\s/g, '')) startWord(); sim.pos = Math.min(sim.pos + 1, sim.word.length + 1); renderTrace(); };
+$('whole').onclick = () => { startWord(); sim.pos = sim.word.length; renderTrace(); };
+$('reset').onclick = () => { startWord(); renderTrace(); };
+
+// ── úlohy ────────────────────────────────────────────────────────────────────
+const sel = $('task');
+sel.innerHTML = '<option value="">Volný návrh</option>' + Auto.TASKS.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+function setTask(id) {
+  task = Auto.TASKS.find(t => t.id === id) || null;
+  M = load(task ? task.alphabet.slice() : M.alphabet);
+  selS = selE = null; sim = { word: '', pos: 0 };
+  $('alpha').value = M.alphabet.join(', '); $('alpha').disabled = !!task;
+  $('taskText').textContent = task ? task.text : 'Kresli, co chceš. Úlohu s automatickou kontrolou vybereš výše.';
+  $('grade').hidden = !task; $('gradeOut').innerHTML = '';
+  $('exRow').hidden = !!task; $('exText').textContent = ''; $('ex').value = '';
+  render();
+}
+sel.onchange = () => setTask(sel.value);
+$('grade').onclick = () => {
+  const g = Auto.grade(M, task), out = $('gradeOut');
+  if (g.ok) { out.innerHTML = '<div class="result ok">✓ Správně. Tvůj automat přijímá přesně správná slova. Kontrola je úplná (ne jen pár slov): porovnal jsem oba automaty na všech možných slovech.</div>'; return; }
+  if (g.kind === 'invalid') { out.innerHTML = '<div class="result bad">Nejdřív oprav automat:<br>' + g.problems.map(p => p.text).join('<br>') + '</div>'; return; }
+  const w = g.word === '' ? 'prázdné slovo' : `slovo „${g.word}“`;
+  out.innerHTML = `<div class="result bad">Ještě ne. Na ${w} se liší: tvůj automat ho ${g.mine ? 'přijímá' : 'nepřijímá'}, ale má ho ${g.expected ? 'přijímat' : 'nepřijímat'}. <button class="btn" id="tryWord">Přečíst toto slovo</button></div>`;
+  $('tryWord').onclick = () => { $('word').value = g.word; $('whole').click(); };
+};
+// ── hotové příklady (řešení úloh): načtou se do volného návrhu ───────────────
+const LECTURE_XY = { q0: [150, 260], q1: [400, 150], q2: [400, 370], q3: [650, 260] };
+function exampleModel(t) {
+  const n = t.ref.states.length;
+  const states = t.ref.states.map((s, i) => {
+    const a = Math.PI + i * 2 * Math.PI / n; // první stav vlevo, ostatní po elipse
+    const xy = LECTURE_XY[s.id] || [Math.round(400 + 250 * Math.cos(a)), Math.round(260 + 170 * Math.sin(a))];
+    return { id: s.id, x: xy[0], y: xy[1] };
+  });
+  const trans = [];
+  for (const u of t.ref.trans) { // znaky stejné hrany sloučit do jednoho popisku
+    const ex = trans.find(x => x.from === u.from && x.to === u.to);
+    if (ex) ex.symbols.push(...u.symbols); else trans.push({ from: u.from, to: u.to, symbols: [...u.symbols] });
+  }
+  return { alphabet: t.alphabet.slice(), states, start: t.ref.start, accept: t.ref.accept.slice(), trans };
+}
+$('ex').innerHTML = '<option value="">Vyber…</option>' + Auto.TASKS.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+$('ex').onchange = () => {
+  const t = Auto.TASKS.find(x => x.id === $('ex').value);
+  if (!t) { $('exText').textContent = ''; return; }
+  if (M.states.length && !confirm('Příklad přepíše tvůj návrh. Pokračovat?')) { $('ex').value = ''; return; }
+  M = exampleModel(t); selS = selE = null; changed();
+  $('alpha').value = M.alphabet.join(', ');
+  $('exText').textContent = 'Jazyk: ' + t.lang + '. Zkus přečíst pár slov a podívej se na tabulku i na strom.';
+};
+setTask('');
+</script>
+</body>
+</html>

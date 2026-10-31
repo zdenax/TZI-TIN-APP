@@ -78,6 +78,8 @@ def save_progress(data):
 
 UI_DIR = BASE / "ui"
 UI_FILES = {"novy": "novy.html", "klasicky": "klasicky.html"}
+AUTOMAT_FILES = {"/automat": ("text/html; charset=utf-8", "automat.html"),
+                "/automat-core.js": ("text/javascript; charset=utf-8", "automat-core.js")}
 DEFAULT_UI = "novy"
 UI_COOKIE = "tzi_ui"
 
@@ -151,6 +153,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(500, f"Chybí soubor ui/{UI_FILES[name]}", "text/plain; charset=utf-8")
             hdr = {"Set-Cookie": f"{UI_COOKIE}={name}; Path=/; Max-Age=31536000; SameSite=Lax"} if remember else None
             return self._send(200, page, "text/html; charset=utf-8", hdr)
+        if u.path in AUTOMAT_FILES:
+            ctype, name = AUTOMAT_FILES[u.path]
+            try:
+                return self._send(200, (UI_DIR / name).read_text(encoding="utf-8"), ctype)
+            except OSError:
+                return self._send(500, f"Chybí soubor ui/{name}", "text/plain; charset=utf-8")
         if u.path == "/api/sources":
             srcs = list_sources()
             real = [s for s in srcs if s["id"] != ALL]
