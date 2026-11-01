@@ -60,6 +60,19 @@ def load_questions(source):
     return banks[source]["questions"]
 
 
+def load_glosar(source):
+    """Pojmy balíčku otázek; pro „všechny dohromady“ po balíčcích, pojem, který se opakuje, jen jednou (u prvního)."""
+    banks, data = load_banks(), json.loads(GLOSAR.read_text(encoding="utf-8"))["banks"]
+    ids = list(banks) if source == ALL else [source]
+    seen, groups = set(), []
+    for b in ids:
+        entries = [e for e in data.get(b, []) if e["term"] not in seen]
+        seen.update(e["term"] for e in entries)
+        if entries:
+            groups.append({"label": source_label(banks[b]), "entries": entries})
+    return {"title": "Všechny přednášky dohromady" if source == ALL else source_label(banks[source]), "groups": groups}
+
+
 def load_recall():
     """Otázky pro režim Doplňovačka ze všech bank v banky/doplnovacka/."""
     return [q for p in sorted(RECALL_DIR.glob("*.json"))
@@ -80,6 +93,8 @@ def save_progress(data):
 UI_DIR = BASE / "ui"
 UI_FILES = {"novy": "novy.html", "klasicky": "klasicky.html"}
 AUTOMAT_FILES = {"/automat": ("text/html; charset=utf-8", "automat.html"),
+                "/glosar": ("text/html; charset=utf-8", "glosar.html"),
+                "/fmt.js": ("text/javascript; charset=utf-8", "fmt.js"),
                 "/automat-core.js": ("text/javascript; charset=utf-8", "automat-core.js")}
 DEFAULT_UI = "novy"
 UI_COOKIE = "tzi_ui"
@@ -172,10 +187,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"error": str(e)}, 404)
         if u.path == "/api/glosar":
             try:
-                lectures = json.loads(GLOSAR.read_text(encoding="utf-8"))["lectures"]
-                return self._json(lectures.get(q.get("lecture", [""])[0], []))
+                return self._json(load_glosar(source))
             except (KeyError, OSError, ValueError) as e:
-                return self._json({"error": str(e)}, 500)
+                return self._json({"error": str(e)}, 404)
         if u.path == "/api/recall":
             try:
                 return self._json(load_recall())

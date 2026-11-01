@@ -19,7 +19,7 @@ Stačí Python 3, nic se neinstaluje. Aplikace čte `ui/*.html` a `banky/*.json`
 
 Nahoře v menu je rozbalovací seznam **Přednáška**. Každá přednáška má vlastní banku otázek (`banky/*.json`), v seznamu je její číslo, datum a téma. Je tam i volba **Všechny přednášky dohromady**. Dále se dá přepnout typ otázek: vše, teorie (výběr A/B/C/D) nebo příklady (zadáš výsledek).
 
-U každé přednášky je odkaz **Glosář**: otevře se okno s pojmy, definicemi a příklady z dané přednášky (zdroj hesla a případné doplnění z AI je u každého hesla). Zavře se tlačítkem, klikem mimo okno nebo Esc.
+U každé přednášky (i u „Všechny přednášky dohromady“) je odkaz **Glosář**: otevře se v nové záložce samostatná stránka s pojmy, definicemi a příklady z toho balíčku otázek. U každého pojmu je vidět zdroj a případné doplnění z AI.
 
 ## Režimy
 

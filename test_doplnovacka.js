@@ -91,6 +91,7 @@ const page = vm.createContext({
   localStorage: {getItem: () => null, setItem() {}}, fetch: () => new Promise(() => {}), // server se nevolá
   setTimeout, setInterval, clearInterval, alert() {}, confirm: () => false,
 });
+vm.runInContext(fs.readFileSync(path.join(__dirname, 'ui/fmt.js'), 'utf8'), page); // fmt je ve sdíleném souboru
 vm.runInContext(js, page);
 const run = code => vm.runInContext(code, page);
 const key = k => docOn.keydown({key: k, target: {tagName: 'DIV'}, preventDefault() {}});
