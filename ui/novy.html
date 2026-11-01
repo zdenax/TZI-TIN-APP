@@ -894,14 +894,15 @@ function matchRecall(answer, accept) {
   return null;
 }
 
-// Výpisy („… vzestupně, oddělené mezerou“): uznají se i ve špatném pořadí a bez mezer, počítá se jen správná množina položek.
+// Výpisy („… vzestupně, oddělené mezerou“): uznají se i ve špatném pořadí a bez mezer, počítá se jen správná množina položek; u množin („od menšího čísla“) i 31 místo 13.
 function sameList(q, raw) {
   if (!/vzestupně/.test(q.hint || '')) return false;
   const want = q.answer.split(/\s+/), L = want[0].length;
   if (!want.every(t => t.length === L)) return false;
   let got = raw.split(/[\s,;]+/).filter(Boolean);
   if (got.length === 1 && got[0].length % L === 0) got = got[0].match(new RegExp(`.{${L}}`, 'g')); // „123231…“ bez mezer
-  return got.length === want.length && [...got].sort().join(' ') === [...want].sort().join(' ');
+  const key = t => /od menšího/.test(q.hint) ? [...t].sort().join('') : t; // množina {3,1} je totéž co {1,3}
+  return got.length === want.length && got.map(key).sort().join(' ') === want.map(key).sort().join(' ');
 }
 
 // ── otázka ──
