@@ -894,6 +894,16 @@ function matchRecall(answer, accept) {
   return null;
 }
 
+// Výpisy („… vzestupně, oddělené mezerou“): uznají se i ve špatném pořadí a bez mezer, počítá se jen správná množina položek.
+function sameList(q, raw) {
+  if (!/vzestupně/.test(q.hint || '')) return false;
+  const want = q.answer.split(/\s+/), L = want[0].length;
+  if (!want.every(t => t.length === L)) return false;
+  let got = raw.split(/[\s,;]+/).filter(Boolean);
+  if (got.length === 1 && got[0].length % L === 0) got = got[0].match(new RegExp(`.{${L}}`, 'g')); // „123231…“ bez mezer
+  return got.length === want.length && [...got].sort().join(' ') === [...want].sort().join(' ');
+}
+
 // ── otázka ──
 function evaluate(q) {
   if (isRecall(q)) {
@@ -902,7 +912,7 @@ function evaluate(q) {
   }
   if (isInput(q)) {
     const v = norm($('ans-input').value);
-    return {userKeys: [v], correctKeys: [norm(q.answer)], isCorrect: v === norm(q.answer)};
+    return {userKeys: [v], correctKeys: [norm(q.answer)], isCorrect: v === norm(q.answer) || sameList(q, $('ans-input').value)};
   }
   const cs = new Set(q.correct);
   return {userKeys: [...selected], correctKeys: [...cs],

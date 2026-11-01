@@ -138,5 +138,11 @@ const fm = s => run('fmt')(s).replace(/<span class="frac"><span>(.*?)<\/span><sp
  ['(a+b)^n = Σ (n nad k) · a^(n−k) · b^k', '(a+b)<sup>n</sup> = Σ {n nad k} · a<sup>n−k</sup> · b<sup>k</sup>'],
  ['δ(q₀, 1) = q₂, q₀ –0→ q₀', 'δ(q<sub>0</sub>, 1) = q<sub>2</sub>, q<sub>0</sub> –0→ q<sub>0</sub>'],
 ].forEach(([s, want]) => { const got = fm(s); if (got !== want) { fail++; console.log(`FAIL fmt: ${s}\n  dostal: ${got}\n  čekal:  ${want}`); } });
+// výpisy „vzestupně, oddělené mezerou“: libovolné pořadí, s mezerami i bez, ale přesná množina položek
+const LIST = {hint: 'trojice vzestupně, oddělené mezerou', answer: '123 132 213 231 312 321'};
+[['123 132 213 231 312 321', true], ['123231312321213132', true], ['321, 312 , 231 213 132 123', true],
+ ['123 132 213 231 312', false], ['123 123 213 231 312 321', false], ['124 132 213 231 312 321', false], ['', false],
+].forEach(([v, want]) => { const got = run(`sameList(${JSON.stringify(LIST)}, ${JSON.stringify(v)})`); if (got !== want) { fail++; console.log(`FAIL sameList: „${v}“ dostal ${got}, čekal ${want}`); } });
+if (run(`sameList({hint: 'čísla oddělená mezerou', answer: '1 3 3 1'}, '3 1 1 3')`)) { fail++; console.log('FAIL sameList: bez „vzestupně“ musí pořadí platit'); }
 console.log(`chyb: ${fail}`);
 process.exit(fail ? 1 : 0);
