@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Vygeneruje banky otázek pro 5. přednášku (29. 10. 2026) do banky/:
-05-2026-10-29.json (variace, permutace, kombinace s opakováním i bez, binomická věta, id 5-N)
+05-2026-10-29.json (variace, permutace, kombinace s opakováním i bez, id 5-N)
 a 05a-konecne-automaty.json (konečné automaty jako vlastní modul, id 5a-N).
 
 Deklarace využití AI: vytvořeno s pomocí nástroje Claude Opus 5.5 (Anthropic, 2026),
@@ -51,18 +51,6 @@ def fCo(n, k): return math.comb(n + k - 1, k)
 def fPo(*ks): return fact(sum(ks)) // math.prod(fact(x) for x in ks)
 
 
-def expand(n):
-    """(a+b)^n roznásobením závorek: {(exponent a, exponent b): koeficient}, nezávisle na math.comb."""
-    poly = {(0, 0): 1}
-    for _ in range(n):
-        new = Counter()
-        for (i, j), c in poly.items():
-            new[(i + 1, j)] += c
-            new[(i, j + 1)] += c
-        poly = dict(new)
-    return poly
-
-
 def verify_formulas():
     check(fact(0) == 1)
     for n in range(8):
@@ -78,8 +66,6 @@ def verify_formulas():
         for ks in itertools.product(range(1, 4), repeat=r):
             if sum(ks) <= 7:
                 check(Po("".join(str(i) * x for i, x in enumerate(ks))) == fPo(*ks), f"P'{ks}")
-    for n in range(13):
-        check(expand(n) == {(n - k, k): math.comb(n, k) for k in range(n + 1)}, f"(a+b)^{n}")
 
 
 def tup(t): return "(" + ",".join(map(str, t)) + ")"
@@ -108,24 +94,7 @@ def verify_lecture_examples():
     check(C23 == [(1, 2), (1, 3), (2, 3)] and len(C23) == fC(3, 2) == fV(3, 2) // fact(2) == 3)
     check(CO23 == [(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (3, 3)] and len(CO23) == fCo(3, 2) == math.comb(4, 2))
     check(len(VO23) - len(V23) == sum(a == b for a, b in VO23) == 3)  # vizualizace: 11, 22, 33
-    check([expand(3)[(3 - k, k)] for k in range(4)] == [1, 3, 3, 1])
-    check([math.comb(3, k) * 2 ** (3 - k) * 3 ** k for k in range(4)] == [8, 36, 54, 27] and (2 + 3) ** 3 == 125)
     check(Vo(2, 4) == 16 and Co(2, 3) == 4)  # k > n u výběrů s opakováním (výpisky, Wikipedie C′(3,2) = 4)
-
-
-def binom_terms(n):
-    """Rozvoj (a+b)^n: (dosazený tvar, zjednodušený tvar) z roznásobení."""
-    poly = expand(n)
-    full, short = [], []
-    for k in range(n + 1):
-        c = poly[(n - k, k)]
-        check(c == math.comb(n, k))
-        full.append(f"({n} nad {k}) · a^{n - k} · b^{k}")
-        pa = "" if n - k == 0 else "a" if n - k == 1 else f"a^{n - k}"
-        pb = "" if k == 0 else "b" if k == 1 else f"b^{k}"
-        body = "·".join(p for p in (pa, pb) if p)
-        short.append((str(c) if c != 1 else "") + body)
-    return " + ".join(full), " + ".join(short)
 
 
 # slovní příklad: možnosti (popis, hodnota), první je správná; hodnota se ověří výčtem a nesmí se shodovat
@@ -228,24 +197,6 @@ def komb_choice():
          ["že jde o výběr s opakováním (prvky se mohou opakovat)", "že nezáleží na pořadí",
           "že se vybírají všechny prvky", "že jde o doplněk množiny"], [0],
          "V′, P′, C′ = variace, permutace a kombinace s opakováním. (Doplněk množiny A′ z 15. 10. je jiný význam čárky.)"),
-        ("Jak zní binomická věta?",
-         ["(a+b)^n = součet přes k = 0, 1, …, n členů (n nad k) · a^(n−k) · b^k",
-          "(a+b)^n = a^n + b^n",
-          "(a+b)^n = součet přes k = 0, 1, …, n členů (n nad k) · a^n · b^k",
-          "(a+b)^n = součet přes k = 0, 1, …, n členů k · a^(n−k) · b^k"], [0],
-         "cs.wikipedia (Binomická věta), výpisky 29. 10.: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k pro k = 0, …, n. "
-         f"Pro n = 3: {binom_terms(3)[1]}."),
-        ("Jak se v rozvoji (a+b)^n = Σ (n nad k) · a^(n−k) · b^k mění exponenty?",
-         ["u a klesá od n do 0, u b roste od 0 do n a součet exponentů je v každém členu n",
-          "u a i u b roste od 0 do n", "u a je stále n, u b roste od 0 do n", "součet exponentů v členu je k"], [0],
-         "Člen (n nad k) · a^(n−k) · b^k má součet exponentů (n−k) + k = n. Koeficient (n nad k) patří "
-         "k exponentu k u b."),
-        ("Proč je u členu a^(n−k) · b^k v rozvoji (a+b)^n koeficient (n nad k)?",
-         ["při roznásobení n závorek (a+b) se vybírá, ze kterých k závorek se vezme b, a na pořadí závorek nezáleží",
-          "protože každý člen vznikne při roznásobení právě jednou", "protože b^k vznikne k! způsoby",
-          "protože exponenty u a klesají"], [0],
-         "Z každé závorky se bere a nebo b. Člen a^(n−k) · b^k vznikne tolikrát, kolika způsoby lze vybrat k závorek "
-         f"z n (kombinace k-té třídy), tedy (n nad k). Pro n = 3, k = 1: 3 způsoby, proto 3a^2·b."),
     ]
     # rozlišení typů na slovních příkladech
     qs += [
@@ -350,26 +301,11 @@ def komb_input():
                f"Kombinace s opakováním (k > n je tu v pořádku): C′_4(3) = (3+4−1 nad 4) = (6 nad 4) = {fCo(3, 4)}."))
     qs.append(("Kolik různých pořadí písmen má slovo KOLO?", "číslo", str(Po("KOLO")),
                f"Řadí se všechna 4 písmena, O je dvakrát → P′_(1,2,1)(4) = 4! / (1! · 2! · 1!) = 24 / 2 = {fPo(1, 2, 1)}."))
-    # binomická věta
-    p5 = expand(5)
-    qs.append(("Jaký koeficient má člen a^2 · b^3 v rozvoji (a+b)^5?", "číslo", str(p5[(2, 3)]),
-               f"Exponent u b je k = 3: (5 nad 3) = 5 · 4 · 3 / 3! = {math.comb(5, 3)}."))
-    p4 = expand(4)
-    qs.append(("Napiš koeficienty rozvoje (a+b)^4 od členu a^4 po b^4.", "čísla oddělená mezerou",
-               " ".join(str(p4[(4 - k, k)]) for k in range(5)),
-               f"(4 nad 0), (4 nad 1), …, (4 nad 4) = {', '.join(str(p4[(4 - k, k)]) for k in range(5))}.\n"
-               f"(a+b)^4 = {binom_terms(4)[1]}"))
-    qs.append(("Kolik sčítanců má rozvoj (a+b)^7 podle binomické věty?", "číslo", str(len(expand(7))),
-               f"k = 0, 1, …, 7, tedy n + 1 = {len(expand(7))} sčítanců."))
-    t2 = math.comb(3, 2) * 2 ** 1 * 3 ** 2
-    qs.append(("Spočítej člen pro k = 2 v rozvoji (2+3)^3 podle binomické věty.", "číslo", str(t2),
-               f"(3 nad 2) · 2^1 · 3^2 = 3 · 2 · 9 = {t2}. Celý rozvoj: 8 + 36 + 54 + 27 = 125 = 5^3."))
     return qs
 
 
 # zadání bez políčka: řešení se odhalí, hodnotí se sám (reveal)
 def komb_reveal():
-    full4, short4 = binom_terms(4)
     return [
         ("Ukaž na příkladu M = {1, 2, 3}, k = 2, proč je variací bez opakování 6, a vypiš je.",
          f"První místo lze obsadit 3 způsoby, druhé už jen 2 (prvek se nesmí opakovat): 3 · 2 = {fV(3, 2)}.\n"
@@ -381,9 +317,6 @@ def komb_reveal():
          "tolikrát, kolika způsoby lze mezi sebou proházet stejné prvky: 2! = 2krát.\n"
          f"3. Proto 4! / (1! · 1! · 2!) = 24 / 2 = {fPo(1, 1, 2)}. Prvky, které tam jsou jednou, dávají 1! = 1.\n"
          f"Všech {len(P1233)} pořadí: {', '.join(P1233)}."),
-        ("Rozepiš (a+b)^4 podle binomické věty.",
-         f"(a+b)^4 = {full4}\n= {short4}\n"
-         "Exponent u a klesá od 4 do 0, u b roste od 0 do 4, koeficienty jsou (4 nad k)."),
     ]
 
 
@@ -678,6 +611,10 @@ BAD = re.compile(r"(první|druhá|třetí|čtvrtá|poslední) možnost|žádná 
 BINOM = re.compile(r"\(([^()<>]+?) nad ([^()<>]+?)\)")
 
 
+# Čísla otázek, které se smazaly (8 o binomické větě). Zůstávají prázdná, aby ostatní ID, a tím i uložený postup, sedělo.
+SMAZANA_ID = {"5-17", "5-18", "5-19", "5-46", "5-47", "5-48", "5-49", "5-52"}
+
+
 def build(choice, inputs, reveal, rnd, prefix):
     qs = []
     for text, opts, correct, expl in choice:
@@ -694,7 +631,11 @@ def build(choice, inputs, reveal, rnd, prefix):
         qs.append({"type": "input", "text": text, "hint": hint, "answer": ans, "solution": sol})
     for text, sol in reveal:
         qs.append({"type": "input", "reveal": True, "text": pripoj_vzorce(text), "solution": sol})
-    for i, q in enumerate(qs, 1):
+    i = 0
+    for q in qs:
+        i += 1
+        while f"{prefix}-{i}" in SMAZANA_ID:
+            i += 1
         q["number"] = i
         q["id"] = f"{prefix}-{i}"
     for q in qs:
@@ -724,7 +665,7 @@ def main():
     rnd = random.Random(29)  # pevné pořadí možností v JSON (nové UI je stejně míchá)
     banks = [
         (build(komb_choice(), komb_input(), komb_reveal(), rnd, "5"), "05-2026-10-29.json",
-         "Variace, permutace, kombinace a binomická věta"),
+         "Variace, permutace a kombinace"),
         (build(auto_choice(), auto_input(), auto_reveal(), rnd, "5a"), "05a-konecne-automaty.json", "Konečné automaty"),
     ]
     mine = {f for _, f, _ in banks}

@@ -115,6 +115,10 @@ KOMB, KOMB22, KOMB29 = "04k-kombinatorika", "04k-kombinatorika", "05-2026-10-29"
 KOMB_JEN_22 = ("Základní množina", "Bez opakování", "Faktoriál", "Kombinace (nezáleží", "Kombinační číslo", "Vlastnosti kombinačního")
 
 
+# pojmy z Glosar.md, které se do aplikace nedávají (na přednášce nebyly důležité)
+VYNECHAT = {"Binomická věta"}
+
+
 def banks_of(title, term):
     if title.startswith("Kombinatorika"):
         return [KOMB22, KOMB29] if term.startswith(KOMB_JEN_22) or term.startswith("Kombinatorika") else [KOMB29]
@@ -137,6 +141,8 @@ def main(src):
         for e in entries:
             head, _, body = e.partition("\n")
             term = clean(head[4:].strip())
+            if term in VYNECHAT:
+                continue
             for b in banks_of(title, term):
                 out.setdefault(b, []).append({"term": term, "body": clean(body.strip())})
     OUT.parent.mkdir(exist_ok=True)

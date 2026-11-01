@@ -26,7 +26,6 @@ def q(text, accept, words, explanation):
 
 P1, P2, P3, P4 = "Přednáška 1. 10.", "Přednáška 8. 10.", "Přednáška 15. 10.", "Přednáška 22. 10."
 P5 = "Přednáška 29. 10."
-BINOM3 = [comb(3, k) for k in range(4)]  # koeficienty (a+b)^3
 AUT_STATES, AUT_SYMBOLS = 4, 2  # automat z přednášky 29. 10.: Q = {q0, q1, q2, q3}, Σ = {0, 1}
 
 CATS = [
@@ -320,7 +319,7 @@ CATS = [
         q("Kolik je (5 nad 2)?", [str(comb(5, 2)), "deset"], 1, f"(5 nad 2) = 5 · 4 / 2! = 20 / 2 = 10. {P4}"),
         q("Kolik je 5!?", [str(factorial(5)), "sto dvacet"], 1,
           f"5! = 5 · 4 · 3 · 2 · 1 = 120 (na přednášce rozepsáno jako 5 · 4 · 3!). {P4}"),
-        # přednáška 29. 10.: variace, permutace, kombinace s opakováním, binomická věta
+        # přednáška 29. 10.: variace, permutace, kombinace s opakováním
         q("Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se žádný prvek neopakuje?",
           ["variace bez opakování", "variace", "variace k-té třídy bez opakování", "variace k-té třídy",
            "variation"], "1-3",
@@ -358,16 +357,6 @@ CATS = [
           f"Počet permutací s opakováním P′_(k_1,…,k_n)(k): prohození stejných prvků nedá nové pořadí. {P5}"),
         q("Kolik je P′_(1,1,2)(4), počet různých pořadí čísel 1, 2, 3, 3?", [str(len(set(permutations("1233")))),
           "dvanáct"], 1, f"4! / (1! · 1! · 2!) = 24 / 2 = 12 (příklad z přednášky). {P5}"),
-        q("Jak se v binomické větě nazývá kombinační číslo (n nad k)?", ["binomický koeficient",
-          "binomial coefficient"], 2, f"Binomický koeficient, čte se „n nad k“ (cs.wikipedia). {P5}"),
-        q("Jak se nazývá vztah (a+b)^n = Σ (n nad k) · a^(n−k) · b^k pro k = 0, 1, …, n?",
-          ["binomická věta", "binomický rozvoj", "binomial theorem"], 2,
-          f"Binomická věta: rozvoj n-té mocniny dvojčlenu (cs.wikipedia). {P5}"),
-        q("Kolik sčítanců má rozvoj (a+b)^n podle binomické věty?", ["n+1", "n + 1", "n plus 1", "n plus jedna"],
-          "1-3", f"k = 0, 1, …, n, tedy n + 1 sčítanců; pro n = 3 jsou to {len(BINOM3)}. {P5}"),
-        q("Jaké koeficienty má rozvoj (a+b)^3, od a^3 po b^3?", [" ".join(map(str, BINOM3)), "".join(map(str, BINOM3)),
-          "jedna tři tři jedna"], 4,
-          f"(a+b)^3 = a^3 + 3a^2·b + 3a·b^2 + b^3, koeficienty (3 nad k) = 1, 3, 3, 1. {P5}"),
     ]),
     ("Konečné automaty", [
         q("Jak se nazývá uspořádaná pětice A = (Q, Σ, δ, q₀, F)?", ["konečný automat",
@@ -448,15 +437,20 @@ def self_check(qs):
         assert x["category"] and x["explanation"], x["id"]
     # číselné odpovědi napsané ručně (ostatní se počítají přímo v CATS)
     assert int("F", 16) == 15 and 16 == 2 ** 4 and comb(7, 1) == 7
-    # přednáška 29. 10.: n + 1 sčítanců, BINOM3 jako (4 nad 2) = 6 z výčtu, rozvoj (a+b)^3 roznásobením
-    assert BINOM3 == [1, 3, 3, 1] and len(list(combinations_with_replacement('123', 2))) == comb(4, 2)
-    a, b = 2, 5
-    assert (a + b) ** 3 == sum(c * a ** (3 - k) * b ** k for k, c in enumerate(BINOM3))
+
+
+
+# čtyři smazané otázky o binomické větě
+SMAZANA_ID = {"r-115", "r-116", "r-117", "r-118"}
 
 
 def main():
     qs = [{"type": "recall", "category": cat, **x} for cat, items in CATS for x in items]
-    for i, x in enumerate(qs, 1):
+    i = 0
+    for x in qs:
+        i += 1
+        while f"r-{i}" in SMAZANA_ID:  # smazané otázky nechají prázdná čísla, ostatní ID (a uložený postup) zůstanou
+            i += 1
         x["number"] = i
         x["id"] = f"r-{i}"
     self_check(qs)

@@ -25,12 +25,10 @@ const SYMETRIE = byText('Podle symetrie kombinačních čísel platí (n nad k) 
 const C52 = byText('Kolik je (5 nad 2)?'), TRIDY = byText('Kolik tříd ekvivalence má relace „stejný zbytek po dělení 3“ na M = {1, …, 8}?');
 const ZBYTKY = byText('Převod z desítkové soustavy opakovaným dělením základem: v jakém pořadí se čtou zbytky?');
 const NA = byText('Jak se nazývá zobrazení f: M → P, pro které H_f = P (každý prvek P je obrazem)?');
-// přednáška 29. 10. (variace, permutace, kombinace s opakováním, binomická věta, konečné automaty)
+// přednáška 29. 10. (variace, permutace, kombinace s opakováním, konečné automaty)
 const VAR = byText('Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se žádný prvek neopakuje?');
 const VAR_O = byText('Jak se nazývá uspořádaná k-tice prvků z n-prvkové množiny M, ve které se prvky mohou opakovat?');
 const PERM_O = byText('Jak se nazývá uspořádaná k-tice, ve které je každý prvek a_i základní množiny M = {a_1, …, a_n} přesně k_i-krát (k = k_1 + … + k_n)?');
-const CLENY = byText('Kolik sčítanců má rozvoj (a+b)^n podle binomické věty?');
-const KOEF3 = byText('Jaké koeficienty má rozvoj (a+b)^3, od a^3 po b^3?');
 const DET = byText('Jaký je konečný automat, u kterého má každý stav pro každý vstupní symbol právě jeden přechod?');
 const START = byText('Jak se nazývá q₀ v pětici konečného automatu?');
 const STROM = byText('Jak se nazývá zápis automatu z přednášky, ve kterém z počátečního stavu (kořene) vedou větve pro každý znak do stavu podle δ a stav, který už se objevil, se dál nerozvíjí?');
@@ -52,8 +50,6 @@ const cases = [
   ['zdola nahoru', ZBYTKY, 'ok'], ['shora dolů', ZBYTKY, null], ['na', NA, 'ok'], ['do', NA, null], ['surjekce', NA, 'ok'],
   ['variace', VAR, 'ok'], ['kombinace', VAR, null], ['permutace', VAR, null], ['variace s opakovanim', VAR_O, 'ok'],
   ['kombinace s opakováním', VAR_O, null], ['permutace s opakováním', PERM_O, 'ok'], ['permutace', PERM_O, null],
-  ['n+1', CLENY, 'ok'], ['n + 1', CLENY, 'ok'], ['n', CLENY, null], ['n − 1', CLENY, null],
-  ['1, 3, 3, 1', KOEF3, 'ok'], ['1331', KOEF3, 'ok'], ['1 2 1', KOEF3, null],
   ['deterministicky', DET, 'ok'], ['DFA', DET, 'ok'], ['nedeterministický', DET, null],
   ['pocatecni stav', START, 'ok'], ['koncový stav', START, null], ['stavovy strom', STROM, 'ok'], ['stavový diagram', STROM, null],
   ['řídící jednotka', RJ, 'ok'], ['ridici jednotka', RJ, 'ok'],
