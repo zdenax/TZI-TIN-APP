@@ -894,6 +894,21 @@ function matchRecall(answer, accept) {
   return null;
 }
 
+// Výpisy („… vzestupně, oddělené mezerou“): uznají se i ve špatném pořadí a bez mezer, počítá se jen správná množina položek; u množin („od menšího čísla“) i 31 místo 13; „napiš prvky abecedně“ je množina znaků v libovolném pořadí.
+function sameList(q, raw) {
+  if (/prvky (abecedně|vzestupně)/.test(q.hint || '')) { // množina prvků psaná jako „ace“: na pořadí znaků nezáleží
+    const chars = s => [...s.replace(/[\s,{}]/g, '')].sort().join('');
+    return chars(raw) === chars(q.answer);
+  }
+  if (!/vzestupně/.test(q.hint || '')) return false;
+  const want = q.answer.split(/\s+/), L = want[0].length;
+  if (!want.every(t => t.length === L)) return false;
+  let got = raw.split(/[\s,;]+/).filter(Boolean);
+  if (got.length === 1 && got[0].length % L === 0) got = got[0].match(new RegExp(`.{${L}}`, 'g')); // „123231…“ bez mezer
+  const key = t => /od menšího/.test(q.hint) ? [...t].sort().join('') : t; // množina {3,1} je totéž co {1,3}
+  return got.length === want.length && got.map(key).sort().join(' ') === want.map(key).sort().join(' ');
+}
+
 // ── otázka ──
 function evaluate(q) {
   if (isRecall(q)) {
@@ -902,7 +917,7 @@ function evaluate(q) {
   }
   if (isInput(q)) {
     const v = norm($('ans-input').value);
-    return {userKeys: [v], correctKeys: [norm(q.answer)], isCorrect: v === norm(q.answer)};
+    return {userKeys: [v], correctKeys: [norm(q.answer)], isCorrect: v === norm(q.answer) || sameList(q, $('ans-input').value)};
   }
   const cs = new Set(q.correct);
   return {userKeys: [...selected], correctKeys: [...cs],
