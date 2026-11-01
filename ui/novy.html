@@ -894,8 +894,12 @@ function matchRecall(answer, accept) {
   return null;
 }
 
-// Výpisy („… vzestupně, oddělené mezerou“): uznají se i ve špatném pořadí a bez mezer, počítá se jen správná množina položek; u množin („od menšího čísla“) i 31 místo 13.
+// Výpisy („… vzestupně, oddělené mezerou“): uznají se i ve špatném pořadí a bez mezer, počítá se jen správná množina položek; u množin („od menšího čísla“) i 31 místo 13; „napiš prvky abecedně“ je množina znaků v libovolném pořadí.
 function sameList(q, raw) {
+  if (/prvky (abecedně|vzestupně)/.test(q.hint || '')) { // množina prvků psaná jako „ace“: na pořadí znaků nezáleží
+    const chars = s => [...s.replace(/[\s,{}]/g, '')].sort().join('');
+    return chars(raw) === chars(q.answer);
+  }
   if (!/vzestupně/.test(q.hint || '')) return false;
   const want = q.answer.split(/\s+/), L = want[0].length;
   if (!want.every(t => t.length === L)) return false;

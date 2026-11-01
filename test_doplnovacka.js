@@ -147,6 +147,9 @@ const SET = {hint: 'každou dvojici od menšího čísla (např. {4,5} jako 45),
 [['12 13 23', true], ['122331', true], ['21 31 32', true], ['12 12 23', false], ['12 13', false], ['12 13 22', false],
 ].forEach(([v, want]) => { const got = run(`sameList(${JSON.stringify(SET)}, ${JSON.stringify(v)})`); if (got !== want) { fail++; console.log(`FAIL sameList množiny: „${v}“ dostal ${got}, čekal ${want}`); } });
 if (run(`sameList(${JSON.stringify(LIST)}, '213 132 123 231 312 321')`) !== true || run(`sameList(${JSON.stringify(LIST)}, '321 321 123 132 213 231')`)) { fail++; console.log('FAIL sameList: u variací se pořadí uvnitř položky nesmí měnit'); }
+const PRVKY = {hint: 'napiš prvky abecedně bez čárek a mezer, např. ace', answer: 'abdefgh'};
+[['abdefgh', true], ['hgfedba', true], ['a, b, d, e, f, g, h', true], ['abdefg', false], ['abdefgg', false], ['abdefgx', false],
+].forEach(([v, want]) => { const got = run(`sameList(${JSON.stringify(PRVKY)}, ${JSON.stringify(v)})`); if (got !== want) { fail++; console.log(`FAIL sameList prvky: „${v}“ dostal ${got}, čekal ${want}`); } });
 if (run(`sameList({hint: 'čísla oddělená mezerou', answer: '1 3 3 1'}, '3 1 1 3')`)) { fail++; console.log('FAIL sameList: bez „vzestupně“ musí pořadí platit'); }
 console.log(`chyb: ${fail}`);
 process.exit(fail ? 1 : 0);
