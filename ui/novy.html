@@ -91,7 +91,7 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
 /* ---------- přednášky ---------- */
 .lectures { list-style: none; margin: 0 0 32px; padding: 0; border-top: 1px solid var(--line); }
 .lectures li { border-bottom: 1px solid var(--line); display: flex; align-items: stretch; }
-.gl-btn { flex: none; background: none; border: 0; padding: 0 16px; color: var(--muted); font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; }
+.gl-btn { flex: none; align-self: center; padding: 14px 16px; color: var(--muted); font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; }
 .gl-btn:hover { color: var(--blue); }
 .lec {
   display: grid;
@@ -260,15 +260,6 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .modal h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; }
   .modal input[type=number] { width: 100%; background: var(--paper); color: var(--ink); font: 700 2rem/1.2 var(--mono); padding: 4px 0; border: 0; border-bottom: 2px solid var(--ink); border-radius: 0; }
   .modal input[type=number]:focus-visible { outline-offset: 4px; }
-  .modal.glosar { width: min(100%, 760px); max-height: 88vh; overflow-y: auto; }
-  .modal.glosar h2 { margin-bottom: 8px; }
-  .gl-entry { padding: 14px 0; border-top: 1px solid var(--line); }
-  .gl-entry h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 6px; }
-  .gl-entry p, .gl-entry ul { margin: 0 0 6px; line-height: 1.55; }
-  .gl-entry ul { padding-left: 1.2em; }
-  .gl-entry table { border-collapse: collapse; margin: 6px 0; font-size: .9375rem; }
-  .gl-entry td, .gl-entry th { border: 1px solid var(--line); padding: 4px 10px; text-align: left; }
-  .gl-entry .src { color: var(--muted); font-size: .875rem; }
   .modal-btns { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; }
   .modal-btns button { padding: 10px 20px; border: 0; border-radius: 8px; font-weight: 700; }
   .btn-ok { background: var(--blue); color: var(--blue-ink); }
@@ -536,14 +527,6 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
     </div>
   </div>
 
-  <div class="overlay" id="glosar-modal" onclick="if (event.target === this) closeGlosar()">
-    <div class="modal glosar" role="dialog" aria-modal="true" aria-labelledby="gl-title">
-      <h2 id="gl-title">Glosář</h2>
-      <div id="gl-body"></div>
-      <div class="modal-btns"><button class="btn-ok" onclick="closeGlosar()">Zavřít</button></div>
-    </div>
-  </div>
-
   <div id="quiz">
     <div id="sudden-banner" class="sudden-banner" style="display:none">Sudden Death<span>1 život, první chyba ukončí hru</span></div>
     <div class="header">
@@ -588,6 +571,7 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   </div>
 
 </div>
+<script src="/fmt.js"></script>
 <script>
 let FULL = [];        // všechny otázky zdroje
 let ALL = [];         // po filtru typu
@@ -619,49 +603,6 @@ const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { cons
 const LETTERS = 'ABCDEFGH';
 const letters = (q, keys) => keys.map(k => LETTERS[optOrder[q.id].indexOf(k)]).sort().join(', ');
 // Zápis z banky (a_n, Z^n, a_(n-1), ->) převede na HTML s dolními/horními indexy a šipkami.
-function fmt(s) {
-  s = String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\.\.\./g, '…');
-  return fracs(s)
-    .replace(/\(([^()<>]+?) nad ([^()<>]+?)\)/g, '<span class="binom"><span><span>$1</span><span>$2</span></span></span>')
-    .replace(/_\(([^)]+)\)/g, '<sub>$1</sub>').replace(/_([A-Za-z0-9]+)/g, '<sub>$1</sub>')
-    .replace(/\^\(([^)]+)\)/g, '<sup>$1</sup>').replace(/\^([A-Za-z0-9]+)/g, '<sup>$1</sup>')
-    .replace(/[₀-₉]+/g, m => '<sub>' + [...m].map(c => '₀₁₂₃₄₅₆₇₈₉'.indexOf(c)).join('') + '</sub>')
-    .replace(/-&gt;/g, '→').replace(/&lt;-/g, '←');
-}
-
-// „a / b“ jako zlomek nad sebou. Jen čísla, jednopísmenné proměnné, ! a závorky, ať „pravda (1) / nepravda (0)“ nebo A/∼ zůstanou textem.
-const isMath = t => /^[\p{L}\d!()·…+−\-,^_ ]+$/u.test(t) && !/\p{L}{2}/u.test(t);
-const unwrap = t => {
-  if (t[0] !== '(') return t;
-  for (let i = 0, d = 0; i < t.length; i++) { d += t[i] === '(' ? 1 : t[i] === ')' ? -1 : 0; if (!d) return i === t.length - 1 ? t.slice(1, -1) : t; }
-  return t;
-};
-function fracs(s) {
-  for (let i = s.indexOf('/'); i >= 0; i = s.indexOf('/', i + 1)) {
-    const a = s[i - 1] === ' ' ? i - 1 : i, b = s[i + 1] === ' ' ? i + 2 : i + 1;
-    let l = a, r = b, d = 0;
-    for (; l > 0; l--) { // čitatel: doleva po mezeru, závorky celé, součin „5 · 4“ patří celý
-      const c = s[l - 1];
-      if (c === ')') d++;
-      else if (c === '(') { if (!d) break; d--; }
-      else if (!d && /[\s=,;]/.test(c)) { if (s.slice(l - 3, l) === ' · ') { l -= 2; continue; } break; }
-    }
-    while (l < a && '−+-'.includes(s[l])) l++; // znaménko zůstane před zlomkem
-    for (d = 0; r < s.length; r++) { // jmenovatel: doprava po mezeru, závorky celé
-      const c = s[r];
-      if (c === '(') d++;
-      else if (c === ')') { if (!d) break; d--; }
-      else if (!d && /[\s=,;/.]/.test(c)) break;
-    }
-    const num = s.slice(l, a), den = s.slice(b, r);
-    if (!num || !den || !isMath(num) || !isMath(den) || !/[\d!]/.test(num + den)) continue;
-    const html = `<span class="frac"><span>${unwrap(num)}</span><span>${unwrap(den)}</span></span>`;
-    s = s.slice(0, l) + html + s.slice(r);
-    i = l + html.length - 1;
-  }
-  return s;
-}
-
 async function init() {
   const r = await fetch('/api/sources');
   const data = await r.json();
@@ -695,7 +636,7 @@ function renderLectures() {
     const p = parseSource(s);
     return `<li><button class="lec" onclick="selectSource('${esc(s.id)}')" aria-pressed="${s.id === currentSource}">` +
       `<span class="n">${esc(p.n)}</span><span class="t">${esc(p.title)}</span><span class="d">${esc(p.date)}</span></button>` +
-      (p.date ? `<button class="gl-btn" onclick="openGlosar(${p.n})" aria-label="Glosář: ${esc(p.n)}. přednáška">Glosář</button>` : '') + '</li>';
+      `<a class="gl-btn" href="/glosar?source=${encodeURIComponent(s.id)}" target="_blank" rel="noopener">Glosář</a></li>`;
   }).join('');
 }
 
@@ -878,42 +819,6 @@ function showRandomModal(mode, pool) {
   $('random-modal').classList.add('show');
   setTimeout(() => input.focus(), 50);
 }
-// ---------- glosář ----------
-const glCache = {};
-const gInline = t => fmt(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>').replace(/`(.+?)`/g, '<code>$1</code>');
-function gBody(body) { // hesla jsou jednoduchý markdown: odstavce, odrážky, tabulky, citace
-  // citace (> ...) ztratí předponu, popisek „[!warning] Název“ je tučně; obsah se pak čte jako běžný markdown
-  const out = [], L = body.split('\n').map(l => l.replace(/^>\s?(\[![a-z]+\]\s*(.*))?/, (m, c, t) => c ? (t ? `**${t}**` : '') : ''));
-  for (let i = 0; i < L.length; i++) {
-    const l = L[i];
-    if (/^\|/.test(l)) {
-      const rows = [];
-      for (; i < L.length && /^\|/.test(L[i]); i++) if (!/^\|[\s|:-]+$/.test(L[i])) rows.push(L[i].replace(/^\||\|$/g, '').split('|'));
-      i--;
-      out.push('<table>' + rows.map((r, k) => '<tr>' + r.map(c => `<${k ? 'td' : 'th'}>${gInline(c.trim())}</${k ? 'td' : 'th'}>`).join('') + '</tr>').join('') + '</table>');
-    } else if (/^- /.test(l)) {
-      const items = [];
-      for (; i < L.length && /^- /.test(L[i]); i++) items.push(L[i].slice(2));
-      i--;
-      out.push('<ul>' + items.map(x => `<li>${gInline(x)}</li>`).join('') + '</ul>');
-    } else if (l.trim()) {
-      out.push(`<p${/^\*Zdroj/.test(l) ? ' class="src"' : ''}>${gInline(l)}</p>`);
-    }
-  }
-  return out.join('');
-}
-async function openGlosar(n) {
-  if (!glCache[n]) glCache[n] = await (await fetch(`/api/glosar?lecture=${n}`)).json();
-  $('gl-title').textContent = `Glosář: ${n}. přednáška`;
-  $('gl-body').innerHTML = glCache[n].length
-    ? glCache[n].map(e => `<div class="gl-entry"><h3>${gInline(e.term)}</h3>${gBody(e.body)}</div>`).join('')
-    : '<p class="cd-empty">K téhle přednášce zatím nejsou hesla.</p>';
-  $('glosar-modal').classList.add('show');
-  $('glosar-modal').querySelector('.modal').scrollTop = 0;
-}
-function closeGlosar() { $('glosar-modal').classList.remove('show'); }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGlosar(); });
-
 function closeModal() { $('random-modal').classList.remove('show'); }
 function startRandom() {
   const maxN = modalPool ? modalPool.length : ALL.length;

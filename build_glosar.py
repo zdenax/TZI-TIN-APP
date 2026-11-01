@@ -2,7 +2,7 @@
 """Převede glosář z Obsidianu (Glosar.md) na glosar/glosar.json pro tlačítko „Glosář“ v aplikaci.
 
 Spuštění:  python3 build_glosar.py /cesta/k/Glosar.md
-Výstup: {"lectures": {"1": [{"term": ..., "body": ...}, ...], ...}}, hesla podle přednášky.
+Výstup: {"banks": {"<stem banky>": [{"term": ..., "body": ...}, ...], ...}}, pojmy podle balíčku otázek.
 LaTeX se převádí na text, který umí `fmt` v ui/novy.html (zlomky „a / b“, „(n nad k)“, indexy _x, mocniny ^x).
 Neznámý LaTeX příkaz skript zastaví, ať nic nezůstane nepřeloženo.
 """
@@ -28,6 +28,8 @@ BB = {"N": "ℕ", "Z": "ℤ", "Q": "ℚ", "R": "ℝ", "C": "ℂ"}
 
 def group(s, i):
     """Obsah závorky { } začínající na s[i] == '{'; vrátí (obsah, index za závorkou)."""
+    if s[i] != "{":  # \sqrt2: argument bez závorek je jeden znak
+        return s[i], i + 1
     d = 0
     for j in range(i, len(s)):
         d += s[j] == "{"
@@ -97,31 +99,35 @@ def clean(text):
     return "\n".join(out)
 
 
-def lectures_of(zdroj, default):
-    """Jen sekce Kombinatorika (default 4 a 5) se dělí podle data ve Zdroji: základy z 22. 10. patří k 4. i 5. přednášce, zbytek (29. 10.) jen k 5."""
-    if default != [4, 5]:
-        return default
-    return [4, 5] if "22. " in zdroj else [5]
+# Sekce glosáře -> balíčky otázek (stem souboru v banky/). Kombinatorika se dělí po heslech, viz niže.
+SECTION_BANKS = [
+    ("Matematický zápis", ["01-2026-10-01"]),
+    ("Výroky", ["02-2026-10-08"]), ("Implikace", ["02-2026-10-08"]), ("Formule", ["02-2026-10-08"]),
+    ("Výrokové formy", ["02-2026-10-08"]), ("Kvantifikátory", ["02-2026-10-08"]),
+    ("Logická výstavba", ["02-2026-10-08"]),
+    ("Důkazy", ["02d-dukazy"]),
+    ("Množiny", ["03-2026-10-15"]),
+    ("Rozklad", ["04-2026-10-22"]),
+    ("Konečné automaty", ["05a-konecne-automaty"]),
+]
+KOMB, KOMB22, KOMB29 = "04k-kombinatorika", "04k-kombinatorika", "05-2026-10-29"
+# do 04k (22. 10.: základy, kombinace, kombinační číslo, Pascal) patří jen tahle hesla; 05 (29. 10.) dostane všechna
+KOMB_JEN_22 = ("Základní množina", "Bez opakování", "Faktoriál", "Kombinace (nezáleží", "Kombinační číslo", "Vlastnosti kombinačního")
 
 
-SECTION_LECTURE = {"Implikace": 2, "Formule": 2, "Výrokové formy": 2, "Kvantifikátory": 2,
-                   "Důkazy": 2, "Logická výstavba": 2}
+def banks_of(title, term):
+    if title.startswith("Kombinatorika"):
+        return [KOMB22, KOMB29] if term.startswith(KOMB_JEN_22) or term.startswith("Kombinatorika") else [KOMB29]
+    return next(b for k, b in SECTION_BANKS if title.startswith(k))
 
 
 def main(src):
     md = Path(src).read_text(encoding="utf-8")
     md = md.split("\n## Použité zdroje")[0]
-    out = {str(n): [] for n in range(1, 6)}
+    out = {}
     for sec in re.split(r"\n(?=## )", md)[1:]:
         title, _, rest = sec.partition("\n")
         title = title[3:].strip()
-        m = re.search(r"\((\d)\. přednáška\)", title)
-        if "(4. a 5. přednáška)" in title:
-            default = [4, 5]
-        elif m:
-            default = [int(m.group(1))]
-        else:
-            default = [next(v for k, v in SECTION_LECTURE.items() if title.startswith(k))]
         rest = re.sub(r"\n---\s*$", "", rest.strip())
         parts = re.split(r"(?:^|\n)(?=### )", rest)  # sekce může začínat rovnou heslem, pak je intro prázdné
         intro, entries = parts[0], parts[1:]
@@ -130,14 +136,12 @@ def main(src):
             entries.insert(0, f"### {re.sub(r' \(.*\)$', '', title)}: přehled\n{intro}")
         for e in entries:
             head, _, body = e.partition("\n")
-            body = body.strip()
-            zd = "\n".join(l for l in body.split("\n") if l.startswith("*Zdroj"))
-            ls = lectures_of(zd, default)
-            for n in ls:
-                out[str(n)].append({"term": clean(head[4:].strip()), "body": clean(body)})
+            term = clean(head[4:].strip())
+            for b in banks_of(title, term):
+                out.setdefault(b, []).append({"term": term, "body": clean(body.strip())})
     OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(json.dumps({"lectures": out}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print({k: len(v) for k, v in out.items()}, "->", OUT)
+    OUT.write_text(json.dumps({"banks": out}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print({k: len(v) for k, v in sorted(out.items())}, "->", OUT)
 
 
 if __name__ == "__main__":
