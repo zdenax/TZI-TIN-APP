@@ -10,7 +10,6 @@ VZORCE = [
     (r"(?<![′\w])P\(", "P(n) = n!"),
     (r"P′_", "P′_(k_1,…,k_n)(k) = k! / (k_1!·k_2!·…·k_n!)"),
     (r"C′_", "C′_k(n) = (n+k−1 nad k)"),
-    (r"\(a\+b\)\^|binomické věty", "(a+b)^n = Σ (n nad k) · a^(n−k) · b^k"),
 ]
 # otázky, které se na vzorec samy ptají, nebo ho už obsahují
 BEZ = re.compile(r"^(Jaký je vzorec|Jak je definováno|Jak zní|Co znamená|Co vyjadřuje|Proč se ve vzorci)|= n!|Σ")

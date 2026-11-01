@@ -1,5 +1,5 @@
 {
- "title": "Variace, permutace, kombinace a binomická věta",
+ "title": "Variace, permutace a kombinace",
  "lecture": 5,
  "date": "2026-10-29",
  "questions": [
@@ -261,63 +261,15 @@
   },
   {
    "type": "choice",
-   "text": "Jak zní binomická věta?",
+   "text": "Čtyřmístný PIN se skládá z číslic 0 až 9 a číslice se mohou opakovat. Čím se spočítá počet PINů?",
    "options": {
-    "A": "(a+b)^n = součet přes k = 0, 1, …, n členů (n nad k) · a^(n−k) · b^k",
-    "B": "(a+b)^n = součet přes k = 0, 1, …, n členů (n nad k) · a^n · b^k",
-    "C": "(a+b)^n = součet přes k = 0, 1, …, n členů k · a^(n−k) · b^k",
-    "D": "(a+b)^n = a^n + b^n"
+    "A": "variace s opakováním V′_4(10) = 10^4",
+    "B": "kombinace C_4(10) = (10 nad 4)",
+    "C": "kombinace s opakováním C′_4(10) = (13 nad 4)",
+    "D": "variace bez opakování V_4(10) = 10! / 6!"
    },
    "correct": [
     "A"
-   ],
-   "explanation": "cs.wikipedia (Binomická věta), výpisky 29. 10.: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k pro k = 0, …, n. Pro n = 3: a^3 + 3a^2·b + 3a·b^2 + b^3.",
-   "number": 17,
-   "id": "5-17"
-  },
-  {
-   "type": "choice",
-   "text": "Jak se v rozvoji (a+b)^n = Σ (n nad k) · a^(n−k) · b^k mění exponenty?",
-   "options": {
-    "A": "u a je stále n, u b roste od 0 do n",
-    "B": "u a klesá od n do 0, u b roste od 0 do n a součet exponentů je v každém členu n",
-    "C": "u a i u b roste od 0 do n",
-    "D": "součet exponentů v členu je k"
-   },
-   "correct": [
-    "B"
-   ],
-   "explanation": "Člen (n nad k) · a^(n−k) · b^k má součet exponentů (n−k) + k = n. Koeficient (n nad k) patří k exponentu k u b.",
-   "number": 18,
-   "id": "5-18"
-  },
-  {
-   "type": "choice",
-   "text": "Proč je u členu a^(n−k) · b^k v rozvoji (a+b)^n koeficient (n nad k)? (Vzorec: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k)",
-   "options": {
-    "A": "protože každý člen vznikne při roznásobení právě jednou",
-    "B": "při roznásobení n závorek (a+b) se vybírá, ze kterých k závorek se vezme b, a na pořadí závorek nezáleží",
-    "C": "protože exponenty u a klesají",
-    "D": "protože b^k vznikne k! způsoby"
-   },
-   "correct": [
-    "B"
-   ],
-   "explanation": "Z každé závorky se bere a nebo b. Člen a^(n−k) · b^k vznikne tolikrát, kolika způsoby lze vybrat k závorek z n (kombinace k-té třídy), tedy (n nad k). Pro n = 3, k = 1: 3 způsoby, proto 3a^2·b.",
-   "number": 19,
-   "id": "5-19"
-  },
-  {
-   "type": "choice",
-   "text": "Čtyřmístný PIN se skládá z číslic 0 až 9 a číslice se mohou opakovat. Čím se spočítá počet PINů?",
-   "options": {
-    "A": "variace bez opakování V_4(10) = 10! / 6!",
-    "B": "kombinace s opakováním C′_4(10) = (13 nad 4)",
-    "C": "variace s opakováním V′_4(10) = 10^4",
-    "D": "kombinace C_4(10) = (10 nad 4)"
-   },
-   "correct": [
-    "C"
    ],
    "explanation": "Záleží na pořadí (1234 ≠ 4321) a číslice se smějí opakovat → variace s opakováním: 10^4 = 10000.",
    "number": 20,
@@ -343,13 +295,13 @@
    "type": "choice",
    "text": "Ze 20 studentů se vybírá tříčlenná komise, členové jsou si rovni. Čím se spočítá počet možností?",
    "options": {
-    "A": "kombinace s opakováním C′_3(20) = (22 nad 3)",
-    "B": "variace bez opakování V_3(20) = 20! / 17!",
-    "C": "kombinace C_3(20) = (20 nad 3)",
-    "D": "permutace P(3) = 3!"
+    "A": "variace bez opakování V_3(20) = 20! / 17!",
+    "B": "kombinace C_3(20) = (20 nad 3)",
+    "C": "permutace P(3) = 3!",
+    "D": "kombinace s opakováním C′_3(20) = (22 nad 3)"
    },
    "correct": [
-    "C"
+    "B"
    ],
    "explanation": "Na pořadí nezáleží a nikdo nemůže být v komisi dvakrát → kombinace: (20 nad 3) = 1140.",
    "number": 22,
@@ -360,12 +312,12 @@
    "text": "V cukrárně mají 5 druhů zákusků a kupuješ 3 zákusky. Druhy se mohou opakovat a na pořadí nezáleží. Čím se spočítá počet možností?",
    "options": {
     "A": "kombinace C_3(5) = (5 nad 3)",
-    "B": "variace s opakováním V′_3(5) = 5^3",
-    "C": "variace bez opakování V_3(5) = 5! / 2!",
-    "D": "kombinace s opakováním C′_3(5) = (7 nad 3)"
+    "B": "variace bez opakování V_3(5) = 5! / 2!",
+    "C": "kombinace s opakováním C′_3(5) = (7 nad 3)",
+    "D": "variace s opakováním V′_3(5) = 5^3"
    },
    "correct": [
-    "D"
+    "C"
    ],
    "explanation": "Nezáleží na pořadí a druhy se opakují → kombinace s opakováním: (5+3−1 nad 3) = (7 nad 3) = 35.",
    "number": 23,
@@ -375,13 +327,13 @@
    "type": "choice",
    "text": "Kolika způsoby lze seřadit 6 různých knih na poličku? Čím se to spočítá?",
    "options": {
-    "A": "variace s opakováním V′_6(6) = 6^6",
-    "B": "permutace s opakováním P′_(3,3)(6) = 6! / (3! · 3!)",
-    "C": "permutace P(6) = 6!",
-    "D": "kombinace C_6(6) = (6 nad 6)"
+    "A": "kombinace C_6(6) = (6 nad 6)",
+    "B": "permutace P(6) = 6!",
+    "C": "variace s opakováním V′_6(6) = 6^6",
+    "D": "permutace s opakováním P′_(3,3)(6) = 6! / (3! · 3!)"
    },
    "correct": [
-    "C"
+    "B"
    ],
    "explanation": "Řadí se všechny knihy, každá jednou → permutace: 6! = 720.",
    "number": 24,
@@ -391,13 +343,13 @@
    "type": "choice",
    "text": "Kolik různých pořadí písmen má slovo MAMA? Čím se to spočítá?",
    "options": {
-    "A": "permutace P(4) = 4!",
-    "B": "variace s opakováním V′_4(2) = 2^4",
-    "C": "variace bez opakování V_2(4) = 4! / 2!",
-    "D": "permutace s opakováním P′_(2,2)(4) = 4! / (2! · 2!)"
+    "A": "variace s opakováním V′_4(2) = 2^4",
+    "B": "permutace P(4) = 4!",
+    "C": "permutace s opakováním P′_(2,2)(4) = 4! / (2! · 2!)",
+    "D": "variace bez opakování V_2(4) = 4! / 2!"
    },
    "correct": [
-    "D"
+    "C"
    ],
    "explanation": "Řadí se všechna 4 písmena, M i A jsou dvakrát → permutace s opakováním: 4! / (2! · 2!) = 24 / 4 = 6 (AAMM, AMAM, AMMA, MAAM, MAMA, MMAA).",
    "number": 25,
@@ -585,42 +537,6 @@
   },
   {
    "type": "input",
-   "text": "Jaký koeficient má člen a^2 · b^3 v rozvoji (a+b)^5? (Vzorec: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k)",
-   "hint": "číslo",
-   "answer": "10",
-   "solution": "Exponent u b je k = 3: (5 nad 3) = 5 · 4 · 3 / 3! = 10.",
-   "number": 46,
-   "id": "5-46"
-  },
-  {
-   "type": "input",
-   "text": "Napiš koeficienty rozvoje (a+b)^4 od členu a^4 po b^4. (Vzorec: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k)",
-   "hint": "čísla oddělená mezerou",
-   "answer": "1 4 6 4 1",
-   "solution": "(4 nad 0), (4 nad 1), …, (4 nad 4) = 1, 4, 6, 4, 1.\n(a+b)^4 = a^4 + 4a^3·b + 6a^2·b^2 + 4a·b^3 + b^4",
-   "number": 47,
-   "id": "5-47"
-  },
-  {
-   "type": "input",
-   "text": "Kolik sčítanců má rozvoj (a+b)^7 podle binomické věty? (Vzorec: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k)",
-   "hint": "číslo",
-   "answer": "8",
-   "solution": "k = 0, 1, …, 7, tedy n + 1 = 8 sčítanců.",
-   "number": 48,
-   "id": "5-48"
-  },
-  {
-   "type": "input",
-   "text": "Spočítej člen pro k = 2 v rozvoji (2+3)^3 podle binomické věty. (Vzorec: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k)",
-   "hint": "číslo",
-   "answer": "54",
-   "solution": "(3 nad 2) · 2^1 · 3^2 = 3 · 2 · 9 = 54. Celý rozvoj: 8 + 36 + 54 + 27 = 125 = 5^3.",
-   "number": 49,
-   "id": "5-49"
-  },
-  {
-   "type": "input",
    "reveal": true,
    "text": "Ukaž na příkladu M = {1, 2, 3}, k = 2, proč je variací bez opakování 6, a vypiš je.",
    "solution": "První místo lze obsadit 3 způsoby, druhé už jen 2 (prvek se nesmí opakovat): 3 · 2 = 6.\nV_2(3) = {(1,2), (1,3), (2,1), (2,3), (3,1), (3,2)}\nObecně n · (n−1) · … · (n−k+1) = n! / (n−k)!, tady 3! / 1! = 6.",
@@ -634,14 +550,6 @@
    "solution": "1. Kdyby byly trojky různé (3_a, 3_b), byla by to obyčejná permutace 4 prvků: 4! = 24 pořadí.\n2. Trojky ale rozlišit nejde: 1 3_a 2 3_b a 1 3_b 2 3_a jsou obě 1323. Každé pořadí je tak započítané tolikrát, kolika způsoby lze mezi sebou proházet stejné prvky: 2! = 2krát.\n3. Proto 4! / (1! · 1! · 2!) = 24 / 2 = 12. Prvky, které tam jsou jednou, dávají 1! = 1.\nVšech 12 pořadí: 1233, 1323, 1332, 2133, 2313, 2331, 3123, 3132, 3213, 3231, 3312, 3321.",
    "number": 51,
    "id": "5-51"
-  },
-  {
-   "type": "input",
-   "reveal": true,
-   "text": "Rozepiš (a+b)^4 podle binomické věty. (Vzorec: (a+b)^n = Σ (n nad k) · a^(n−k) · b^k)",
-   "solution": "(a+b)^4 = (4 nad 0) · a^4 · b^0 + (4 nad 1) · a^3 · b^1 + (4 nad 2) · a^2 · b^2 + (4 nad 3) · a^1 · b^3 + (4 nad 4) · a^0 · b^4\n= a^4 + 4a^3·b + 6a^2·b^2 + 4a·b^3 + b^4\nExponent u a klesá od 4 do 0, u b roste od 0 do 4, koeficienty jsou (4 nad k).",
-   "number": 52,
-   "id": "5-52"
   }
  ]
 }

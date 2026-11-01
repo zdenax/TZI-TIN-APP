@@ -284,10 +284,6 @@
    {
     "term": "Vlastnosti kombinačního čísla",
     "body": "- **Symetrie:** (n nad k) = (n nad n-k) (vybrat k prvků = vybrat těch n-k, které nevezmeš).\n- (n nad 0) = (n nad n) = 1 a (n nad 1) = n.\n- **Pascalovo pravidlo:** (n nad k) + (n nad k+1) = (n+1 nad k+1), k < n (domácí úkol, základ Pascalova trojúhelníku).\n*Zdroj: přednáška 22. 10. (tyto tři umět dokázat; Pascalovo pravidlo byl domácí úkol); názvy a slovní vysvětlení **Doplněno z Claude**.*"
-   },
-   {
-    "term": "Binomická věta",
-    "body": "(a+b)^n = ∑_(k=0)^(n) (n nad k) a^(n-k) b^k. Rozvoj má n+1 členů, exponent u a klesá a u b roste, koeficienty jsou kombinační čísla. Např. (a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3.\n*Zdroj: přednáška 29. 10.; příklad n=3 **Doplněno z Claude** (ověřeno ve zdroji [10]).*"
    }
   ],
   "05a-konecne-automaty": [

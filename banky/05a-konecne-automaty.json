@@ -7,13 +7,13 @@
    "type": "choice",
    "text": "Co tvoří pětici A = (Q, Σ, δ, q₀, F) konečného automatu?",
    "options": {
-    "A": "abeceda, slova, množina přechodů, počáteční znak, přijímací znaky",
-    "B": "stavy, slova, přechodová funkce, počáteční slovo, přijímaná slova",
-    "C": "stavy, abeceda, přechodová funkce, počáteční stav, množina přijímacích stavů",
-    "D": "stavy, abeceda, přechodová funkce, koncový stav, množina počátečních stavů"
+    "A": "stavy, abeceda, přechodová funkce, koncový stav, množina počátečních stavů",
+    "B": "abeceda, slova, množina přechodů, počáteční znak, přijímací znaky",
+    "C": "stavy, slova, přechodová funkce, počáteční slovo, přijímaná slova",
+    "D": "stavy, abeceda, přechodová funkce, počáteční stav, množina přijímacích stavů"
    },
    "correct": [
-    "C"
+    "D"
    ],
    "explanation": "Konečným automatem nazýváme každou uspořádanou pětici A = (Q, Σ, δ, q₀, F): Q stavy, Σ abeceda, δ přechodová funkce, q₀ počáteční stav, F množina přijímacích (koncových) stavů (Mareš, kap. 1.2).",
    "number": 1,
@@ -40,8 +40,8 @@
    "text": "Co je Σ (velká sigma) v pětici konečného automatu?",
    "options": {
     "A": "množina stavů",
-    "B": "množina přijímacích stavů",
-    "C": "součet všech stavů",
+    "B": "součet všech stavů",
+    "C": "množina přijímacích stavů",
     "D": "konečná neprázdná množina znaků, vstupní abeceda"
    },
    "correct": [
@@ -55,13 +55,13 @@
    "type": "choice",
    "text": "Co je δ (malá delta) v pětici konečného automatu?",
    "options": {
-    "A": "počáteční stav, ve kterém automat začíná číst slovo",
-    "B": "přechodová funkce δ : Q × Σ → Q, pro každý stav a znak ze vstupu určí, do jakého stavu automat přejde",
-    "C": "konečná neprázdná množina znaků, ze kterých se skládá vstupní slovo",
-    "D": "množina stavů, ve kterých když výpočet skončí, je slovo přijato"
+    "A": "množina stavů, ve kterých když výpočet skončí, je slovo přijato",
+    "B": "počáteční stav, ve kterém automat začíná číst slovo",
+    "C": "přechodová funkce δ : Q × Σ → Q, pro každý stav a znak ze vstupu určí, do jakého stavu automat přejde",
+    "D": "konečná neprázdná množina znaků, ze kterých se skládá vstupní slovo"
    },
    "correct": [
-    "B"
+    "C"
    ],
    "explanation": "δ je přechodová funkce (zobrazení) δ : Q × Σ → Q (Mareš, kap. 1.2).",
    "number": 4,
@@ -71,10 +71,10 @@
    "type": "choice",
    "text": "Co je q₀ v pětici konečného automatu?",
    "options": {
-    "A": "množina všech stavů",
-    "B": "přijímací stav, q₀ ∈ F",
+    "A": "první znak vstupního slova",
+    "B": "množina všech stavů",
     "C": "počáteční stav, q₀ ∈ Q",
-    "D": "první znak vstupního slova"
+    "D": "přijímací stav, q₀ ∈ F"
    },
    "correct": [
     "C"
@@ -87,13 +87,13 @@
    "type": "choice",
    "text": "Co je F v pětici konečného automatu?",
    "options": {
-    "A": "přechodová funkce",
+    "A": "jeden koncový znak abecedy",
     "B": "množina všech slov, která automat přečte",
-    "C": "množina přijímacích (koncových) stavů, F ⊆ Q",
-    "D": "jeden koncový znak abecedy"
+    "C": "přechodová funkce",
+    "D": "množina přijímacích (koncových) stavů, F ⊆ Q"
    },
    "correct": [
-    "C"
+    "D"
    ],
    "explanation": "F ⊆ Q je množina přijímacích (koncových) stavů (Mareš, kap. 1.2). V příkladu z přednášky F = {q₁, q₂}.",
    "number": 6,
@@ -104,12 +104,12 @@
    "text": "Jak se čte zápis δ : Q × Σ → Q?",
    "options": {
     "A": "Q krát sigma je zobrazení do delta",
-    "B": "delta je prvek množiny Q krát sigma",
-    "C": "delta je zobrazení z Q krát sigma do Q",
-    "D": "delta je zobrazení z Q do Q krát sigma"
+    "B": "delta je zobrazení z Q krát sigma do Q",
+    "C": "delta je zobrazení z Q do Q krát sigma",
+    "D": "delta je prvek množiny Q krát sigma"
    },
    "correct": [
-    "C"
+    "B"
    ],
    "explanation": "δ je jméno zobrazení, „:“ = „je zobrazení z … do …“, Q × Σ jsou dvojice (stav, znak), → Q: výsledkem je stav.",
    "number": 7,
@@ -119,13 +119,13 @@
    "type": "choice",
    "text": "Co jsou prvky množiny Q × Σ, na které je definovaná přechodová funkce δ?",
    "options": {
-    "A": "všechny znaky abecedy",
-    "B": "všechny dvojice (stav, znak)",
-    "C": "všechna slova nad abecedou Σ",
+    "A": "všechna slova nad abecedou Σ",
+    "B": "všechny znaky abecedy",
+    "C": "všechny dvojice (stav, znak)",
     "D": "všechny stavy automatu"
    },
    "correct": [
-    "B"
+    "C"
    ],
    "explanation": "Q × Σ je kartézský součin (přednáška 15. 10.): dvojice (q, a), kde q ∈ Q a a ∈ Σ, např. (q₀, 1) u automatu z přednášky.",
    "number": 8,
@@ -135,13 +135,13 @@
    "type": "choice",
    "text": "Proč je přechodová funkce δ : Q × Σ → Q zobrazení?",
    "options": {
-    "A": "každému stavu přiřadí právě jeden znak",
+    "A": "každé dvojici (stav, znak) přiřadí aspoň jeden stav, může i víc",
     "B": "každému znaku přiřadí množinu stavů",
-    "C": "každé dvojici (stav, znak) přiřadí aspoň jeden stav, může i víc",
-    "D": "každé dvojici (stav, znak) přiřadí právě jeden stav"
+    "C": "každé dvojici (stav, znak) přiřadí právě jeden stav",
+    "D": "každému stavu přiřadí právě jeden znak"
    },
    "correct": [
-    "D"
+    "C"
    ],
    "explanation": "Zobrazení (přednáška 22. 10.) přiřadí každému prvku právě jeden obraz. Na náčrtu z přednášky vede z každé dvojice v Q × Σ právě jedna šipka do Q.",
    "number": 9,
@@ -152,12 +152,12 @@
    "text": "Co znamená zápis δ(q, a) = q′?",
    "options": {
     "A": "q, a i q′ jsou znaky abecedy",
-    "B": "automat ve stavu q přečte znak a a přejde do stavu q′",
-    "C": "automat ve stavu q′ přečte znak a a přejde do stavu q",
-    "D": "stav q se přepíše na znak a"
+    "B": "stav q se přepíše na znak a",
+    "C": "automat ve stavu q přečte znak a a přejde do stavu q′",
+    "D": "automat ve stavu q′ přečte znak a a přejde do stavu q"
    },
    "correct": [
-    "B"
+    "C"
    ],
    "explanation": "δ(q, a) = q′, kde q, q′ ∈ Q a a ∈ Σ (zápis z tabule): ve stavu q přečte a, přejde do q′.",
    "number": 10,
@@ -168,12 +168,12 @@
    "text": "Co musí splňovat přechody deterministického konečného automatu?",
    "options": {
     "A": "ze stavu může pro jeden symbol vést víc přechodů",
-    "B": "každý stav má aspoň jeden přechod, pro některé symboly může chybět",
-    "C": "každý stav má pro každý vstupní symbol právě jeden přechod",
-    "D": "přechody stačí zadat jen z počátečního stavu"
+    "B": "každý stav má pro každý vstupní symbol právě jeden přechod",
+    "C": "přechody stačí zadat jen z počátečního stavu",
+    "D": "každý stav má aspoň jeden přechod, pro některé symboly může chybět"
    },
    "correct": [
-    "C"
+    "B"
    ],
    "explanation": "Mareš, kap. 1.2: δ pro každý stav a znak určí, kam automat přejde; v grafu z každého vrcholu vede pro každý znak abecedy právě jedna hrana. Automat z přednášky: 4 · 2 = 8 přechodů, všechny zadané.",
    "number": 11,
@@ -183,13 +183,13 @@
    "type": "choice",
    "text": "Co je stavový (přechodový) diagram konečného automatu?",
    "options": {
-    "A": "výčet všech δ(q, a) = q′ pod sebou",
-    "B": "orientovaný graf: vrcholy jsou stavy, hrana z q do q′ je označená znakem a, když δ(q, a) = q′",
-    "C": "tabulka, ve které řádky jsou stavy a sloupce znaky",
-    "D": "seznam všech přijímaných slov"
+    "A": "tabulka, ve které řádky jsou stavy a sloupce znaky",
+    "B": "seznam všech přijímaných slov",
+    "C": "výčet všech δ(q, a) = q′ pod sebou",
+    "D": "orientovaný graf: vrcholy jsou stavy, hrana z q do q′ je označená znakem a, když δ(q, a) = q′"
    },
    "correct": [
-    "B"
+    "D"
    ],
    "explanation": "„Tabulka jako orientovaný graf“: vrcholy = stavy, hrany podle δ; počáteční stav má šipku zvenku, přijímací se označí výstupní šipkou (jinde se kreslí dvojitý kroužek). Tabulka a výčet δ jsou jiné zápisy téhož automatu.",
    "number": 12,
@@ -264,9 +264,9 @@
    "text": "Jaké je podle přednášky hlavní poslání konečného automatu?",
    "options": {
     "A": "převést slovo do desítkové soustavy",
-    "B": "vypsat všechny stavy v abecedním pořadí",
+    "B": "spočítat, kolik je ve slově jedniček",
     "C": "o libovolném slově z nul a jedniček rozhodnout, zda ho přijme (rozpozná), nebo ne",
-    "D": "spočítat, kolik je ve slově jedniček"
+    "D": "vypsat všechny stavy v abecedním pořadí"
    },
    "correct": [
     "C"
@@ -296,12 +296,12 @@
    "text": "Co je kořenem stavového stromu automatu?",
    "options": {
     "A": "stav s nejvíce přechody",
-    "B": "libovolný přijímací stav",
-    "C": "počáteční stav q₀",
+    "B": "počáteční stav q₀",
+    "C": "libovolný přijímací stav",
     "D": "poslední přečtený znak"
    },
    "correct": [
-    "C"
+    "B"
    ],
    "explanation": "Kořen je počáteční stav q₀ a z něj vedou větve pro každý znak do stavu podle δ. V rukopisu má kořen šipku zvenku, ale není nutná: počáteční stav je zřejmý z toho, že je kořenem (Vais, kap. 1.3, s. 11).",
    "number": 19,
@@ -313,11 +313,11 @@
    "options": {
     "A": "jediný znak „dveře“",
     "B": "počet lidí, kteří prošli",
-    "C": "stavy zavřeno a otevřeno",
-    "D": "události vstup a odchod"
+    "C": "události vstup a odchod",
+    "D": "stavy zavřeno a otevřeno"
    },
    "correct": [
-    "D"
+    "C"
    ],
    "explanation": "Když vstoupíme, dveře se otevřou, když odejdeme, zavřou se. Události jsou vstupní znaky, Σ = {vstup, odchod}, Q = {zavřeno, otevřeno}, q₀ = zavřeno (zápis z výpisků).",
    "number": 20,
@@ -329,8 +329,8 @@
    "options": {
     "A": "protože každý stav musí mít smyčku",
     "B": "deterministický automat musí mít pro každý stav a každý znak právě jeden přechod",
-    "C": "aby se dveře nikdy nezavřely",
-    "D": "aby měl automat víc přijímacích stavů"
+    "C": "aby měl automat víc přijímacích stavů",
+    "D": "aby se dveře nikdy nezavřely"
    },
    "correct": [
     "B"
@@ -343,8 +343,8 @@
    "type": "choice",
    "text": "Dveře (q₀ = zavřeno, δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno) dostanou události vstup, odchod, vstup. Kudy vede výpočet?",
    "options": {
-    "A": "zavřeno → otevřeno → otevřeno → otevřeno",
-    "B": "zavřeno → otevřeno → zavřeno → zavřeno",
+    "A": "zavřeno → otevřeno → zavřeno → zavřeno",
+    "B": "zavřeno → otevřeno → otevřeno → otevřeno",
     "C": "zavřeno → otevřeno → zavřeno → otevřeno",
     "D": "zavřeno → zavřeno → otevřeno → zavřeno"
    },
