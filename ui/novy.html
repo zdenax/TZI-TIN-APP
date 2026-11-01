@@ -636,7 +636,7 @@ function renderLectures() {
     const p = parseSource(s);
     return `<li><button class="lec" onclick="selectSource('${esc(s.id)}')" aria-pressed="${s.id === currentSource}">` +
       `<span class="n">${esc(p.n)}</span><span class="t">${esc(p.title)}</span><span class="d">${esc(p.date)}</span></button>` +
-      `<a class="gl-btn" href="/glosar?source=${encodeURIComponent(s.id)}" target="_blank" rel="noopener">Glosář</a></li>`;
+      `<a class="gl-btn" href="/glosar?source=${encodeURIComponent(s.id)}">Glosář</a></li>`;
   }).join('');
 }
 
