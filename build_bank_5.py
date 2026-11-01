@@ -271,14 +271,14 @@ def komb_input():
                "číslo", str(len(co32)),
                f"C′_3(2) = (2+3−1 nad 3) = (4 nad 3) = {fCo(2, 3)}: {', '.join(setstr(c) for c in co32)}."))
     # výčty pro M = {1, 2, 3} (porovnání bez mezer, pořadí vzestupně)
-    h_pair = "každou dvojici jako dvojčíslí (např. (4,5) jako 45), dvojice vzestupně, oddělené mezerou"
-    h_set = "každou dvojici od menšího čísla (např. {4,5} jako 45), dvojice vzestupně, oddělené mezerou"
+    h_pair = "každou dvojici jako dvojčíslí (např. (4,5) jako 45), dvojice vzestupně, oddělené mezerou nebo čárkou"
+    h_set = "každou dvojici od menšího čísla (např. {4,5} jako 45), dvojice vzestupně, oddělené mezerou nebo čárkou"
     qs.append(("Vypiš všechny variace 2. třídy bez opakování z M = {1, 2, 3}.", h_pair, joined(V23),
                f"V_2(3) = {{{', '.join(tup(t) for t in V23)}}}, celkem 3! / 1! = {len(V23)}."))
     qs.append(("Vypiš všechny variace 2. třídy s opakováním z M = {1, 2, 3}.", h_pair, joined(VO23),
                f"V′_2(3) = {{1,2,3}} × {{1,2,3}} = {{{', '.join(tup(t) for t in VO23)}}}, celkem 3^2 = {len(VO23)}."))
     qs.append(("Vypiš všechny permutace množiny M = {1, 2, 3}.",
-               "každou trojici jako trojčíslí (např. (4,5,6) jako 456), vzestupně, oddělené mezerou", joined(P3),
+               "každou trojici jako trojčíslí (např. (4,5,6) jako 456), vzestupně, oddělené mezerou nebo čárkou", joined(P3),
                f"P(3) = {{{', '.join(tup(t) for t in P3)}}}, celkem 3! = {len(P3)}."))
     qs.append(("Vypiš všechny kombinace 2. třídy bez opakování z M = {1, 2, 3}.", h_set, joined(C23),
                f"C_2(3) = {', '.join(setstr(t) for t in C23)}, celkem (3 nad 2) = {len(C23)}."))
