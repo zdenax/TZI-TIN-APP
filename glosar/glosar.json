@@ -1,0 +1,310 @@
+{
+ "lectures": {
+  "1": [
+   {
+    "term": "Číselné obory",
+    "body": "**ℕ** přirozená, **ℤ** celá, **ℚ** racionální (zlomky), **ℝ** reálná (i √(), π), **ℂ** komplexní (a + ib). Platí ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ.\n*Zdroj: přednáška.*"
+   },
+   {
+    "term": "Číselná soustava",
+    "body": "Způsob reprezentace čísel; čísla se tvoří z uspořádaných souborů znaků, které se nazývají **číslice**. Dělí se na **poziční** a **nepoziční**.\n*Zdroj: přednáška.*"
+   },
+   {
+    "term": "Poziční soustava, základ Z",
+    "body": "Charakterizovaná číslem Z > 1, **základem**. Základ udává **maximální počet číslic**, které jsou v soustavě k dispozici. Hodnota číslice závisí na její **pozici**.\n*Příklady:* dvojková (Z = 2), osmičková (8), desítková (10), šestnáctková (16).\n*Zdroj: přednáška (věta o pozici je doplněná: **Doplněno z Claude**).*"
+   },
+   {
+    "term": "Nepoziční soustava",
+    "body": "Není charakterizovaná kladným číslem (základem). Příklad: **římská** (I, II, III, IV, V, VI, …).\n*Zdroj: přednáška.*"
+   },
+   {
+    "term": "Obecný zápis čísla",
+    "body": "a = a_n · Z^n + a_(n-1) · Z^(n-1) + … + a_1 · Z^1 + a_0 · Z^0\nČíslice a_n, …, a_0 jdou zleva doprava; **n = počet číslic − 1**. Číslice dosazuješ za a_i, základ Z zůstává.\n*Příklad:* (63025)_(10) = 6 · 10^4 + 3 · 10^3 + 0 · 10^2 + 2 · 10^1 + 5 · 10^0.\n*Zdroj: přednáška a cvičení 8. 10. (cviko-2-2026-10-08).*"
+   },
+   {
+    "term": "Další značení",
+    "body": "Faktoriál n! = 1 · 2 … n, 0! = 1 · absolutní hodnota |{-5}| = 5 · součet ∑ · součin ∏ · mocnina a^n, a^0 = 1 (pozor na 0^0).\n*Zdroj: přednáška.*"
+   }
+  ],
+  "2": [
+   {
+    "term": "Výrok",
+    "body": "Věta určitého jazyka, které lze přiřadit **právě jednu** z pravdivostních hodnot: pravdivá (platná) = 1, nepravdivá (neplatná) = 0.\n*Příklady:* „4 je sudé\" (výrok, 1), „3 je sudé\" (výrok, 0). „Bude pršet\" se v poznámkách označilo jako ne-výrok (hodnotu nelze určit).\n*Zdroj: přednáška.*"
+   },
+   {
+    "term": "Pravdivostní hodnota",
+    "body": "Hodnota výroku: 1 (pravda) nebo 0 (nepravda).\n*Zdroj: přednáška.*"
+   },
+   {
+    "term": "Logická spojka",
+    "body": "Operace, kterou ze dvou výroků (nebo z jednoho) vytvoříme nový: ¬, ∧, ∨, ⇒ , ⇔ .\n*Zdroj: přednáška (nadpis „Logické spojky\"; slovní popis **Doplněno z Claude**).*\n\n| Spojka | Název | Čteme | Pravdivá, když |\n|---|---|---|---|\n| ¬ x | **negace** | „není pravda, že x\" | x je nepravdivé |\n| x ∧ y | **konjunkce** | „x a zároveň y\" | jsou pravdivé oba |\n| x ∨ y | **disjunkce** | „x nebo y\" | je pravdivý aspoň jeden |\n| x ⇒ y | **implikace** | „jestliže x, pak y\" | vždy kromě x = 1, y = 0 |\n| x ⇔ y | **ekvivalence** | „x právě tehdy, když y\" | mají x i y stejnou hodnotu |\n\n*Zdroj: tabulky z přednášky; slovní sloupce **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Pravdivostní tabulka",
+    "body": "Tabulka, která pro **všechny kombinace** hodnot písmen (x, y: 11, 10, 01, 00) uvádí hodnotu formule.\n*Zdroj: přednáška (tabulky operací, důkaz tabulkou).*"
+   },
+   {
+    "term": "Implikace: obměna, obrácení, inverze: přehled",
+    "body": "Tohle je častý zdroj chyb: tři zápisy, které vypadají podobně, ale **jen obměna** má stejnou hodnotu jako původní implikace.\n\nPro implikaci x ⇒ y (**x** = předpoklad, **y** = závěr):\n\n| Pojem | Zápis | Je ekvivalentní s x ⇒ y? |\n|---|---|---|\n| **obměna** (kontrapozice) | ¬ y ⇒ ¬ x | **ano, vždy** |\n| **obrácení** (obrácená implikace) | y ⇒ x | **ne**, nemusí |\n| **inverze** | ¬ x ⇒ ¬ y | **ne**, nemusí |"
+   },
+   {
+    "term": "Obměna implikace",
+    "body": "Implikace x ⇒ y má obměnu ¬ y ⇒ ¬ x: **prohodíme** předpoklad se závěrem **a oba zanegujeme**. Obě mají **vždy stejnou pravdivostní hodnotu**:\nx ⇒ y ≡ ¬ y ⇒ ¬ x\n*Zdroj: přednáška (označeno jako důležité; slovní vysvětlení a příklad níže jsou **Doplněno z Claude**).*\n\n> [!warning] Doplněno z Claude\n> **Proč to platí:** x ⇒ y je nepravdivá jen když x = 1 a y = 0. Obměna ¬ y ⇒ ¬ x je nepravdivá jen když ¬ y = 1 a ¬ x = 0, tedy zase y = 0 a x = 1. Je to tentýž jediný případ, proto se hodnoty vždy shodují.\n>\n> **Příklad:** Implikace „Jestliže n je sudé, pak n^2 je sudé.\" Obměna: „Jestliže n^2 **není** sudé, pak n **není** sudé.\" Obě říkají totéž, takže dokázat jednu = dokázat druhou. Na tom stojí **nepřímý důkaz** (viz Důkazy).\n>\n> **Tabulka:**\n>\n> | x | y | x ⇒ y | ¬ y ⇒ ¬ x |\n> |:-:|:-:|:-:|:-:|\n> | 1 | 1 | 1 | 1 |\n> | 1 | 0 | 0 | 0 |\n> | 0 | 1 | 1 | 1 |\n> | 0 | 0 | 1 | 1 |\n>\n> Ověřeno výpočtem i ve skriptech ([1], [2])."
+   },
+   {
+    "term": "Obrácení implikace (obrácená implikace)",
+    "body": "Implikace y ⇒ x, tedy předpoklad a závěr se **jen prohodí** (bez negace). **Nemusí mít stejnou hodnotu** jako x ⇒ y: liší se v řádcích (1,0) a (0,1).\n*Příklad:* „Jestliže n je sudé, pak n^2 je sudé\" je pravda; obrácení „Jestliže n^2 je sudé, pak n je sudé\" je v tomto případě také pravda, ale **obecně** to tak být nemusí (např. „je-li číslo násobkem 4, je sudé\" je pravda, obrácení „je-li sudé, je násobkem 4\" je nepravda).\n*Zdroj: přednáška (definice, tabulka); příklady **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Inverze",
+    "body": "Implikace ¬ x ⇒ ¬ y (obě části zanegované, **bez** prohození). Je ekvivalentní s **obrácením** y ⇒ x, ne s původní implikací: pro x = 1, y = 0 je x ⇒ y = 0, ale ¬ x ⇒ ¬ y = 1.\n*Zdroj: v poznámkách z přednášky se tento pojem **nevyskytuje** (v rukopisu je na jednom místě nejasný zápis, viz 2026-10-08). **Doplněno z Claude**, ověřeno výpočtem; název „inverze\" je z obecné logiky a nemusí se na přednášce používat.*"
+   },
+   {
+    "term": "Výroková formule",
+    "body": "Zápis sestavený z **písmen, logických spojek a závorek**, takový, že když za písmena dosadíme výroky, stane se z něj **výrok**. Příklad: (x ∧ ¬ y) ⇒ z.\n*Zdroj: přednáška (označeno jako velice důležité).*"
+   },
+   {
+    "term": "Tautologie",
+    "body": "Výroková formule, která po dosazení výroků **jakýchkoli** pravdivostních hodnot dává **vždy pravdivý** výrok. Příklad: (x ⇒ y) ≡ (¬ y ⇒ ¬ x).\n*Další příklad:* x ∨ ¬ x (**Doplněno z Claude**: ať je x jakékoli, vyjde 1).\n*Zdroj: přednáška.*"
+   },
+   {
+    "term": "Ekvivalentní výrokové formule (značka ≡)",
+    "body": "Dvě formule jsou ekvivalentní, jestliže obsahují **stejná písmena** a po dosazení výroků jakýchkoli hodnot za tato písmena jsou z obou formulí **vždy výroky stejných pravdivostních hodnot**. Značíme ≡.\n*Zdroj: přednáška.*\n\n> [!warning] Doplněno z Claude\n> **Souvislost:** formule A a B jsou ekvivalentní právě tehdy, když A ⇔ B je tautologie. **Pozor na rozdíl:** ⇔  je **spojka** (součást formule, dává 0 nebo 1), ≡ je **tvrzení o dvou formulích** („mají vždy stejnou hodnotu\")."
+   },
+   {
+    "term": "De Morganovy zákony",
+    "body": "¬(x ∧ y) ≡ ¬ x ∨ ¬ y ¬(x ∨ y) ≡ ¬ x ∧ ¬ y ¬(x ⇒ y) ≡ x ∧ ¬ y\nSlovně: negace „a\" je „nebo\" z negací, negace „nebo\" je „a\" z negací, negace implikace je „předpoklad platí a závěr ne\".\n*Zdroj: 1. zákon byl úkol z přednášky (důkaz tabulkou, 2026-10-08); 2. a 3. zákon a slovní pravidlo **Doplněno z Claude** ([3]; 3. zákon ověřen výpočtem, jako „De Morganův\" ho uvádí jen [4], striktně jde o důsledek x ⇒ y ≡ ¬ x ∨ y; zkontrolovat, co za třetí zákon považuje vyučující).*"
+   },
+   {
+    "term": "Příslušnost k množině",
+    "body": "a ∈ X — a je **prvkem (elementem)** množiny X; a ∉ Y — a **není** prvkem Y.\n*Zdroj: přednáška.*"
+   },
+   {
+    "term": "Výroková forma",
+    "body": "Věta určitého jazyka, která obsahuje **proměnnou** (nebo několik proměnných); značíme V(x), V(x, y). Musí obsahovat proměnnou. Není to výrok, výrokem se stane po dosazení.\n*Příklady:* a > 0, x^2 + y^2 = 1.\n*Zdroj: přednáška. Rozlišení **forma × formule** je **Doplněno z Claude**: formule = písmena + spojky + závorky, forma = věta s proměnnou.*"
+   },
+   {
+    "term": "Definiční obor výrokové formy",
+    "body": "Množina D taková, že pro každé c ∈ D je V(c) **výrok** (pravdivý nebo nepravdivý).\n*Příklad:* V(x): √(x) = 5 má definiční obor D: x ≥ 0.\n*Zdroj: přednáška (označeno, že pojem máme znát). Význam příkladu s odmocninou je můj **návrh**, viz 2026-10-08.*"
+   },
+   {
+    "term": "Obor pravdivosti",
+    "body": "Podmnožina definičního oboru, pro jejíž prvky je V(c) **pravdivý** výrok.\n*Příklad:* pro √(x) = 5, D: x ≥ 0 je to {25}.\n*Zdroj: v rukopisu byl dotaz „Claude vysvětli\"; **Doplněno z Claude**, ověřeno ve skriptech ([2], [5]).*"
+   },
+   {
+    "term": "Obor hodnot",
+    "body": "Ve zmínce z přednášky: pojem, který máme znát spolu s definičním oborem.\n*Zdroj: přednáška (zmíněno). Vysvětlení **Doplněno z Claude** z vlastní znalosti, nehledáno: u **funkce** je to množina všech hodnot, kterých funkce nabývá. Pozor, **není** to totéž co obor pravdivosti.*"
+   },
+   {
+    "term": "Kvantifikátory: přehled",
+    "body": "| Značka | Čteme | Příklad (z přednášky) |\n|:-:|---|---|\n| ∀ | pro každé / pro všechna | ∀ x ∈ ℝ; x^2 ≥ 0 |\n| ∃ | existuje (aspoň jedno) | ∃ x ∈ ℝ; x > 5 |\n| ∃! | existuje právě jedno | ∃! x ∈ ℝ; x = 5 |\n\n*Zdroj: značky a příklady přednáška; čtení a názvy **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Negace kvantifikátorů",
+    "body": "Při negaci se kvantifikátor **mění** (∀ → ∃, ∃ → ∀) a negace se přesune **dovnitř**:\n¬(∀ x; V(x)) ⇔ ∃ x; ¬ V(x) ¬(∃ x; V(x)) ⇔ ∀ x; ¬ V(x)\n*Zdroj: přednáška („obecné pravidlo při negaci\"); slovní čtení a příklady **Doplněno z Claude** ([1]).*"
+   },
+   {
+    "term": "Důkazy: přehled",
+    "body": "Dokazujeme implikaci x ⇒ y. U písemky: „dokažte tuto větu všemi způsoby, které jsme probírali.\" Podrobně: 2026-10-08.\n\n| Způsob | Postup |\n|---|---|\n| **Přímý důkaz** | řetěz implikací x ⇒ y_1, y_1 ⇒ y_2, …, y_n ⇒ y |\n| **Nepřímý důkaz** | dokážeme **obměnu** ¬ y ⇒ ¬ x (ta je ekvivalentní, viz Implikace: obměna, obrácení, inverze) |\n| **Důkaz sporem** | (x ∧ ¬ y) ⇒ Z, kde Z je nepravda |\n| **Důkaz ekvivalence** | x ⇔ y dokážeme jako x ⇒ y **a** y ⇒ x |\n| **Matematická indukce** | pro ∀ n ≥ n_0: ověříme φ(n_0) (základ) a φ(k) ⇒ φ(k+1) (krok); viz 2026-10-08 |\n\n*Zdroj: vzorce přednáška; slovní postupy a příklady **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Logická výstavba matematiky: přehled",
+    "body": "*Zdroj celé sekce: přednáška (4. strana poznámek).*\n\n- **Axiom:** tvrzení, jehož platnost předpokládáme (nedokazuje se). Na počátku jsou axiomy.\n- **Primitivní pojem:** pojem vyskytující se v axiomech, který **nedefinujeme** (bod, přímka, čas, hmotnost).\n- **Definice:** zavádí další pojmy (např. definice rychlosti, zrychlení).\n- **Věta:** pravdivý výrok, který lze odvodit pomocí pravidel logiky z axiomů nebo z vět již dokázaných. Věty se zpravidla dokazují.\n- **Lemma:** věta, která se dokazuje, ale slouží spíš jako pomocná pro důkaz dalších vět; rozdíl proti větě je často nevýrazný."
+   }
+  ],
+  "3": [
+   {
+    "term": "Množina",
+    "body": "Souhrn objektů (prvků) chápeme jako **samostatný objekt**, celek. Množiny značíme **velkými** písmeny, prvky **malými**: M = {a, b, c}, a ∈ M, d ∉ M.\n*Zdroj: přednáška 15. 10.*"
+   },
+   {
+    "term": "Zadání množiny",
+    "body": "**Výčtem prvků** X = {a_1, …, a_n} nebo **vlastností** {x ; P(x)} (všechna x, která mají vlastnost P(x)).\n*Zdroj: přednáška 15. 10.*"
+   },
+   {
+    "term": "Podmnožina a vlastní podmnožina",
+    "body": "X ⊆ Y ⇔ (a ∈ X ⇒ a ∈ Y). **Vlastní** podmnožina: X ⊂ Y ⇔ X ⊆ Y ∧ X ≠ Y (rovnost se nepřipouští, u obyčejné podmnožiny ano).\nProč v definici inkluze **implikace**: tabulka dává 0 jen pro a ∈ X, a ∉ Y, což je přesně porušení inkluze; ∧ ani ∨ to nesplní. Vyučující to bude chtít zdůvodnit (viz 2026-10-15).\n*Zdroj: přednáška 15. 10.; zdůvodnění přes tabulku **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Rovnost množin",
+    "body": "A = B ⇔ A ⊆ B ∧ B ⊆ A, tj. (x ∈ A ⇒ x ∈ B) ∧ (x ∈ B ⇒ x ∈ A).\n*Zdroj: přednáška 15. 10.*"
+   },
+   {
+    "term": "Druhy množin",
+    "body": "- **Prázdná** ∅: neobsahuje žádný prvek.\n- **Konečná:** konečný počet prvků.\n- **Nekonečná:** není konečná (např. ℕ, ℤ, ℝ).\n- **Spočetná:** existuje vzájemně jednoznačné zobrazení mezi ní a ℕ (prvky jde očíslovat).\n- **Nespočetná:** není konečná ani spočetná (např. ℝ).\nRozdíl spočetná × nekonečná: nekonečná říká jen „není jich konečně mnoho\", spočetná, že jde očíslovat; ℝ je nekonečná, ale nespočetná.\n*Zdroj: prázdná, konečná, nekonečná (příklady), spočetná: přednáška 15. 10. (u spočetné byl pokyn ověřit, sedí se skripty [6]); nespočetná a vysvětlení rozdílu **Doplněno z Claude**. Pozor: někteří autoři počítají mezi spočetné i konečné množiny.*"
+   },
+   {
+    "term": "Operace s množinami",
+    "body": "| Operace | Zápis | Definice |\n|---|---|---|\n| **Průnik** | A ∩ B | x ∈ A ∩ B ⇔ x ∈ A ∧ x ∈ B |\n| **Sjednocení** | A ∪ B | x ∈ A ∪ B ⇔ x ∈ A ∨ x ∈ B |\n| **Rozdíl** | A ∖ B | x ∈ A ∖ B ⇔ x ∈ A ∧ x ∉ B |\n| **Doplněk** | A' | x ∈ A' ⇔ x ∈ U ∧ x ∉ A |\n\n**Univerzum** U: množina všech uvažovaných prvků, A ⊆ U. **Disjunktní množiny:** A ∩ B = ∅.\nPříklady: {a,b,c,d} ∩ {c,d,e,f} = {c,d}; {a,b,c} ∪ {d,e} = {a,b,c,d,e}; {a,b,c,d} ∖ {b,d} = {a,c}.\n*Zdroj: přednáška 15. 10.; u univerza slovní vysvětlení a u doplňku ověření ([7], anglicky) **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Potenční množina",
+    "body": "Množina všech podmnožin: P(A) = {B ; B ⊆ A} (též Pot(A)). Je-li |A| = n, pak |Pot(A)| = 2^n. Např. A = {a,b,c} má 8 podmnožin (od ∅ po {a,b,c}).\n*Zdroj: přednáška 15. 10.*"
+   },
+   {
+    "term": "Uspořádaná dvojice",
+    "body": "Dvojice (x, y), u které **záleží na pořadí**; kulaté závorky. (x,y) = (u,v) ⇔ x = u ∧ y = v, takže obecně (x,y) ≠ (y,x) (na rozdíl od množiny {x,y} = {y,x}).\n*Zdroj: „záleží na pořadí\" přednáška 15. 10.; zbytek **Doplněno z Claude** (z mé znalosti, ve skriptech neověřeno).*"
+   },
+   {
+    "term": "Kartézský součin",
+    "body": "A × B = {(x, y) ; x ∈ A ∧ y ∈ B}. Zapisuje se jako množina, **tabulka** nebo **orientovaný graf**. |A × B| = |A| · |B|. Více množin: A_1 × … × A_n = {(x_1,…,x_n) ; x_i ∈ A_i}.\n*Zdroj: definice a příklad přednáška 15. 10.; |A × B| = |A| · |B| **Doplněno z Claude** (ověřeno na příkladu 2 · 3 = 6).*"
+   },
+   {
+    "term": "Systém množin",
+    "body": "Množiny A_1, A_2, …, A_n, zapisované {A_i ; i ∈ ℕ} nebo {A_i ; i = 1, …, n}.\n*Zdroj: přednáška 15. 10.*"
+   },
+   {
+    "term": "Relace",
+    "body": "Relace mezi prvky A a B je **podmnožina kartézského součinu** A × B (nebo pravidlo, které u každé uspořádané dvojice (x,y) určí, zda v relaci je). Relace na jedné množině: R ⊆ A × A.\n*Zdroj: přednáška 15. 10. (foto papíru).*"
+   },
+   {
+    "term": "Vlastnosti relací",
+    "body": "| Vlastnost | Zápis | Příklad |\n|---|---|---|\n| **Reflexivní** | ∀ x ∈ A; xRx | x = x |\n| **Symetrická** | xRy ⇒ yRx | x = y ⇒ y = x |\n| **Tranzitivní** | xRy ∧ yRz ⇒ xRz | x > y ∧ y > z ⇒ x > z |\n| **Antisymetrická** | xRy ∧ yRx ⇒ x = y | ≤ |\n\n*Zdroj: přednáška 15. 10. Učebnice rozlišuje **slabou** antisymetrii (výše) a **silnou** (xRy ⇒ ¬ yRx, např. <) a definuje i **antireflexivní** relaci (∀ x; (x,x) ∉ R), viz učební text Přibyl, Tichá [8, kap. 4] **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Relace ekvivalence",
+    "body": "Relace, která je zároveň **symetrická, reflexivní a tranzitivní**, na stejné množině. Příklad: =; „stejný zbytek po dělení 3\" na ℕ.\n*Zdroj: definice přednáška 15. 10.; druhý příklad z učebnice [8] **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Uspořádání",
+    "body": "- **Neostré:** reflexivní, antisymetrická a tranzitivní (např. ≤).\n- **Ostré:** antireflexivní, antisymetrická a tranzitivní (např. <).\n*Zdroj: v poznámkách z přednášky je jen „tranzitivní a antisymetrická\"; úplné definice **Doplněno z Claude** z učební text Přibyl, Tichá [8, s. 107], ověřeno výpočtem; zkontrolovat, co říká vyučující.*"
+   },
+   {
+    "term": "Matematická indukce",
+    "body": "Důkaz pro všechna n ≥ n_0: **základní krok** φ(n_0) a **indukční krok** φ(k) ⇒ φ(k+1) (předpokládá se φ(k)). Podrobně a s příklady: 2026-10-08.\n*Zdroj: zápis z tabule přednáška 15. 10. (nedokončeno, podrobně příští týden); vysvětlení a příklady **Doplněno z Claude** podle učební text Přibyl, Tichá [8].*"
+   }
+  ],
+  "4": [
+   {
+    "term": "Disjunktní rozklad",
+    "body": "Systém **neprázdných podmnožin** {A_1, …, A_n} množiny A, pro který platí: **a)** sjednocením je celá A, A_1 ∪ … ∪ A_n = A; **b)** každé dvě různé jsou disjunktní, A_i ∩ A_j = ∅ pro i ≠ j. Množinu „rozřežeš na kousky\" tak, že nic nechybí a nic se nepřekrývá (každý prvek je v právě jednom kousku).\n*Pozor:* u b) nestačí, aby byl prázdný průnik **všech** kousků, musí to platit pro **každé dva**.\n*Zdroj: přednáška 22. 10.; slovní výklad a příklady **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Třída ekvivalence",
+    "body": "Skupina všech prvků, které jsou spolu ekvivalentní (∼): [a] = {b ∈ A ; a ∼ b}. Každé dva prvky třídy jsou spolu ekvivalentní a co je ekvivalentní s prvkem třídy, patří do třídy.\n*Příklad:* zbytky po dělení 3 na {1,…,8}: {1,4,7}, {2,5,8}, {3,6}.\n*Pozor na značení:* na přednášce je třída značená A', ale A' je i doplněk množiny, ve skriptech se píše [x].\n*Zdroj: přednáška 22. 10.; příklad **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Podílová množina (faktorová množina)",
+    "body": "Množina **všech tříd** rozkladu: A/{∼} = {[a] ; a ∈ A}. Její prvky jsou množiny. Pro zbytky po dělení 3 na {1,…,8} má **3 prvky**, i když A má 8. Souvisí to s konečnými automaty (sloučení ekvivalentních stavů).\n*Zdroj: přednáška 22. 10. (název „podílová\"); skripta ji nazývají **faktorová**, zkontrolovat, který název chce vyučující. Slovní vysvětlení **Doplněno z Claude**.*\n\n> [!warning] Doplněno z Claude\n> **Ekvivalence × rozklad:** třídy ekvivalence vždy tvoří rozklad množiny a naopak každý rozklad určuje ekvivalenci (dva prvky jsou ekvivalentní, když jsou ve stejném kousku). Jsou to dva pohledy na totéž."
+   },
+   {
+    "term": "Zobrazení",
+    "body": "**Předpis** f, který každému prvku x z neprázdné množiny M přiřadí **právě jeden** prvek y z množiny P: f: M → P, ∀ x ∈ M ∃! y ∈ P; x ↦ y. Kdyby některé x mělo dva obrazy nebo žádný, zobrazení to není. Zobrazení mezi číselnými množinami je **funkce**.\n*Zdroj: přednáška 22. 10.; „zobrazení = funkce\" ve skriptech [8].*"
+   },
+   {
+    "term": "Definiční obor a obor hodnot (D_f, H_f)",
+    "body": "D_f: všechna x, která mají obraz (u f: M → P celé M). H_f ⊆ P: všechna y, která jsou něčím obrazem.\n*Zdroj: přednáška 22. 10.*"
+   },
+   {
+    "term": "Vzor a obraz",
+    "body": "Je-li f(x) = y, je x **vzor** prvku y a y je **obraz** prvku x.\n*Zdroj: přednáška 22. 10.*"
+   },
+   {
+    "term": "Druhy zobrazení",
+    "body": "| Druh | Podmínka | Slovně |\n|---|---|---|\n| **do** množiny P | H_f ⊂ P (vlastní podmnožina) | v P zůstane prvek bez šipky |\n| **na** množinu P (surjektivní) | H_f = P | každé y je obrazem aspoň jednoho x |\n| **prosté** | x_1 ≠ x_2 ⇒ f(x_1) ≠ f(x_2) | žádné dvě šipky nekončí ve stejném bodě |\n| **vzájemně jednoznačné** (bijekce) | prosté **a** na | každé x má právě jedno y a každé y právě jeden vzor |\n\n*Zdroj: přednáška 22. 10. (u každého typu umět nakreslit a zapsat); slovní sloupec **Doplněno z Claude** ([8, s. 113–117]).*"
+   },
+   {
+    "term": "Inverzní zobrazení",
+    "body": "Je-li f vzájemně jednoznačné z K na L, existuje právě jedno inverzní zobrazení f^(-1): L → K, pro které f^(-1)(y) = x ⇔ f(x) = y. Platí D_(f^(-1)) = H_f a H_(f^(-1)) = D_f. Jde „po šipkách zpátky\", což jde jen tehdy, když z každého y vede zpět právě jedna šipka.\n*Zdroj: přednáška 22. 10.; vysvětlení **Doplněno z Claude** ([8, s. 117–118]).*"
+   },
+   {
+    "term": "Složené zobrazení",
+    "body": "Pro g: K → L a f: L → Q je f ∘ g: K → Q, (f ∘ g)(x) = f(g(x)): **nejdřív g, potom f**. Záleží na pořadí: sin (x^2) ≠ (sin x)^2.\n*Pozor:* skripta [8] píší F ∘ G v opačném pořadí (nejdřív F), u zkoušky používat zápis z přednášky.\n*Zdroj: přednáška 22. 10.; poznámka o pořadí **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Základní množina, skupina",
+    "body": "**Základní množina** M je množina o n prvcích, ze které se vybírá do skupin. **Skupina** je výběr prvků z M; skupina **k-té třídy** má k prvků. U **uspořádané** skupiny záleží na pořadí, (a,b) ≠ (b,a), u neuspořádané ne.\n*Zdroj: přednáška 22. 10.*"
+   },
+   {
+    "term": "Bez opakování × s opakováním",
+    "body": "**Bez opakování:** každý prvek z M se vybere nejvýš jednou. **S opakováním:** prvek se smí vybrat vícekrát. Značí se čárkou: V, P, C bez opakování, V', P', C' s opakováním.\n*Zdroj: přednáška 22. a 29. 10.*"
+   },
+   {
+    "term": "Faktoriál",
+    "body": "n! = n · (n-1) … 2 · 1, 0! = 1. Důležité rozdělení: n! = n · (n-1) … (n-k+1) · (n-k)! (k ≤ n), díky němu se (n-k)! vykrátí.\n*Zdroj: přednáška 22. 10. (označeno jako důležité); důvod 0! = 1 **Doplněno z Claude**: aby platily vzorce pro k = n.*"
+   },
+   {
+    "term": "Kombinační číslo",
+    "body": "(n nad k) = (n!) / ((n-k)! k!), n, k ∈ ℕ, 0 ≤ k ≤ n. Po rozepsání n! se (n-k)! vykrátí: (n nad k) = (n(n-1)…(n-k+1)) / (k!).\n*Zdroj: přednáška 22. 10.*"
+   },
+   {
+    "term": "Vlastnosti kombinačního čísla",
+    "body": "- **Symetrie:** (n nad k) = (n nad n-k) (vybrat k prvků = vybrat těch n-k, které nevezmeš).\n- (n nad 0) = (n nad n) = 1 a (n nad 1) = n.\n- **Pascalovo pravidlo:** (n nad k) + (n nad k+1) = (n+1 nad k+1), k < n (domácí úkol, základ Pascalova trojúhelníku).\n*Zdroj: přednáška 22. 10. (tyto tři umět dokázat; Pascalovo pravidlo byl domácí úkol); názvy a slovní vysvětlení **Doplněno z Claude**.*"
+   }
+  ],
+  "5": [
+   {
+    "term": "Základní množina, skupina",
+    "body": "**Základní množina** M je množina o n prvcích, ze které se vybírá do skupin. **Skupina** je výběr prvků z M; skupina **k-té třídy** má k prvků. U **uspořádané** skupiny záleží na pořadí, (a,b) ≠ (b,a), u neuspořádané ne.\n*Zdroj: přednáška 22. 10.*"
+   },
+   {
+    "term": "Bez opakování × s opakováním",
+    "body": "**Bez opakování:** každý prvek z M se vybere nejvýš jednou. **S opakováním:** prvek se smí vybrat vícekrát. Značí se čárkou: V, P, C bez opakování, V', P', C' s opakováním.\n*Zdroj: přednáška 22. a 29. 10.*"
+   },
+   {
+    "term": "Faktoriál",
+    "body": "n! = n · (n-1) … 2 · 1, 0! = 1. Důležité rozdělení: n! = n · (n-1) … (n-k+1) · (n-k)! (k ≤ n), díky němu se (n-k)! vykrátí.\n*Zdroj: přednáška 22. 10. (označeno jako důležité); důvod 0! = 1 **Doplněno z Claude**: aby platily vzorce pro k = n.*"
+   },
+   {
+    "term": "Variace (záleží na pořadí, bez opakování)",
+    "body": "Uspořádaná k-tice z n různých prvků: V_k(n) = (n!) / ((n-k)!) = n(n-1)…(n-k+1), 0 ≤ k ≤ n.\n*Příklad:* V_2(3) z {1,2,3}: 6 dvojic, (3!) / (1!) = 6.\n*Zdroj: přednáška 29. 10.*"
+   },
+   {
+    "term": "Variace s opakováním",
+    "body": "Uspořádaná k-tice, prvky se smějí opakovat: V'_k(n) = n^k. Může být k > n. Jsou to prvky kartézského součinu M^k.\n*Příklad:* V'_2(3) = 9 dvojic. PIN ze 4 číslic: 10^4.\n*Zdroj: přednáška 29. 10.; PIN **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Permutace (bez opakování)",
+    "body": "Seřazení **všech** n různých prvků: P(n) = n!. Je to variace s k = n: V_n(n) = (n!) / (0!) = n!.\n*Příklad:* 4 knihy na poličku: 4! = 24.\n*Zdroj: přednáška 29. 10.; příklad s knihami **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Permutace s opakováním",
+    "body": "Seřazení k prvků, kde se prvek a_i opakuje k_i-krát, k = k_1 + … + k_n: P'_(k_1,…,k_n)(k) = (k!) / (k_1! k_2!… k_n!). Dělí se tím, že prohození stejných prvků nic nezmění.\n*Příklad:* čísla 1,1,2,2,2: (5!) / (2! 3!) = 10; slovo MAMA: (4!) / (2! 2!) = 6.\n*Zdroj: přednáška 29. 10.; příklady **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Kombinace (nezáleží na pořadí, bez opakování)",
+    "body": "k-prvková podmnožina n-prvkové množiny: C_k(n) = (n nad k) = (n!) / ((n-k)! k!). Vztah k variacím: C_k(n) = (V_k(n)) / (k!) (každou skupinu jsme započítali k!-krát, každé pořadí zvlášť).\n*Příklad:* 2 z {a,b,c,d}: (4 nad 2) = 6.\n*Zdroj: přednáška 29. 10.; vztah k variacím **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Kombinace s opakováním",
+    "body": "Neuspořádaný výběr k prvků, prvky se smějí opakovat: C'_k(n) = (n+k-1 nad k). Může být k > n.\n*Příklad:* C'_2(3) = (4 nad 2) = 6 ({1,1}, {1,2}, {1,3}, {2,2}, {2,3}, {3,3}).\n*Zdroj: přednáška 29. 10.*"
+   },
+   {
+    "term": "Kombinační číslo",
+    "body": "(n nad k) = (n!) / ((n-k)! k!), n, k ∈ ℕ, 0 ≤ k ≤ n. Po rozepsání n! se (n-k)! vykrátí: (n nad k) = (n(n-1)…(n-k+1)) / (k!).\n*Zdroj: přednáška 22. 10.*"
+   },
+   {
+    "term": "Vlastnosti kombinačního čísla",
+    "body": "- **Symetrie:** (n nad k) = (n nad n-k) (vybrat k prvků = vybrat těch n-k, které nevezmeš).\n- (n nad 0) = (n nad n) = 1 a (n nad 1) = n.\n- **Pascalovo pravidlo:** (n nad k) + (n nad k+1) = (n+1 nad k+1), k < n (domácí úkol, základ Pascalova trojúhelníku).\n*Zdroj: přednáška 22. 10. (tyto tři umět dokázat; Pascalovo pravidlo byl domácí úkol); názvy a slovní vysvětlení **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Binomická věta",
+    "body": "(a+b)^n = ∑_(k=0)^(n) (n nad k) a^(n-k) b^k. Rozvoj má n+1 členů, exponent u a klesá a u b roste, koeficienty jsou kombinační čísla. Např. (a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3.\n*Zdroj: přednáška 29. 10.; příklad n=3 **Doplněno z Claude** (ověřeno ve zdroji [10]).*"
+   },
+   {
+    "term": "Konečný automat",
+    "body": "Uspořádaná **pětice** A = (Q, Σ, δ, q_0, F):\n- Q konečná neprázdná množina **stavů**,\n- Σ konečná neprázdná **abeceda** (vstupní znaky),\n- δ: Q × Σ → Q **přechodová funkce**,\n- q_0 ∈ Q **počáteční stav**,\n- F ⊆ Q množina **přijímacích** stavů.\n*Zdroj: přednáška 29. 10.; výklad jednotlivých složek **Doplněno z Claude** ([11, kap. 1.2], [9]).*"
+   },
+   {
+    "term": "Deterministický automat",
+    "body": "Pro každý stav a každý znak vede **právě jeden** přechod, tedy δ(q, a) je vždy jediný stav. Tabulka přechodů má |Q| · |Σ| políček a žádné nesmí chybět.\n*Zdroj: přednáška 29. 10. (reagovat na všechny vstupní symboly).*"
+   },
+   {
+    "term": "Přechodová funkce, tabulka, stavový diagram",
+    "body": "Čtyři způsoby, jak zadat tentýž automat (vždy s Q, Σ, q_0, F):\n- **Přechodová funkce:** vypsané δ(q, a) = q' pro všechny dvojice.\n- **Tabulka přechodů:** řádky stavy, sloupce znaky, v políčku δ(q,a); počáteční stav → , přijímací ←.\n- **Stavový diagram:** orientovaný graf, vrcholy stavy, hrana q →{a} q', když δ(q,a) = q'. Při návrhu se doporučuje začít diagramem.\n*Zdroj: přednáška 29. 10.; stručné definice **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Stavový strom",
+    "body": "Kreslí se od počátečního stavu (kořen, nahoře) shora dolů. Z každého uzlu vede pro každý znak jedna hrana k výskytu následujícího stavu. Rozvíjí se, dokud v listech nejsou jen stavy, které už jsou ve stromu rozvinuté. Přijímací stavy se značí u všech výskytů.\n*Zdroj: přednáška 29. 10. (příklad); definice doplněná z Vaise [9, kap. 1.3, s. 11] **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Přijetí slova a jazyk automatu",
+    "body": "Slovo se přečte znak po znaku od q_0. Je **přijato**, když výpočet skončí v přijímacím stavu. Množina všech přijatých slov je **jazyk automatu**.\n*Příklad z přednášky:* slovo 1011010 projde q_0, q_2, q_1, q_3, q_3, q_1, q_3, q_1 a skončí v q_1 ∈ F, je přijato.\n*Zdroj: přednáška 29. 10.; pojem jazyk automatu **Doplněno z Claude** ([11]).*"
+   },
+   {
+    "term": "Automat s výstupem (Moorův, Mealyho)",
+    "body": "Navíc **výstupní symboly** O a výstupní funkce. U **Moorova** automatu λ: Q → O (výstup závisí jen na stavu, např. světlo nad dveřmi), u **Mealyho** λ: Q × Σ → O (výstup patří k přechodu).\n*Zdroj: **Doplněno z Claude** ([9, kap. 1.2, s. 6–7]); na přednášce nezaznělo, přesné značení vyučujícího neznám.*"
+   }
+  ]
+ }
+}
