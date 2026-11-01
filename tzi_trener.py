@@ -22,6 +22,7 @@ from urllib.parse import parse_qs, urlparse
 
 BASE = Path(__file__).resolve().parent
 BANKS = BASE / "banky"
+GLOSAR = BASE / "glosar" / "glosar.json"  # hesla podle přednášky, generuje build_glosar.py
 RECALL_DIR = BANKS / "doplnovacka"  # otázky typu recall; běžné režimy čtou jen banky/*.json, tyhle nevidí
 PROGRESS_FILE = BASE / "progress.json"
 PORT = 5051
@@ -169,6 +170,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(load_questions(source))
             except (KeyError, OSError, ValueError) as e:
                 return self._json({"error": str(e)}, 404)
+        if u.path == "/api/glosar":
+            try:
+                lectures = json.loads(GLOSAR.read_text(encoding="utf-8"))["lectures"]
+                return self._json(lectures.get(q.get("lecture", [""])[0], []))
+            except (KeyError, OSError, ValueError) as e:
+                return self._json({"error": str(e)}, 500)
         if u.path == "/api/recall":
             try:
                 return self._json(load_recall())
