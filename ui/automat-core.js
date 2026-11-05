@@ -95,6 +95,57 @@
     return { equal: true };
   };
 
+  // Stavy zapsané textem ("q0, q2", "q₀ q₂") -> ['q0','q2']; podle tabulky se piš i dolní indexy.
+  Auto.parseStates = function (text) {
+    return String(text).replace(/[₀-₉]/g, c => String(c.charCodeAt(0) - 0x2080)).split(/[\s,;→]+/).filter(Boolean).map(x => x.toLowerCase());
+  };
+
+  // Přechodová funkce zapsaná jako { q: { a: 'q1' } } proti referenčnímu automatu: seznam chybných buněk.
+  Auto.gradeDelta = function (cells, ref, alphabet) {
+    const d = Auto.delta(ref), wrong = [];
+    for (const s of ref.states) for (const a of alphabet) {
+      const got = Auto.parseStates((cells[s.id] || {})[a] || '');
+      if (got.length !== 1 || got[0] !== d[s.id][a][0]) wrong.push({ q: s.id, a });
+    }
+    return wrong;
+  };
+
+  // Tabulka: buňky jako δ, k tomu značky počátečního (→) a přijímacích (←) stavů.
+  Auto.gradeTable = function (cells, marks, ref, alphabet) {
+    const wrong = Auto.gradeDelta(cells, ref, alphabet), badMarks = [];
+    for (const s of ref.states) {
+      const m = marks[s.id] || {};
+      if (!!m.start !== (ref.start === s.id) || !!m.accept !== ref.accept.includes(s.id)) badMarks.push(s.id);
+    }
+    return { ok: !wrong.length && !badMarks.length, wrong, badMarks };
+  };
+
+  // Strom po úrovních: stavy zleva doprava (úroveň 0 je kořen).
+  Auto.treeLevels = function (m) {
+    const t = Auto.tree(m), levels = [];
+    if (!t) return levels;
+    let cur = [t];
+    while (cur.length) { levels.push(cur.map(n => n.state)); cur = cur.flatMap(n => n.children); }
+    return levels;
+  };
+
+  // Úrovně stromu zadané uživatelem (pole textů) proti automatu: indexy chybných úrovní.
+  Auto.gradeLevels = function (inputs, m) {
+    const exp = Auto.treeLevels(m), wrong = [];
+    exp.forEach((lv, i) => { if (Auto.parseStates(inputs[i] || '').join(' ') !== lv.join(' ')) wrong.push(i); });
+    return { ok: !wrong.length, wrong, count: exp.length };
+  };
+
+  // Čtení slova: stavy po jednotlivých znacích (pole textů) a verdikt (true = přijato) proti tomu, co automat doopravdy udělá.
+  Auto.gradeRun = function (states, verdict, m, word) {
+    const r = Auto.run(m, word), wrong = [];
+    for (let i = 0; i < word.length; i++) {
+      const got = Auto.parseStates((states || [])[i] || '');
+      if (got.length !== 1 || !r.steps[i] || got[0] !== r.steps[i].to) wrong.push(i);
+    }
+    return { ok: !wrong.length && verdict === r.accepted, wrong, verdictOk: verdict === r.accepted, accepted: r.accepted };
+  };
+
   const dfa = (start, accept, rows) => ({
     start, accept,
     states: Object.keys(rows).map(id => ({ id })),
@@ -123,6 +174,9 @@
       ref: dfa('r0', ['r0'], { r0: { 0: 'r1', 1: 'r1' }, r1: { 0: 'r2', 1: 'r2' }, r2: { 0: 'r0', 1: 'r0' } }) },
     { id: 'prednaska', lang: 'automat z přednášky: aspoň jedna 1 a končí 0, nebo tvar 0…01', title: 'Automat z přednášky', alphabet: ['0', '1'], pred: w => /^0*1$/.test(w) || (w.endsWith('0') && w.includes('1')),
       text: 'Překresli automat z přednášky podle tabulky: q₀ je počáteční, přijímací jsou q₁ a q₂.  δ: q₀ → (0: q₀, 1: q₂), q₁ → (0: q₁, 1: q₃), q₂ → (0: q₁, 1: q₃), q₃ → (0: q₁, 1: q₃). Stavy pojmenuj q0, q1, q2, q3.',
+      ref: dfa('q0', ['q1', 'q2'], { q0: { 0: 'q0', 1: 'q2' }, q1: { 0: 'q1', 1: 'q3' }, q2: { 0: 'q1', 1: 'q3' }, q3: { 0: 'q1', 1: 'q3' } }) },
+    { id: 'repr', steps: true, words: ['1011010', '0', '1', '10', '0110', '100', '11', '0010'], lang: 'automat z přednášky zadaný přechodovou funkcí', title: 'Čtyři reprezentace (δ → tabulka → diagram → strom)', alphabet: ['0', '1'], pred: w => /^0*1$/.test(w) || (w.endsWith('0') && w.includes('1')),
+      text: 'Automat je zadaný přechodovou funkcí na obrázku: Q = {q0, q1, q2, q3}, Σ = {0, 1}, počáteční stav q0, F = {q1, q2}. Nejdřív přepiš hodnoty δ, pak vyplň tabulku, nakresli diagram a sestav stavový strom.',
       ref: dfa('q0', ['q1', 'q2'], { q0: { 0: 'q0', 1: 'q2' }, q1: { 0: 'q1', 1: 'q3' }, q2: { 0: 'q1', 1: 'q3' }, q3: { 0: 'q1', 1: 'q3' } }) },
   ];
 

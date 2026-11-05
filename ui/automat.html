@@ -62,6 +62,16 @@ td.miss { color: var(--bad); } td.multi { color: var(--warn); }
 .tree .seen { color: var(--muted); }
 .floating { position: fixed; z-index: 10; border: 2px solid var(--blue); background: var(--card); border-radius: 8px; padding: 4px 8px; width: 120px; }
 code { font-family: var(--mono); }
+.rstep { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 10px; }
+.rstep h3 { font-size: 15px; margin-bottom: 4px; }
+.rstep.locked { opacity: .5; }
+.rstep input[type=text] { width: 64px; text-align: center; font-family: var(--mono); }
+.rstep input.lv { width: 100%; text-align: left; }
+.rstep img { width: 100%; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; }
+.rstep input.bad { border-color: var(--bad); }
+.rstep input.good { border-color: var(--ok); }
+.done { color: var(--ok); font-weight: 700; }
+.dgrid { display: grid; grid-template-columns: auto auto; gap: 4px 20px; justify-content: start; font-family: var(--mono); }
 </style>
 </head>
 <body>
@@ -87,6 +97,10 @@ code { font-family: var(--mono); }
       <div id="gradeOut"></div>
       <div class="row" id="exRow"><label for="ex">Hotový příklad</label><select id="ex"></select></div>
       <p id="exText" class="hint"></p>
+    </div>
+    <div class="card" id="reprCard" hidden>
+      <h2>Čtyři reprezentace</h2>
+      <div id="reprBody"></div>
     </div>
     <div class="card">
       <h2>Abeceda a vybraný stav</h2>
@@ -340,7 +354,7 @@ function setTask(id) {
   selS = selE = null; sim = { word: '', pos: 0 };
   $('alpha').value = M.alphabet.join(', '); $('alpha').disabled = !!task;
   $('taskText').textContent = task ? task.text : 'Kresli, co chceš. Úlohu s automatickou kontrolou vybereš výše.';
-  $('grade').hidden = !task; $('gradeOut').innerHTML = '';
+  $('grade').hidden = !task; $('gradeOut').innerHTML = ''; buildRepr();
   $('exRow').hidden = !!task; $('exText').textContent = ''; $('ex').value = '';
   render();
 }
@@ -378,6 +392,92 @@ $('ex').onchange = () => {
   $('alpha').value = M.alphabet.join(', ');
   $('exText').textContent = 'Jazyk: ' + t.lang + '. Zkus přečíst pár slov a podívej se na tabulku i na strom.';
 };
+// ── úloha „čtyři reprezentace“: δ → tabulka → diagram → strom ────────────────
+const RKEY = 'tzi_automat_repr';
+let RP = { delta: {}, table: {}, marks: {}, levels: [], done: {} };
+const rsave = () => { try { localStorage.setItem(RKEY, JSON.stringify(RP)); } catch (e) { /* bez uložení */ } };
+const paint = (el, ok) => { el.classList.toggle('good', ok === true); el.classList.toggle('bad', ok === false); };
+function buildRepr() {
+  const card = $('reprCard');
+  card.hidden = !(task && task.steps);
+  if (card.hidden) return;
+  try { RP = { delta: {}, table: {}, marks: {}, levels: [], done: {}, wi: 0, run: { states: [], verdict: null }, wordsOk: 0, ...JSON.parse(localStorage.getItem(RKEY)) }; } catch (e) { /* nový */ }
+  RP.wi = (RP.wi || 0) % task.words.length;
+  const ref = task.ref, al = task.alphabet, ids = ref.states.map(s => s.id), S = id => id.replace(/\d+/g, sub);
+  const rm = { ...ref, alphabet: al }, nLevels = Auto.treeLevels(rm).length, b = $('reprBody');
+  const cellIn = (kind, q, a) => `<input type="text" data-${kind}="${q}|${a}" value="${(RP[kind === 'd' ? 'delta' : 'table'][q] || {})[a] || ''}" autocomplete="off" aria-label="δ(${q}, ${a})">`;
+  let h = '<div class="rstep"><h3 id="rTitle">1. Přechodová funkce δ</h3><img src="/automat-delta.jpg" alt="Přechodová funkce zadaná na tabuli"><p class="hint">Přepiš hodnoty z obrázku (např. q2).</p><div class="dgrid">';
+  for (const q of ids) for (const a of al) h += `<label>δ(${S(q)}, ${a}) = ${cellIn('d', q, a)}</label>`;
+  h += '</div><div class="row"><button class="btn primary" id="rD">Zkontrolovat δ</button><span id="rDo"></span></div></div>';
+  h += '<div class="rstep" id="rT"><h3>2. Tabulka přechodů</h3><p class="hint">Vyplň buňky, → u počátečního a ← u přijímacích stavů.</p><table><tr><th>→</th><th>←</th><th></th>' + al.map(a => `<th>${a}</th>`).join('') + '</tr>';
+  for (const q of ids) h += `<tr><td><input type="checkbox" data-m="${q}|start" ${(RP.marks[q] || {}).start ? 'checked' : ''}></td><td><input type="checkbox" data-m="${q}|accept" ${(RP.marks[q] || {}).accept ? 'checked' : ''}></td><th>${S(q)}</th>` + al.map(a => `<td>${cellIn('t', q, a)}</td>`).join('') + '</tr>';
+  h += '</table><div class="row"><button class="btn primary" id="rTb">Zkontrolovat tabulku</button><span id="rTo"></span></div></div>';
+  h += '<div class="rstep" id="rG"><h3>3. Diagram</h3><p class="hint">Nakresli automat na plátno a klikni na „Zkontrolovat“ v kartě Úloha.</p><span id="rGo"></span></div>';
+  h += '<div class="rstep" id="rS"><h3>4. Stavový strom</h3><p class="hint">Po úrovních shora dolů, stavy zleva doprava oddělené mezerou (znaky na hranách nepiš). Stav, který už je ve stromu rozvinutý, se dál nerozvíjí.</p>';
+  for (let i = 0; i < nLevels; i++) h += `<div class="row"><label style="min-width:70px">Úroveň ${i}</label><input type="text" class="lv" data-l="${i}" value="${RP.levels[i] || ''}" autocomplete="off" placeholder="např. q0 q1"></div>`;
+  h += '<div class="row"><button class="btn primary" id="rSb">Zkontrolovat strom</button><span id="rSo"></span></div></div>';
+  h += '<div class="rstep" id="rW"><h3>5. Čtení slova</h3><div id="rWbody"></div></div>';
+  b.innerHTML = h;
+  const word = () => task.words[RP.wi];
+  function drawWord() { // slovo zadané aplikací: dopiš stav po každém znaku a rozhodni, jestli se slovo přijme
+    const w = word();
+    let x = `<p class="hint">Slovo <b class="trace">${w}</b>: začni ve stavu ${S(ref.start)}, dopiš stav po přečtení každého znaku a rozhodni, jestli automat slovo přijme.</p><div class="row trace">${S(ref.start)}`;
+    [...w].forEach((c, i) => { x += ` –${c}→ <input type="text" data-w="${i}" value="${RP.run.states[i] || ''}" autocomplete="off" aria-label="stav po ${i + 1}. znaku">`; });
+    x += `</div><div class="row"><label><input type="radio" name="verdict" data-v="1" ${RP.run.verdict === true ? 'checked' : ''}> Přijato</label><label><input type="radio" name="verdict" data-v="0" ${RP.run.verdict === false ? 'checked' : ''}> Nepřijato</label></div>`;
+    x += `<div class="row"><button class="btn primary" id="rWb">Zkontrolovat slovo</button><button class="btn" id="rWn">Další slovo</button><span id="rWo"></span></div><p class="hint">Správně zvládnutých slov: ${RP.wordsOk}</p>`;
+    $('rWbody').innerHTML = x;
+    $('rWb').onclick = () => {
+      const r = Auto.gradeRun(RP.run.states, RP.run.verdict, ref, w);
+      $('rWbody').querySelectorAll('input[data-w]').forEach(i => paint(i, !r.wrong.includes(+i.dataset.w)));
+      const o = $('rWo');
+      if (r.ok) { RP.wordsOk++; o.className = 'done'; o.textContent = ` ✓ Správně, slovo ${r.accepted ? 'je přijato' : 'není přijato'}.`; }
+      else { o.className = 'status bad'; o.textContent = r.wrong.length ? ` ✗ chybné stavy: ${r.wrong.map(i => i + 1 + '.').join(', ')} znak` : r.verdictOk ? '' : (RP.run.verdict === null ? ' ✗ Vyber, jestli je slovo přijato.' : ' ✗ Stavy sedí, ale verdikt ne: přijímací je jen stav ze F, kde slovo skončilo.'); }
+      rsave();
+    };
+    $('rWn').onclick = () => { RP.wi = (RP.wi + 1) % task.words.length; RP.run = { states: [], verdict: null }; rsave(); drawWord(); refresh(); };
+  }
+  b.oninput = ev => {
+    const t = ev.target, [q, k] = (t.dataset.d || t.dataset.t || t.dataset.m || '').split('|');
+    if (t.dataset.w) { RP.run.states[+t.dataset.w] = t.value; paint(t, null); rsave(); return; }
+    if (t.dataset.v) { RP.run.verdict = t.dataset.v === '1'; rsave(); return; }
+    if (t.dataset.d) (RP.delta[q] = RP.delta[q] || {})[k] = t.value;
+    else if (t.dataset.t) (RP.table[q] = RP.table[q] || {})[k] = t.value;
+    else if (t.dataset.m) (RP.marks[q] = RP.marks[q] || {})[k] = t.checked;
+    else if (t.dataset.l) RP.levels[+t.dataset.l] = t.value;
+    paint(t, null); rsave();
+  };
+  const mark = (kind, wrong, out, okMsg) => {
+    b.querySelectorAll(`input[data-${kind}]`).forEach(i => { const [q, a] = i.dataset[kind].split('|'); paint(i, !wrong.some(w => w.q === q && w.a === a)); });
+    out.className = wrong.length ? 'status bad' : 'done'; out.textContent = wrong.length ? ` ✗ chybných buněk: ${wrong.length}` : okMsg;
+  };
+  function refresh() {
+    ['rT', 'rG', 'rS', 'rW'].forEach(id => $(id).classList.toggle('locked', !RP.done.delta));
+    b.querySelectorAll('#rT input, #rT button, #rS input, #rS button, #rW input, #rW button').forEach(i => { i.disabled = !RP.done.delta; });
+    $('rGo').className = 'done'; $('rGo').textContent = RP.done.diagram ? '✓ Diagram sedí.' : '';
+    const n = ['delta', 'table', 'diagram', 'tree'].filter(k => RP.done[k]).length;
+    $('rTitle').textContent = '1. Přechodová funkce δ' + (n === 4 ? ' · všechny 4 reprezentace hotové ✓' : ` · hotovo ${n} ze 4`);
+    rsave();
+  }
+  $('rD').onclick = () => { const w = Auto.gradeDelta(RP.delta, ref, al); mark('d', w, $('rDo'), ' ✓ δ sedí, ostatní kroky se odemkly.'); RP.done.delta = !w.length; refresh(); };
+  $('rTb').onclick = () => {
+    const r = Auto.gradeTable(RP.table, RP.marks, ref, al);
+    mark('t', r.wrong, $('rTo'), r.badMarks.length ? '' : ' ✓ Tabulka sedí.');
+    if (r.badMarks.length) { $('rTo').className = 'status bad'; $('rTo').textContent += ` ✗ chybná značka → nebo ← u: ${r.badMarks.join(', ')}`; }
+    RP.done.table = r.ok; refresh();
+  };
+  $('rSb').onclick = () => {
+    const r = Auto.gradeLevels(RP.levels, rm);
+    b.querySelectorAll('input[data-l]').forEach(i => paint(i, !r.wrong.includes(+i.dataset.l)));
+    $('rSo').className = r.ok ? 'done' : 'status bad'; $('rSo').textContent = r.ok ? ' ✓ Strom sedí.' : ` ✗ chybné úrovně: ${r.wrong.join(', ')}`;
+    RP.done.tree = r.ok; refresh();
+  };
+  drawWord(); refresh();
+}
+$('grade').addEventListener('click', () => { // diagram je třetí krok; kontrola je ta stejná jako u ostatních úloh
+  if (!(task && task.steps) || !RP.done.delta) return;
+  RP.done.diagram = !!$('gradeOut').querySelector('.result.ok'); rsave();
+  $('rGo').textContent = RP.done.diagram ? '✓ Diagram sedí.' : '';
+});
 setTask('');
 </script>
 </body>
