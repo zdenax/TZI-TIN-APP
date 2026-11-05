@@ -70,6 +70,10 @@ code { font-family: var(--mono); }
 .rstep img { width: 100%; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; }
 .rstep input.bad { border-color: var(--bad); }
 .rstep input.good { border-color: var(--ok); }
+details.guide { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; background: var(--paper); }
+details.guide summary { cursor: pointer; font-weight: 700; }
+details.guide ol { margin: 8px 0 4px 20px; font-size: 14px; }
+details.guide li { margin-bottom: 6px; }
 .done { color: var(--ok); font-weight: 700; }
 .dgrid { display: grid; grid-template-columns: auto auto; gap: 4px 20px; justify-content: start; font-family: var(--mono); }
 </style>
@@ -86,6 +90,10 @@ code { font-family: var(--mono); }
       <button id="clear" class="btn" title="Vymaže celý návrh">Vyčistit vše</button>
     </div>
     <svg id="board" viewBox="0 0 800 520" aria-label="Plátno automatu"></svg>
+    <div class="row" id="addRow" style="margin-top:8px"><b>Přidat šipku bez tažení:</b>
+      <select id="aFrom" aria-label="Ze stavu"></select> → <select id="aTo" aria-label="Do stavu"></select>
+      <label for="aSym">znak</label><input type="text" id="aSym" size="5" placeholder="0, 1" autocomplete="off">
+      <button class="btn" id="aAdd">+ Šipka</button></div>
     <p class="hint" style="margin-top:8px">Dvojklik na prázdné místo přidá stav, dvojklik na stav ho přejmenuje, dvojklik na hranu změní znaky. Klávesa Delete smaže vybranou věc.</p>
   </section>
   <aside>
@@ -206,6 +214,12 @@ function renderSide(chk, d) {
     $('isStart').onchange = e => { M.start = e.target.checked ? s.id : (M.start === s.id ? null : M.start); changed(); };
     $('isAcc').onchange = e => { M.accept = e.target.checked ? [...new Set([...M.accept, s.id])] : M.accept.filter(x => x !== s.id); changed(); };
   }
+  // výběr stavů pro „+ Šipka“ (jen když se změnil seznam stavů, ať se nezavírá rozbalený výběr)
+  const key = M.states.map(x => x.id).join(',');
+  if ($('aFrom').dataset.key !== key) {
+    const keep = [$('aFrom').value, $('aTo').value], opts = M.states.map(x => `<option value="${x.id}">${x.id.replace(/\d+/g, sub)}</option>`).join('');
+    [$('aFrom'), $('aTo')].forEach((el, i) => { el.innerHTML = opts; el.dataset.key = key; if (M.states.some(x => x.id === keep[i])) el.value = keep[i]; });
+  }
   // strom
   const tr = Auto.tree(M);
   const li = n => `<li class="${n.seen ? 'seen' : ''}">${n.sym !== undefined ? `<span class="hint">${n.sym}</span> → ` : ''}${n.state.replace(/\d+/g, sub)}${M.accept.includes(n.state) ? ' ←' : ''}${n.seen ? ' (už ve stromu)' : ''}${n.children.length ? '<ul>' + n.children.map(li).join('') + '</ul>' : ''}</li>`;
@@ -308,9 +322,10 @@ svg.addEventListener('pointermove', ev => {
 svg.addEventListener('pointerup', ev => {
   if (drag) { if (drag.moved) save(); drag = null; return; }
   if (rubber) {
-    const from = rubber.from, tgt = document.elementFromPoint(ev.clientX, ev.clientY), to = tgt && tgt.closest && tgt.closest('[data-s]');
+    // cíl se hledá podle souřadnic (ne podle prvku pod myší), aby to nezáleželo na prohlížeči
+    const from = rubber.from, p = toSvg(ev), b = M.states.find(s => Math.hypot(s.x - p.x, s.y - p.y) <= R + 8);
     rubber = null; render();
-    if (to) { const b = pos(to.dataset.s); ask(b.x, b.y - R - 20, '', v => setSymbols(from, b.id, v)); }
+    if (b) ask(b.x, b.y - R - 20, '', v => setSymbols(from, b.id, v));
   }
 });
 svg.addEventListener('dblclick', ev => {
@@ -321,7 +336,7 @@ svg.addEventListener('dblclick', ev => {
   const p = toSvg(ev); addState(p.x, p.y);
 });
 document.addEventListener('keydown', ev => {
-  if (ev.target.tagName === 'INPUT') return;
+  if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT') return;
   if (ev.key === 'Delete' || ev.key === 'Backspace') { if (selS) removeState(selS); else if (selE !== null) removeEdge(selE); }
 });
 
@@ -332,6 +347,12 @@ $('tools').addEventListener('click', ev => {
   document.querySelectorAll('#tools button[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b));
   svg.style.cursor = { move: 'default', state: 'copy', edge: 'crosshair', erase: 'not-allowed' }[mode];
 });
+$('aAdd').onclick = () => {
+  if (!M.states.length) { alert('Nejdřív přidej stavy (+ Stav).'); return; }
+  if (!parseSymbols($('aSym').value).length) { alert('Napiš znak (nebo znaky) přechodu, např. 0 nebo 0, 1.'); return; }
+  setSymbols($('aFrom').value, $('aTo').value, $('aSym').value); $('aSym').value = '';
+};
+$('aSym').onkeydown = ev => { if (ev.key === 'Enter') $('aAdd').click(); };
 $('clear').onclick = () => { if (!M.states.length || confirm('Smazat celý návrh?')) { M = fresh(M.alphabet); selS = selE = null; changed(); } };
 $('alpha').onchange = () => {
   const a = parseSymbols($('alpha').value);
@@ -406,7 +427,13 @@ function buildRepr() {
   const ref = task.ref, al = task.alphabet, ids = ref.states.map(s => s.id), S = id => id.replace(/\d+/g, sub);
   const rm = { ...ref, alphabet: al }, nLevels = Auto.treeLevels(rm).length, b = $('reprBody');
   const cellIn = (kind, q, a) => `<input type="text" data-${kind}="${q}|${a}" value="${(RP[kind === 'd' ? 'delta' : 'table'][q] || {})[a] || ''}" autocomplete="off" aria-label="δ(${q}, ${a})">`;
-  let h = '<div class="rstep"><h3 id="rTitle">1. Přechodová funkce δ</h3><img src="/automat-delta.jpg" alt="Přechodová funkce zadaná na tabuli"><p class="hint">Přepiš hodnoty z obrázku (např. q2).</p><div class="dgrid">';
+  let h = `<details class="guide"><summary>Návod: jak na to</summary><ol>
+    <li><b>δ:</b> podívej se na obrázek a do každého políčka napiš, kam automat přejde, např. u δ(q₀, 1) napiš <code>q2</code>. Klikni na „Zkontrolovat δ“, červená políčka jsou špatně.</li>
+    <li><b>Tabulka:</b> řádek = stav, sloupec = znak, v buňce je cílový stav. Zaškrtni → u počátečního stavu a ← u přijímacích (ty jsou v F).</li>
+    <li><b>Diagram:</b> vlevo přidej stavy (<code>+ Stav</code>, pojmenuj je q0 až q3), nastav počáteční a přijímací stav (klikni na stav v režimu Posun a zaškrtni). Šipky: v režimu <code>→ Přechod</code> táhni od stavu ke stavu a napiš znak, nebo použij řádek <code>Přidat šipku bez tažení</code> pod plátnem (ze stavu, do stavu, znak). Smyčka = stejný stav jako začátek i konec. Dva znaky na jedné šipce napiš oba, např. <code>0, 1</code>. Pak „Zkontrolovat“ v kartě Úloha.</li>
+    <li><b>Strom:</b> začni kořenem (počáteční stav). Z každého uzlu vede šipka pro každý znak (nejdřív 0, pak 1). Úroveň po úrovni piš stavy zleva doprava. Stav, který už ve stromu někde rozvinutý je, se dál nerozvíjí (ale na své úrovni se zapíše).</li>
+    <li><b>Čtení slova:</b> začínáš v q0. Pro každý znak slova najdi v tabulce, kam z aktuálního stavu přejdeš, a dopiš ten stav. Slovo je přijato, jen když skončíš ve stavu z F (q1 nebo q2).</li>
+  </ol></details>` + '<div class="rstep"><h3 id="rTitle">1. Přechodová funkce δ</h3><img src="/automat-delta.jpg" alt="Přechodová funkce zadaná na tabuli"><p class="hint">Přepiš hodnoty z obrázku (např. q2).</p><div class="dgrid">';
   for (const q of ids) for (const a of al) h += `<label>δ(${S(q)}, ${a}) = ${cellIn('d', q, a)}</label>`;
   h += '</div><div class="row"><button class="btn primary" id="rD">Zkontrolovat δ</button><span id="rDo"></span></div></div>';
   h += '<div class="rstep" id="rT"><h3>2. Tabulka přechodů</h3><p class="hint">Vyplň buňky, → u počátečního a ← u přijímacích stavů.</p><table><tr><th>→</th><th>←</th><th></th>' + al.map(a => `<th>${a}</th>`).join('') + '</tr>';
