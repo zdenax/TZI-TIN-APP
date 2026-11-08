@@ -95,7 +95,8 @@ UI_FILES = {"novy": "novy.html", "klasicky": "klasicky.html"}
 AUTOMAT_FILES = {"/automat": ("text/html; charset=utf-8", "automat.html"),
                 "/glosar": ("text/html; charset=utf-8", "glosar.html"),
                 "/fmt.js": ("text/javascript; charset=utf-8", "fmt.js"),
-                "/automat-core.js": ("text/javascript; charset=utf-8", "automat-core.js")}
+                "/automat-core.js": ("text/javascript; charset=utf-8", "automat-core.js"),
+                "/automat-delta.jpg": ("image/jpeg", "automat-delta.jpg")}
 DEFAULT_UI = "novy"
 UI_COOKIE = "tzi_ui"
 
@@ -172,7 +173,7 @@ class Handler(BaseHTTPRequestHandler):
         if u.path in AUTOMAT_FILES:
             ctype, name = AUTOMAT_FILES[u.path]
             try:
-                return self._send(200, (UI_DIR / name).read_text(encoding="utf-8"), ctype)
+                return self._send(200, (UI_DIR / name).read_bytes(), ctype)
             except OSError:
                 return self._send(500, f"Chybí soubor ui/{name}", "text/plain; charset=utf-8")
         if u.path == "/api/sources":

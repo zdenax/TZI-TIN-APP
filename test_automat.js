@@ -42,4 +42,31 @@ assert.equal(Auto.check({ alphabet: ['0'], states: [], start: null, accept: [], 
 // 6. jiná abeceda než v úloze
 assert.equal(Auto.grade({ ...lecture, alphabet: ['a', 'b'] }, Auto.TASKS[0]).kind, 'invalid');
 
+// 7. úloha „čtyři reprezentace“: δ, tabulka, strom po úrovních
+const rep = Auto.TASKS.find(t => t.id === 'repr'), al = ['0', '1'];
+const good = { q0: { 0: 'q0', 1: 'q2' }, q1: { 0: 'q1', 1: 'q3' }, q2: { 0: 'q1', 1: 'q3' }, q3: { 0: 'q1', 1: 'q3' } };
+assert.deepEqual(Auto.gradeDelta(good, rep.ref, al), []);
+assert.deepEqual(Auto.gradeDelta({ ...good, q2: { 0: 'Q₁', 1: ' q3 ' } }, rep.ref, al), []); // velikost písmen, dolní index, mezery
+assert.deepEqual(Auto.gradeDelta({ ...good, q1: { 0: 'q1', 1: 'q2' } }, rep.ref, al), [{ q: 'q1', a: '1' }]);
+assert.equal(Auto.gradeDelta({}, rep.ref, al).length, 8);
+const marks = { q0: { start: true }, q1: { accept: true }, q2: { accept: true } };
+assert.ok(Auto.gradeTable(good, marks, rep.ref, al).ok);
+assert.deepEqual(Auto.gradeTable(good, { ...marks, q3: { accept: true } }, rep.ref, al).badMarks, ['q3']);
+const lv = Auto.treeLevels(asModel(rep.ref));
+assert.deepEqual(lv, [['q0'], ['q0', 'q2'], ['q1', 'q3'], ['q1', 'q3', 'q1', 'q3']]);
+assert.ok(Auto.gradeLevels(['q0', 'q0 q2', 'q1, q3', 'q1 q3 q1 q3'], asModel(rep.ref)).ok);
+assert.deepEqual(Auto.gradeLevels(['q0', 'q2 q0', 'q1 q3', ''], asModel(rep.ref)).wrong, [1, 3]);
+
+// 8. čtení slova: trénink má přijatá i nepřijatá slova, kontrola pozná chybný stav i chybný verdikt
+const rm = asModel(rep.ref), acc = rep.words.map(w => Auto.run(rm, w).accepted);
+assert.ok(acc.includes(true) && acc.includes(false));
+assert.equal(rep.words[0], '1011010'); assert.ok(acc[0]);
+assert.ok(Auto.gradeRun(['q2', 'q1', 'q3', 'q3', 'q1', 'q3', 'q1'], true, rm, '1011010').ok);
+assert.ok(Auto.gradeRun(['Q₂', 'q1', 'q3', 'q3', 'q1', 'q3', 'q1'], true, rm, '1011010').ok);
+const bad1 = Auto.gradeRun(['q2', 'q1', 'q3', 'q1', 'q1', 'q3', 'q1'], true, rm, '1011010');
+assert.deepEqual(bad1.wrong, [3]); assert.equal(bad1.ok, false);
+const bad2 = Auto.gradeRun(['q2', 'q1', 'q3', 'q3', 'q1', 'q3', 'q1'], false, rm, '1011010');
+assert.equal(bad2.ok, false); assert.equal(bad2.verdictOk, false); assert.deepEqual(bad2.wrong, []);
+assert.equal(Auto.gradeRun(['q2'], null, rm, '1011010').ok, false);
+
 console.log('automat test OK');
