@@ -146,6 +146,103 @@
     return { ok: !wrong.length && verdict === r.accepted, wrong, verdictOk: verdict === r.accepted, accepted: r.accepted };
   };
 
+  // Rozložení stavového stromu: list = další pozice zleva, rodič je nad středem svých dětí; y = hloubka.
+  Auto.treeLayout = function (root) {
+    const nodes = []; let leaf = 0, depth = 0;
+    (function walk(n, y, parent) {
+      const o = { n, y, parent, x: 0 }; nodes.push(o); depth = Math.max(depth, y);
+      if (!n.children.length) { o.x = leaf++; return o; }
+      const kids = n.children.map(c => walk(c, y + 1, o));
+      o.x = (kids[0].x + kids[kids.length - 1].x) / 2;
+      return o;
+    })(root, 0, null);
+    return { nodes, leaves: leaf, depth };
+  };
+
+  // Zadání automatu textem (δ(q0, 0) = q1 …, Σ = {…}, počáteční stav, F = {…}) -> automat; problems = co ještě chybí.
+  Auto.parseSpec = function (text) {
+    const src = String(text).replace(/[₀-₉]/g, c => String(c.charCodeAt(0) - 0x2080));
+    const id = "[A-Za-z_][A-Za-z0-9_′']*", problems = [], trans = [], low = s => s.toLowerCase();
+    const list = s => s.split(/[,\s;]+/).filter(Boolean);
+    const ids = s => list(s).filter(x => new RegExp('^' + id + '$').test(x)).map(low);
+    const add = (f, a, t) => trans.push({ from: low(f), to: low(t), symbols: [a] });
+    let m;
+    const re = new RegExp(`(?:δ|delta)?\\s*\\(\\s*(${id})\\s*[,;]\\s*([^\\s,;()])\\s*\\)\\s*(?:=|->|→)\\s*(${id})`, 'gi');
+    while ((m = re.exec(src))) add(m[1], m[2], m[3]);
+    if (!trans.length) {
+      const re2 = new RegExp(`^\\s*(${id})[\\s,]+([^\\s,])[\\s,]*(?:->|→|=)?\\s*(${id})\\s*$`, 'gmi');
+      while ((m = re2.exec(src))) add(m[1], m[2], m[3]);
+    }
+    if (!trans.length) problems.push('Nenašel jsem žádný přechod. Piš je jako δ(q0, 0) = q1, každý na jeden řádek.');
+    const sigma = (src.match(/[Σ∑]\s*=\s*\{([^}]*)\}/) || src.match(/abeceda[^\n:=]*[:=]\s*\{?([^}\n]*)\}?/i) || [])[1];
+    const qset = (src.match(/(?:^|[^A-Za-z])Q\s*=\s*\{([^}]*)\}/) || [])[1];
+    const fset = (src.match(/(?:^|[^A-Za-z])F\s*=\s*\{([^}]*)\}/) || src.match(/(?:koncov|p[řr]ij[ií]mac)\w*[^\n:=]*[:=]\s*\{?([^}\n]*)\}?/i) || [])[1];
+    const sm = src.match(new RegExp(`po[cč](?:[aá]te[cč]n\\S*|\\.)(?:\\s+stav\\w*)?(?:\\s+je)?\\s*[:=]?\\s*(${id})`, 'i')) || src.match(new RegExp(`\\bstart\\w*\\s*[:=]?\\s*(${id})`, 'i'));
+    const alphabet = sigma ? list(sigma) : [...new Set(trans.flatMap(t => t.symbols))].sort();
+    if (alphabet.some(a => [...a].length !== 1)) problems.push('Znaky abecedy musí být jednopísmenné.');
+    const accept = fset !== undefined ? ids(fset) : [];
+    const start = sm ? low(sm[1]) : (trans[0] && trans[0].from) || null;
+    if (!sm && trans.length) problems.push(`Počáteční stav jsem nenašel, beru ${start}. Napiš např. „počáteční stav q0“.`);
+    const stateIds = [...new Set([...(qset ? ids(qset) : []), ...trans.flatMap(t => [t.from, t.to]), ...(start ? [start] : []), ...accept])];
+    const d = {};
+    for (const t of trans) {
+      const a = t.symbols[0];
+      if (!alphabet.includes(a)) { problems.push(`Znak ${a} není v abecedě {${alphabet.join(', ')}}.`); continue; }
+      const k = t.from + '|' + a;
+      if (d[k] && d[k] !== t.to) problems.push(`δ(${t.from}, ${a}) je zadáno dvakrát různě (${d[k]} a ${t.to}).`);
+      d[k] = t.to;
+    }
+    const missing = [];
+    for (const q of stateIds) for (const a of alphabet) if (!d[q + '|' + a]) missing.push(`δ(${q}, ${a})`);
+    if (trans.length && missing.length) problems.push('Chybí přechody: ' + missing.join(', ') + '.');
+    if (fset === undefined && trans.length) problems.push('Nenašel jsem přijímací stavy. Napiš např. F = {q1}.');
+    const uniq = []; // znaky jedné hrany do jednoho záznamu
+    for (const t of trans) { const e = uniq.find(u => u.from === t.from && u.to === t.to); if (e) e.symbols.push(...t.symbols); else uniq.push({ ...t, symbols: [...t.symbols] }); }
+    return { ok: !problems.length && stateIds.length > 0, problems, alphabet, start, accept, states: stateIds.map(i => ({ id: i })), trans: uniq };
+  };
+
+  // Přejmenuje stavy na q0, q1, … podle pořadí objevení od počátečního stavu (prohledávání do šířky).
+  Auto.normalize = function (ref, alphabet) {
+    const d = Auto.delta(ref), order = [ref.start], map = {};
+    for (let i = 0; i < order.length; i++) for (const a of alphabet) for (const t of (d[order[i]] || {})[a] || []) if (!order.includes(t)) order.push(t);
+    for (const s of ref.states) if (!order.includes(s.id)) order.push(s.id);
+    order.forEach((s, i) => { map[s] = 'q' + i; });
+    return {
+      start: map[ref.start], accept: ref.accept.map(x => map[x]), states: order.map(s => ({ id: map[s] })),
+      trans: ref.trans.map(t => ({ ...t, from: map[t.from], to: map[t.to] })),
+    };
+  };
+
+  // Zadání automatu jako text: Q, Σ, počáteční stav, F a všechna δ.
+  Auto.specText = function (ref, alphabet) {
+    const d = Auto.delta(ref);
+    return `Q = {${ref.states.map(s => s.id).join(', ')}}\nΣ = {${alphabet.join(', ')}}\npočáteční stav ${ref.start}\nF = {${ref.accept.join(', ')}}\n` +
+      ref.states.flatMap(s => alphabet.map(a => `δ(${s.id}, ${a}) = ${d[s.id][a][0]}`)).join('\n');
+  };
+
+  // Slova k tréninku čtení: čtyři přijatá a čtyři nepřijatá délky 3 až 7, výběr stálý podle seed.
+  Auto.pickWords = function (ref, alphabet, seed) {
+    const acc = [], rej = [];
+    let level = [''];
+    for (let len = 1; len <= 7 && level.length * alphabet.length <= 4000; len++) {
+      level = level.flatMap(w => alphabet.map(a => w + a));
+      if (len >= 3) for (const w of level) (Auto.run(ref, w).accepted ? acc : rej).push(w);
+    }
+    let x = [...String(seed)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+    const rnd = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+    const take = (arr, n) => { const a = arr.slice(), out = []; while (a.length && out.length < n) out.push(a.splice(Math.floor(rnd() * a.length), 1)[0]); return out; };
+    const A = take(acc, 4), R = take(rej, 4), out = [];
+    for (let i = 0; i < 4; i++) { if (R[i]) out.push(R[i]); if (A[i]) out.push(A[i]); }
+    return out.length ? out : [alphabet[0]];
+  };
+
+  // Úloha „zadaný automat“ (δ, tabulka, diagram, strom, čtení slova): o.ref + o.alphabet; o.normalize přejmenuje stavy na q0, q1, …
+  Auto.makeGiven = function (o) {
+    const ref = o.normalize ? Auto.normalize(o.ref, o.alphabet) : o.ref;
+    return { id: o.id, title: o.title, steps: true, custom: !!o.custom, alphabet: o.alphabet, ref, image: o.image || null, lang: o.lang || '',
+      text: o.text || Auto.specText(ref, o.alphabet), pred: o.pred, words: o.words || Auto.pickWords(ref, o.alphabet, o.id) };
+  };
+
   const dfa = (start, accept, rows) => ({
     start, accept,
     states: Object.keys(rows).map(id => ({ id })),
@@ -172,10 +269,13 @@
     { id: 'delka3', lang: 'slova s délkou dělitelnou třemi', title: 'Délka dělitelná třemi', alphabet: ['0', '1'], pred: w => w.length % 3 === 0,
       text: 'Přijímej právě slova, jejichž délka je dělitelná třemi (včetně prázdného slova). Znaky samotné nehrají roli.',
       ref: dfa('r0', ['r0'], { r0: { 0: 'r1', 1: 'r1' }, r1: { 0: 'r2', 1: 'r2' }, r2: { 0: 'r0', 1: 'r0' } }) },
+    { id: 'dvere', lang: 'slova končící 1 (dveře)', title: 'Dveře (otevřeno / zavřeno)', alphabet: ['0', '1'], pred: w => w.endsWith('1'),
+      text: 'Automat řídí vstupní dveře. Vstup 0 znamená, že před dveřmi nikdo není, vstup 1 znamená, že před nimi někdo stojí. Dveře jsou na začátku zavřené, otevřené dveře jsou přijímací stav. Navrhni automat (2 stavy).',
+      ref: dfa('q0', ['q1'], { q0: { 0: 'q0', 1: 'q1' }, q1: { 0: 'q0', 1: 'q1' } }) },
     { id: 'prednaska', lang: 'automat z přednášky: aspoň jedna 1 a končí 0, nebo tvar 0…01', title: 'Automat z přednášky', alphabet: ['0', '1'], pred: w => /^0*1$/.test(w) || (w.endsWith('0') && w.includes('1')),
       text: 'Překresli automat z přednášky podle tabulky: q₀ je počáteční, přijímací jsou q₁ a q₂.  δ: q₀ → (0: q₀, 1: q₂), q₁ → (0: q₁, 1: q₃), q₂ → (0: q₁, 1: q₃), q₃ → (0: q₁, 1: q₃). Stavy pojmenuj q0, q1, q2, q3.',
       ref: dfa('q0', ['q1', 'q2'], { q0: { 0: 'q0', 1: 'q2' }, q1: { 0: 'q1', 1: 'q3' }, q2: { 0: 'q1', 1: 'q3' }, q3: { 0: 'q1', 1: 'q3' } }) },
-    { id: 'repr', steps: true, words: ['1011010', '0', '1', '10', '0110', '100', '11', '0010'], lang: 'automat z přednášky zadaný přechodovou funkcí', title: 'Čtyři reprezentace (δ → tabulka → diagram → strom)', alphabet: ['0', '1'], pred: w => /^0*1$/.test(w) || (w.endsWith('0') && w.includes('1')),
+    { id: 'repr', steps: true, image: '/automat-delta.jpg', words: ['1011010', '0', '1', '10', '0110', '100', '11', '0010'], lang: 'automat z přednášky zadaný přechodovou funkcí', title: 'Čtyři reprezentace (δ → tabulka → diagram → strom)', alphabet: ['0', '1'], pred: w => /^0*1$/.test(w) || (w.endsWith('0') && w.includes('1')),
       text: 'Automat je zadaný přechodovou funkcí na obrázku: Q = {q0, q1, q2, q3}, Σ = {0, 1}, počáteční stav q0, F = {q1, q2}. Nejdřív přepiš hodnoty δ, pak vyplň tabulku, nakresli diagram a sestav stavový strom.',
       ref: dfa('q0', ['q1', 'q2'], { q0: { 0: 'q0', 1: 'q2' }, q1: { 0: 'q1', 1: 'q3' }, q2: { 0: 'q1', 1: 'q3' }, q3: { 0: 'q1', 1: 'q3' } }) },
   ];
