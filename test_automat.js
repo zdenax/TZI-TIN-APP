@@ -88,4 +88,8 @@ for (const t of Auto.TASKS.filter(x => x.steps)) {
 assert.deepEqual(Auto.normalize(Auto.TASKS.find(t => t.id === 'bez11').ref, ['0', '1']).states.map(s => s.id), ['q0', 'q1', 'q2']);
 assert.deepEqual(Auto.parseSpec('F = {}\nδ(a,0)=a δ(a,1)=a').accept, []);
 
+// 10. kostra zadání s prázdnými místy nesmí chytit „F“ jako počáteční stav
+assert.equal(Auto.parseSpec('Q = {}\nΣ = {0, 1}\npočáteční stav \nF = {}\nδ(, ) = ').start, null);
+assert.equal(Auto.parseSpec('počáteční stav q1\nδ(q1,0)=q1').start, 'q1');
+
 console.log('automat test OK');

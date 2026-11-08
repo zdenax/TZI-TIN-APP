@@ -485,7 +485,11 @@ function showTab(id) {
   for (const [k] of [['delta'], ['table'], ['diagram'], ['tree'], ['word']]) $('p-' + k).hidden = k !== id;
   lsSet('tzi_automat_tab_' + (task ? task.id : 'volny'), id);
   renderTabs();
-  if (id === 'delta') syncDelta(); else if (id === 'diagram') { fitBoard(); render(); } else if (id === 'word') { if (given) sim.cur = null; renderWordDiagram(); }
+  if (id === 'delta') {
+    syncDelta();
+    const t = $('dText');
+    if (t && t.value === skeleton()) { t.focus(); t.setSelectionRange(5, 5); } // kurzor do Q = {|}
+  } else if (id === 'diagram') { fitBoard(); render(); } else if (id === 'word') { if (given) sim.cur = null; renderWordDiagram(); }
   $('pane').scrollTop = 0;
 }
 
@@ -570,7 +574,8 @@ function specFromM() { // přechodová funkce z diagramu jako text
   for (const s of M.states) for (const a of M.alphabet) for (const t of d[s.id][a] || []) l.push(`δ(${s.id}, ${a}) = ${t}`);
   return l.join('\n');
 }
-function syncDelta() { const t = $('dText'); if (t && document.activeElement !== t) t.value = specFromM(); }
+const skeleton = () => `Q = {}\nΣ = {${M.alphabet.join(', ')}}\npočáteční stav \nF = {}\nδ(, ) = `; // kostra se speciálními znaky, jen se doplní
+function syncDelta() { const t = $('dText'); if (t && document.activeElement !== t) t.value = M.states.length ? specFromM() : skeleton(); }
 function applySpec(text) { // text s δ -> stejný automat v diagramu (stavy, které už v diagramu jsou, si drží polohu)
   const sp = Auto.parseSpec(text), msg = $('dMsg');
   if (!text.trim()) { msg.innerHTML = ''; return; }
@@ -588,10 +593,16 @@ function applySpec(text) { // text s δ -> stejný automat v diagramu (stavy, kt
 function buildLive() {
   RP = null;
   $('p-delta').innerHTML = '<h2>1. Přechodová funkce δ</h2><p class="hint">Navrhni ji sám podle zadání vlevo: napiš stavy Q, abecedu Σ, počáteční stav, F a přechody <code>δ(q0, 0) = q1</code>, každý na jeden řádek. Tabulka, diagram a strom se podle toho udělají samy. Stejně tak se tu ukáže δ z diagramu, který nakreslíš.</p>' +
-    '<textarea id="dText" rows="14" spellcheck="false" placeholder="Q = {q0, q1}&#10;Σ = {0, 1}&#10;počáteční stav q0&#10;F = {q1}&#10;δ(q0, 0) = q0&#10;δ(q0, 1) = q1&#10;…"></textarea><div id="dMsg"></div>' +
-    '<div class="row"><button class="btn primary" id="dGrade">Zkontrolovat automat</button></div><div class="gradeOut"></div>';
+    '<textarea id="dText" rows="14" spellcheck="false"></textarea><div id="dMsg"></div>' +
+    '<div class="row"><button class="btn" id="dAdd" title="Přidá řádek δ( , ) = a nastaví kurzor do závorky">+ přechod δ( , ) =</button><button class="btn primary" id="dGrade">Zkontrolovat automat</button></div><div class="gradeOut"></div>';
   $('dText').oninput = () => applySpec($('dText').value);
   $('dGrade').onclick = doGrade; $('dGrade').hidden = !task;
+  $('dAdd').onclick = () => {
+    const t = $('dText'); t.focus();
+    if (!/δ\(, \) =\s*$/.test(t.value)) t.value = t.value.replace(/\s*$/, '') + '\nδ(, ) = ';
+    const c = t.value.lastIndexOf('δ(, )') + 2; t.setSelectionRange(c, c);
+  };
+  syncDelta();
   $('p-table').innerHTML = '<h2>2. Tabulka přechodů</h2><div id="lTable"></div>';
   $('p-tree').innerHTML = '<h2>4. Stavový strom</h2><div id="lTree" class="treebox"></div>';
   $('p-word').innerHTML = '<h2>5. Čtení slova</h2><div class="row"><input type="text" id="word" placeholder="např. 1011010" size="16" autocomplete="off"><button class="btn" id="step">Krok</button><button class="btn" id="whole">Celé</button><button class="btn" id="reset">Znovu</button></div><div id="trace" class="trace"></div><p class="hint">Slovo čte tvůj diagram, aktuální stav je zvýrazněný.</p><svg id="wBoard" aria-label="Diagram"></svg>';

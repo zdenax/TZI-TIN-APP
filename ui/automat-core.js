@@ -177,7 +177,7 @@
     const sigma = (src.match(/[Σ∑]\s*=\s*\{([^}]*)\}/) || src.match(/abeceda[^\n:=]*[:=]\s*\{?([^}\n]*)\}?/i) || [])[1];
     const qset = (src.match(/(?:^|[^A-Za-z])Q\s*=\s*\{([^}]*)\}/) || [])[1];
     const fset = (src.match(/(?:^|[^A-Za-z])F\s*=\s*\{([^}]*)\}/) || src.match(/(?:koncov|p[řr]ij[ií]mac)\w*[^\n:=]*[:=]\s*\{?([^}\n]*)\}?/i) || [])[1];
-    const sm = src.match(new RegExp(`po[cč](?:[aá]te[cč]n\\S*|\\.)(?:\\s+stav\\w*)?(?:\\s+je)?\\s*[:=]?\\s*(${id})`, 'i')) || src.match(new RegExp(`\\bstart\\w*\\s*[:=]?\\s*(${id})`, 'i'));
+    const sm = src.match(new RegExp(`po[cč](?:[aá]te[cč]n\\S*|\\.)(?:[ \\t]+stav\\w*)?(?:[ \\t]+je)?[ \\t]*[:=]?[ \\t]*(?!(?:stav|je)\\b)(${id})`, 'i')) || src.match(new RegExp(`\\bstart\\w*[ \\t]*[:=]?[ \\t]*(${id})`, 'i'));
     const alphabet = sigma ? list(sigma) : [...new Set(trans.flatMap(t => t.symbols))].sort();
     if (alphabet.some(a => [...a].length !== 1)) problems.push('Znaky abecedy musí být jednopísmenné.');
     const accept = fset !== undefined ? ids(fset) : [];
