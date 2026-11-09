@@ -1,0 +1,962 @@
+{
+ "title": "Jazyky rozpoznatelné konečnými automaty",
+ "lecture": 6,
+ "date": "2026-11-05",
+ "questions": [
+  {
+   "type": "choice",
+   "text": "Kdy je slovo rozpoznáno konečným automatem (definice z přednášky)?",
+   "options": {
+    "A": "Když automat při čtení slova aspoň jednou projde koncovým stavem.",
+    "B": "Když je slovo celé přečteno a automat skončí v koncovém stavu.",
+    "C": "Když se automat po přečtení slova vrátí do počátečního stavu.",
+    "D": "Když první přečtený znak vede automat do koncového stavu."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Rozhoduje jen stav po posledním znaku; cesta slovem a stavy uprostřed se nepočítají.",
+   "number": 1,
+   "id": "6-1"
+  },
+  {
+   "type": "choice",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Čte slovo 1011: q₀ → q₂ → q₁ → q₃ → q₃. Je slovo rozpoznáno?",
+   "options": {
+    "A": "Ne, protože slovo obsahuje víc jedniček než nul.",
+    "B": "Ano, protože slovo začíná jedničkou.",
+    "C": "Ano, cestou prošel koncovým stavem q₁.",
+    "D": "Ne, skončil v q₃ ∉ F."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Skončil v q₃ ∉ F, i když cestou prošel koncovými stavy q₂ a q₁. Počítá se jen stav po posledním znaku, ne průchod koncovým stavem uprostřed čtení.",
+   "number": 2,
+   "id": "6-2"
+  },
+  {
+   "type": "choice",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Čte slovo 1011010: q₀ → q₂ → q₁ → q₃ → q₃ → q₁ → q₃ → q₁. Je slovo rozpoznáno?",
+   "options": {
+    "A": "Ano, protože cesta začíná i končí ve stejném stavu.",
+    "B": "Ne, protože prošel stavem q₃ ∉ F.",
+    "C": "Ano, skončil v q₁ ∈ F.",
+    "D": "Ne, protože slovo je delší než počet stavů."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Slovo je celé přečteno a automat stojí v koncovém stavu, takže ho rozpoznává.",
+   "number": 3,
+   "id": "6-3"
+  },
+  {
+   "type": "choice",
+   "text": "Co je δ* (zobecněná přechodová funkce)?",
+   "options": {
+    "A": "δ* : Σ* → ℕ, spočítá délku přečteného slova.",
+    "B": "δ* : Q × Σ* → F, vrací vždy některý koncový stav.",
+    "C": "δ* : Q × Σ* → Q, vrátí stav po přečtení celého slova.",
+    "D": "δ* : Q × Σ → Q, přečte jediný znak a vrátí další stav."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "δ umí jen jeden znak, δ* rozšiřuje δ na celá slova: δ*(q, w) = q′ je stav, ve kterém automat skončí.",
+   "number": 4,
+   "id": "6-4"
+  },
+  {
+   "type": "choice",
+   "text": "Čemu se rovná δ*(q, ε), tedy přečtení prázdného slova?",
+   "options": {
+    "A": "Nějakému koncovému stavu z F.",
+    "B": "q (stav se nezmění).",
+    "C": "Počátečnímu stavu q₀.",
+    "D": "Není definováno."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Pravidlo 1: δ*(q, ε) = q. Prázdné slovo nemá žádný znak, takže se nic nepřečte.",
+   "number": 5,
+   "id": "6-5"
+  },
+  {
+   "type": "choice",
+   "text": "Jak zní rekurzivní pravidlo 2 pro δ*(q, wa), kde w je slovo a a znak?",
+   "options": {
+    "A": "δ*(q, wa) = δ(δ*(q, w), a)",
+    "B": "δ*(q, wa) = δ(q, a)",
+    "C": "δ*(q, wa) = δ*(q, w) ∪ δ(q, a)",
+    "D": "δ*(q, wa) = δ(δ*(q, a), w)"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Nejdřív přečti w, pak ještě znak a: poslední znak se oddělí, stav po zbytku w dá δ*, a na ten se použije obyčejné δ se znakem a.",
+   "number": 6,
+   "id": "6-6"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký je rozdíl mezi δ a δ*?",
+   "options": {
+    "A": "δ vrací stav, δ* vrací množinu slov.",
+    "B": "δ je jeden krok (jeden znak), δ* je čtení celého slova.",
+    "C": "δ je pro deterministické automaty, δ* pro nedeterministické.",
+    "D": "Žádný, jen se píše jinak."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Chytil obě značí stejně (δ), vyučující píše u slova w taky δ bez hvězdičky, ale slovo w znamená čtení celého slova.",
+   "number": 7,
+   "id": "6-7"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se počítá δ*(q₀, 10), tedy čtení slova 10?",
+   "options": {
+    "A": "Zevnitř ven: δ(δ(q₀, 1), 0), nejdřív první znak, pak druhý.",
+    "B": "Jako součet δ(q₀, 1) + δ(q₀, 0).",
+    "C": "Jako δ(q₀, 10), v jednom kroku.",
+    "D": "Zvenku dovnitř: δ(δ(q₀, 0), 1), nejdřív poslední znak."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Čte se zleva doprava; výsledek je stav po posledním znaku.",
+   "number": 8,
+   "id": "6-8"
+  },
+  {
+   "type": "choice",
+   "text": "Co je abeceda Σ?",
+   "options": {
+    "A": "Jedno slovo nad jazykem.",
+    "B": "Libovolná, klidně i nekonečná množina celých slov.",
+    "C": "Konečná neprázdná množina symbolů (písmen).",
+    "D": "Množina všech koncových stavů."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Přednáška: Σ je libovolná konečná abeceda, např. Σ = {0, 1}. Že je neprázdná, doplňuje Vais (doplněno z Claude).",
+   "number": 9,
+   "id": "6-9"
+  },
+  {
+   "type": "choice",
+   "text": "Co je slovo nad abecedou Σ?",
+   "options": {
+    "A": "Nekonečná posloupnost znaků z Σ.",
+    "B": "Přechod mezi dvěma stavy.",
+    "C": "Libovolná podmnožina Σ.",
+    "D": "Konečná posloupnost písmen z Σ."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Délka slova je počet znaků. Např. 0110 je slovo nad {0, 1} a |0110| = 4.",
+   "number": 10,
+   "id": "6-10"
+  },
+  {
+   "type": "choice",
+   "text": "Co je prázdné slovo ε a jakou má délku?",
+   "options": {
+    "A": "Slovo bez jediného písmene, délka 0.",
+    "B": "Jeden znak, který značí mezeru, délka 1.",
+    "C": "Prázdná množina, ne slovo.",
+    "D": "Slovo, které nepatří do žádného jazyka."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "ε je také slovo (jako prázdný řetězec v programování). V rukopise „e – prázdné slovo“, |ε| = 0.",
+   "number": 11,
+   "id": "6-11"
+  },
+  {
+   "type": "choice",
+   "text": "Co je Σ⁺?",
+   "options": {
+    "A": "Množina všech konečných neprázdných slov nad Σ.",
+    "B": "Množina všech konečných slov nad Σ včetně prázdného.",
+    "C": "Množina všech podmnožin Σ.",
+    "D": "Nejdelší slovo nad Σ."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Přednáška: Σ⁺ = všechna konečná neprázdná slova (Chytil, def. 1.2.1). Např. {0, 1}⁺ = {0, 1, 00, 01, 10, 11, 000, …}.",
+   "number": 12,
+   "id": "6-12"
+  },
+  {
+   "type": "choice",
+   "text": "Co je Σ*?",
+   "options": {
+    "A": "Množina všech jazyků nad abecedou Σ.",
+    "B": "Všechna konečná neprázdná slova nad Σ, bez slova ε.",
+    "C": "Všechna nekonečná slova (posloupnosti) nad Σ.",
+    "D": "Všechna konečná slova nad Σ včetně prázdného slova ε."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Σ* = Σ⁺ ∪ {ε}, pro Σ = {0, 1} je Σ* = {ε, 0, 1, 00, …}. Rozdíl proti Σ⁺ je jediný prvek: ε.",
+   "number": 13,
+   "id": "6-13"
+  },
+  {
+   "type": "choice",
+   "text": "V čem se liší Σ⁺ a Σ*?",
+   "options": {
+    "A": "Jen v prázdném slovu: ε ∈ Σ*, ale ε ∉ Σ⁺.",
+    "B": "Nijak, jsou to dvě značky téže množiny.",
+    "C": "Σ* je konečná, Σ⁺ nekonečná.",
+    "D": "Σ⁺ obsahuje jen slova délky 1."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Zapamatuj si: + = aspoň jeden znak, * = klidně i žádný.",
+   "number": 14,
+   "id": "6-14"
+  },
+  {
+   "type": "choice",
+   "text": "Kolik prvků má množina Σ⁺ pro Σ = {0, 1}?",
+   "options": {
+    "A": "Dvě na desátou, tedy přesně 1024.",
+    "B": "Žádný, množina je prázdná.",
+    "C": "Nekonečně (spočetně) mnoho.",
+    "D": "2"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Slov každé délky n je 2ⁿ, délek je nekonečně mnoho. Slova jdou seřadit podle délky, proto je množina spočetná.",
+   "number": 15,
+   "id": "6-15"
+  },
+  {
+   "type": "choice",
+   "text": "Co je jazyk nad abecedou Σ?",
+   "options": {
+    "A": "Jen množina slov, která rozpozná nějaký automat.",
+    "B": "Libovolná podmnožina L ⊆ Σ*.",
+    "C": "Jen nekonečná množina slov nad Σ.",
+    "D": "Množina všech abeced."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Definice důležitá z přednášky (Chytil, def. 1.2.2). Že jazyk může být konečný i nekonečný, a také prázdný, je doplněno z Claude.",
+   "number": 16,
+   "id": "6-16"
+  },
+  {
+   "type": "choice",
+   "text": "Je množina {00, 01, 10, 11} jazykem nad abecedou {0, 1}?",
+   "options": {
+    "A": "Ano, ale jen pokud obsahuje prázdné slovo.",
+    "B": "Ne, jazyk smí obsahovat jen slova délky 1.",
+    "C": "Ano, je to podmnožina {0, 1}*.",
+    "D": "Ne, jazyk musí být nekonečný."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Jazyk je libovolná podmnožina Σ*, tedy i konečný výčet; tady všechna slova délky 2 (příklad doplněný Claudem).",
+   "number": 17,
+   "id": "6-17"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se definuje jazyk L(A) rozpoznávaný konečným automatem A = (Q, Σ, δ, q₀, F)?",
+   "options": {
+    "A": "L(A) = {w ∈ Σ* ; δ*(q₀, w) ∈ F}, všechna slova, která automat rozpozná.",
+    "B": "L(A) = {w ∈ Σ* ; δ*(q₀, w) = q₀}, tedy slova vracející se do počátku.",
+    "C": "L(A) = Σ*, vždy všechna slova.",
+    "D": "L(A) = {q ∈ Q ; q ∈ F}, množina koncových stavů."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Zkrácený zápis na tabuli: w ∈ L(A) ⇔ δ*(q₀, w) ∈ F. Čte se: pusť automat z q₀, přečti w a podívej se, zda skončil ve F.",
+   "number": 18,
+   "id": "6-18"
+  },
+  {
+   "type": "choice",
+   "text": "Kdy je jazyk L rozpoznatelný konečným automatem?",
+   "options": {
+    "A": "Když je L nekonečný (má nekonečně mnoho slov).",
+    "B": "Když L = L(A) pro nějaký konečný automat A.",
+    "C": "Když L obsahuje prázdné slovo ε.",
+    "D": "Když má L alespoň dvě různá slova."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Definice 1.2.4 z Chytila. Doplněno z Claude: třídu všech takových jazyků značí Chytil 𝓕; každý konečný jazyk je rozpoznatelný, nekonečný jen někdy, takže nekonečnost o rozpoznatelnosti nerozhoduje.",
+   "number": 19,
+   "id": "6-19"
+  },
+  {
+   "type": "choice",
+   "text": "Kdy je prázdné slovo rozpoznáno konečným automatem?",
+   "options": {
+    "A": "Vždy, protože každý automat přijímá ε.",
+    "B": "Nikdy, protože prázdné slovo se vůbec nedá přečíst.",
+    "C": "Právě když má automat jen jeden stav.",
+    "D": "Právě když q₀ ∈ F (počáteční stav je koncový)."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "ε ∈ L(A) ⇔ q₀ ∈ F. Plyne z δ*(q₀, ε) = q₀: automat nic nepřečte, takže zůstane v q₀.",
+   "number": 20,
+   "id": "6-20"
+  },
+  {
+   "type": "choice",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Je v něm rozpoznáno prázdné slovo?",
+   "options": {
+    "A": "Ne, protože q₀ ∉ F.",
+    "B": "Ano, každý automat přijímá ε.",
+    "C": "Ne, protože ε není slovo.",
+    "D": "Ano, protože q₀ je počáteční."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "ε ∈ L(A) ⇔ q₀ ∈ F, a tady q₀ není v F.",
+   "number": 21,
+   "id": "6-21"
+  },
+  {
+   "type": "choice",
+   "text": "Musí být počáteční stav zároveň koncový?",
+   "options": {
+    "A": "Ano, jinak by automat nepřijal žádné slovo.",
+    "B": "Ne, q₀ v F být může, ale nemusí.",
+    "C": "Ne, počáteční stav nesmí být nikdy koncový.",
+    "D": "Ano, ale jen u automatů se dvěma stavy."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "F ⊆ Q je libovolná podmnožina. Je-li q₀ ∈ F, v tabulce se značí ↔ (Chytil) a automat rozpoznává ε.",
+   "number": 22,
+   "id": "6-22"
+  },
+  {
+   "type": "choice",
+   "text": "Co je zřetězení slov u a v?",
+   "options": {
+    "A": "Slovo uv: slovo u a za ním slovo v.",
+    "B": "Množina {u, v}.",
+    "C": "Průnik písmen slov u a v.",
+    "D": "Slovo, které vznikne zprohazováním znaků."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Např. u = abc, v = cda → uv = abccda.",
+   "number": 23,
+   "id": "6-23"
+  },
+  {
+   "type": "choice",
+   "text": "Je zřetězení slov komutativní (platí uv = vu)?",
+   "options": {
+    "A": "Ano, pro libovolná slova u, v.",
+    "B": "Ano, ale jen pro slova stejné délky.",
+    "C": "Ne, a není ani asociativní.",
+    "D": "Ne, ale je asociativní."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "abc·cda = abccda, ale cda·abc = cdaabc. Zřetězení je asociativní, ne komutativní; prázdné slovo je neutrální prvek: εu = uε = u.",
+   "number": 24,
+   "id": "6-24"
+  },
+  {
+   "type": "choice",
+   "text": "Které slovo je neutrální prvek zřetězení (platí εu = uε = u)?",
+   "options": {
+    "A": "Slovo u samo sebou.",
+    "B": "Slovo 0.",
+    "C": "Prázdné slovo ε.",
+    "D": "Neexistuje."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Zřetězením s prázdným slovem se slovo nezmění. Délky se při zřetězení sčítají: |uv| = |u| + |v|.",
+   "number": 25,
+   "id": "6-25"
+  },
+  {
+   "type": "choice",
+   "text": "Jak je definováno n-násobné zřetězení uⁿ slova u?",
+   "options": {
+    "A": "u¹ = u, uⁱ⁺¹ = uⁱuⁱ, u⁰ = ε",
+    "B": "uⁿ je n-tý znak slova u.",
+    "C": "u¹ = u, uⁱ⁺¹ = uⁱu, u⁰ = ε",
+    "D": "u¹ = u, uⁱ⁺¹ = uⁱ, u⁰ = ε"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Na tabuli u¹ = u, u² = uu, uⁱ⁺¹ = uⁱu (Chytil); u⁰ = ε doplňuje Vais. uⁿ je tedy n kopií u za sebou, např. pro u = ab je u³ = ababab. Délka je |uⁿ| = n · |u|.",
+   "number": 26,
+   "id": "6-26"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se čte zápis „∃ q₁, …, qₙ₊₁ : qₙ₊₁ ∈ F, q₁ = q₀, qᵢ₊₁ = δ(qᵢ, xᵢ)“ u slova w = x₁x₂…xₙ?",
+   "options": {
+    "A": "Každé slovo ze Σ* délky n je automatem rozpoznáno.",
+    "B": "Automat má n + 1 stavů a všechny leží ve F.",
+    "C": "Existuje stav, který je zároveň počáteční i koncový.",
+    "D": "Existuje výpočet z q₀ po znacích slova w, který skončí ve F."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "q₁, …, qₙ₊₁ jsou členy posloupnosti stavů při čtení (q₁ = q₀ je start), ne jména stavů q₁, q₂ automatu z přednášky. Každý další stav vznikne z předchozího a přečteného znaku a poslední leží ve F. Je to totéž co δ*(q₀, w) ∈ F; u deterministického automatu je výpočet jen jeden, „existuje“ znamená „ten jediný končí ve F“.",
+   "number": 27,
+   "id": "6-27"
+  },
+  {
+   "type": "choice",
+   "text": "Proč u deterministického automatu stačí psát δ*(q₀, w) ∈ F místo „existuje výpočet končící ve F“?",
+   "options": {
+    "A": "Protože slovo w je vždy jednoznakové.",
+    "B": "Protože δ* vůbec nezávisí na čteném slově.",
+    "C": "Protože výpočet na slovo w je jen jeden.",
+    "D": "Protože automat má vždy jen jeden koncový stav."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Deterministický automat: δ je funkce Q × Σ → Q, každé dvojici (stav, znak) přiřadí jediný stav. Proto je výpočet na w jen jeden a „existuje výpočet končící ve F“ znamená totéž co δ*(q₀, w) ∈ F.",
+   "number": 28,
+   "id": "6-28"
+  },
+  {
+   "type": "choice",
+   "text": "Přednáška: „existují diskrétní a spojité, budeme brát diskrétní“. Jak lze „diskrétní“ automat chápat?",
+   "options": {
+    "A": "Automat nečte žádný vstup, mění stav sám od sebe.",
+    "B": "Stav se mění po krocích, jeden krok = jeden přečtený znak.",
+    "C": "Automat má nekonečně mnoho stavů a čte slovo naráz.",
+    "D": "Stav se mění spojitě v čase, bez jednotlivých kroků."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Přednáška to dál nerozvedla. Výklad (stav se mění po krocích, krok = znak) je ve výpiscích označený jako doplněk od Clauda, není to výrok z tabule ani z knihy.",
+   "number": 29,
+   "id": "6-29"
+  },
+  {
+   "type": "choice",
+   "text": "Z čeho si podle přednášky představujeme automat?",
+   "options": {
+    "A": "Z jediného přepínače se dvěma polohami.",
+    "B": "Z řídicí jednotky, čtecí hlavy a pásky s buňkami.",
+    "C": "Z procesoru, operační paměti, disku a sběrnice.",
+    "D": "Z obrazovky, klávesnice a myši s tlačítky."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Na pásce je vstupní slovo, hlava ho čte po jednom znaku, řídicí jednotka drží aktuální stav.",
+   "number": 30,
+   "id": "6-30"
+  },
+  {
+   "type": "choice",
+   "text": "Jaké čtyři způsoby zadání konečného automatu bude chtít úkol na příští týden?",
+   "options": {
+    "A": "Přechodová funkce, tabulka, stavový diagram a stavový strom.",
+    "B": "Tabulka přechodů, stavový diagram, regulární výraz a gramatika.",
+    "C": "Rovnice, graf, matice sousednosti a vstupní slovo.",
+    "D": "Jen tabulka přechodů a stavový diagram, nic dalšího."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Úkol: konečný automat ve všech čtyřech reprezentacích, od jednodušších po složitější.",
+   "number": 31,
+   "id": "6-31"
+  },
+  {
+   "type": "choice",
+   "text": "Příklad 2 (dveře): stav 0 = zavřeno, stav 1 = otevřeno; vstup 0 = nikdo není před dveřmi, vstup 1 = někdo je. Kolik má automat stavů a jaká je abeceda?",
+   "options": {
+    "A": "Jeden stav a abecedu {0, 1}.",
+    "B": "Dva stavy a abecedu {zavřeno, otevřeno}.",
+    "C": "Čtyři stavy a abecedu {0, 1}.",
+    "D": "Dva stavy Q = {q₀, q₁} a abecedu Σ = {0, 1}."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Q = {q₀, q₁}, Σ = {0, 1}, počáteční q₀ (zavřeno), F = {q₁} (otevřeno).",
+   "number": 32,
+   "id": "6-32"
+  },
+  {
+   "type": "choice",
+   "text": "Dveře (příklad 2): Q = {q₀, q₁}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₁, F = {q₁}. Jaká slova automat rozpoznává?",
+   "options": {
+    "A": "Slova začínající jedničkou.",
+    "B": "Slova se sudým počtem jedniček.",
+    "C": "Slova končící jedničkou.",
+    "D": "Slova obsahující aspoň jednu jedničku."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Nový stav je vždy poslední přečtený znak (1 → q₁, 0 → q₀), takže rozhoduje poslední znak. Ověřeno výčtem do délky 12.",
+   "number": 33,
+   "id": "6-33"
+  },
+  {
+   "type": "choice",
+   "text": "Dveře (příklad 2): slovo 01001. Jak vypadá posloupnost stavů a je slovo rozpoznáno?",
+   "options": {
+    "A": "q₀ → q₁ → q₁ → q₁ → q₁ → q₁; skončí v q₁, rozpoznáno.",
+    "B": "q₀ → q₀ → q₁ → q₀ → q₀ → q₁; skončí v q₁ ∈ F, rozpoznáno.",
+    "C": "q₀ → q₀ → q₁ → q₀ → q₀ → q₀; skončí v q₀, nerozpoznáno.",
+    "D": "q₁ → q₀ → q₁ → q₁ → q₀ → q₁; skončí v q₁, rozpoznáno."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Stavy po znacích 0, 1, 0, 0, 1: q₀, q₁, q₀, q₀, q₁. Poslední znak je 1, takže q₁ ∈ F.",
+   "number": 34,
+   "id": "6-34"
+  },
+  {
+   "type": "choice",
+   "text": "Dveře (příklad 2): rozpozná se prázdné slovo ε?",
+   "options": {
+    "A": "Ne, q₀ ∉ F (F = {q₁}).",
+    "B": "Ne, protože ε nemá délku.",
+    "C": "Ano, každý automat přijímá ε.",
+    "D": "Ano, protože dveře jsou na začátku zavřené."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "ε ∈ L(A) ⇔ q₀ ∈ F, tady F = {q₁}, takže ne. Slovo musí končit 1, ε nemá žádný znak.",
+   "number": 35,
+   "id": "6-35"
+  },
+  {
+   "type": "choice",
+   "text": "Kolik přechodů (políček tabulky) má deterministický automat z příkladu 2 s dveřmi?",
+   "options": {
+    "A": "3",
+    "B": "2",
+    "C": "6",
+    "D": "4"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "2 stavy × 2 znaky: z každého stavu vede pro každý znak abecedy právě jeden přechod, |Q| · |Σ| = 2 · 2 = 4.",
+   "number": 36,
+   "id": "6-36"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Do jakého stavu dojde po přečtení slova 10, tedy čemu se rovná δ*(q₀, 10)?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q1",
+   "solution": "Čte se po znacích: δ(q₀, 1) = q₂, δ(q₂, 0) = q₁.\nδ*(q₀, 10) = q₁, a to je koncový stav, slovo je rozpoznáno.",
+   "number": 37,
+   "id": "6-37"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Do jakého stavu dojde po přečtení slova 1011, tedy čemu se rovná δ*(q₀, 1011)?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q3",
+   "solution": "Čte se po znacích: δ(q₀, 1) = q₂, δ(q₂, 0) = q₁, δ(q₁, 1) = q₃, δ(q₃, 1) = q₃.\nδ*(q₀, 1011) = q₃, to není koncový stav, slovo není rozpoznáno.",
+   "number": 38,
+   "id": "6-38"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Do jakého stavu dojde po přečtení slova 1011010, tedy čemu se rovná δ*(q₀, 1011010)?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q1",
+   "solution": "Čte se po znacích: δ(q₀, 1) = q₂, δ(q₂, 0) = q₁, δ(q₁, 1) = q₃, δ(q₃, 1) = q₃, δ(q₃, 0) = q₁, δ(q₁, 1) = q₃, δ(q₃, 0) = q₁.\nδ*(q₀, 1011010) = q₁, a to je koncový stav, slovo je rozpoznáno.",
+   "number": 39,
+   "id": "6-39"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Do jakého stavu dojde po přečtení slova 111, tedy čemu se rovná δ*(q₀, 111)?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q3",
+   "solution": "Čte se po znacích: δ(q₀, 1) = q₂, δ(q₂, 1) = q₃, δ(q₃, 1) = q₃.\nδ*(q₀, 111) = q₃, to není koncový stav, slovo není rozpoznáno.",
+   "number": 40,
+   "id": "6-40"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Do jakého stavu dojde po přečtení slova 001, tedy čemu se rovná δ*(q₀, 001)?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q2",
+   "solution": "Čte se po znacích: δ(q₀, 0) = q₀, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂.\nδ*(q₀, 001) = q₂, a to je koncový stav, slovo je rozpoznáno.",
+   "number": 41,
+   "id": "6-41"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Je slovo 11 rozpoznáno?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ne",
+   "solution": "q₀ → q₂ → q₃ – skončil mimo F: ne.",
+   "number": 42,
+   "id": "6-42"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Je slovo 0011 rozpoznáno?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ne",
+   "solution": "q₀ → q₀ → q₀ → q₂ → q₃ – skončil mimo F: ne.",
+   "number": 43,
+   "id": "6-43"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Je slovo 1110 rozpoznáno?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ano",
+   "solution": "q₀ → q₂ → q₃ → q₃ → q₁ – skončil ve F: ano.",
+   "number": 44,
+   "id": "6-44"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Je slovo 0 rozpoznáno?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ne",
+   "solution": "q₀ → q₀ – skončil mimo F: ne.",
+   "number": 45,
+   "id": "6-45"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Je slovo 1100 rozpoznáno?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ano",
+   "solution": "q₀ → q₂ → q₃ → q₁ → q₁ – skončil ve F: ano.",
+   "number": 46,
+   "id": "6-46"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Jak dlouhé je nejkratší slovo, které automat rozpoznává?",
+   "hint": "číslo (délka slova)",
+   "answer": "1",
+   "solution": "Prázdné slovo ne (q₀ ∉ F). Jednoznakové: 0 vede q₀ → q₀ (nepřijato), 1 vede q₀ → q₂ ∈ F (přijato). Nejkratší je slovo 1, délka 1.",
+   "number": 47,
+   "id": "6-47"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Kolik slov délky 4 nad {0, 1} automat rozpoznává?",
+   "hint": "číslo",
+   "answer": "8",
+   "solution": "Z 16 slov délky 4 jich končí ve F 8: 0001 0010 0100 0110 1000 1010 1100 1110.",
+   "number": 48,
+   "id": "6-48"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Kolik slov délky 3 nad {0, 1} automat rozpoznává?",
+   "hint": "číslo",
+   "answer": "4",
+   "solution": "Z 8 slov délky 3 jich končí ve F 4: 001 010 100 110.",
+   "number": 49,
+   "id": "6-49"
+  },
+  {
+   "type": "input",
+   "text": "Dveře (příklad 2): Q = {q₀, q₁}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₁, F = {q₁}. Do jakého stavu dojde automat po slově 10110?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q0",
+   "solution": "q₀ → q₁ → q₀ → q₁ → q₁ → q₀. Nový stav je poslední přečtený znak: q₀.",
+   "number": 50,
+   "id": "6-50"
+  },
+  {
+   "type": "input",
+   "text": "Dveře (příklad 2): Q = {q₀, q₁}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₁, F = {q₁}. Do jakého stavu dojde automat po slově 010010?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q0",
+   "solution": "q₀ → q₀ → q₁ → q₀ → q₀ → q₁ → q₀. Nový stav je poslední přečtený znak: q₀.",
+   "number": 51,
+   "id": "6-51"
+  },
+  {
+   "type": "input",
+   "text": "Dveře (příklad 2): Q = {q₀, q₁}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₁, F = {q₁}. Do jakého stavu dojde automat po slově 11?",
+   "hint": "stav jako q a číslo, bez dolního indexu, např. q7",
+   "answer": "q1",
+   "solution": "q₀ → q₁ → q₁. Nový stav je poslední přečtený znak: q₁.",
+   "number": 52,
+   "id": "6-52"
+  },
+  {
+   "type": "input",
+   "text": "Dveře (příklad 2, rozpoznává slova končící 1). Kolik slov délky 4 nad {0, 1} rozpozná?",
+   "hint": "číslo",
+   "answer": "8",
+   "solution": "Poslední znak je pevně 1, zbylé tři jsou libovolné: 2³ = 8.",
+   "number": 53,
+   "id": "6-53"
+  },
+  {
+   "type": "input",
+   "text": "Kolik slov délky 3 existuje nad abecedou {0, 1}?",
+   "hint": "číslo",
+   "answer": "8",
+   "solution": "Na každé z 3 pozic jsou dva znaky, tedy 2³ = 8 slov.",
+   "number": 54,
+   "id": "6-54"
+  },
+  {
+   "type": "input",
+   "text": "Kolik slov délky 5 existuje nad abecedou {0, 1}?",
+   "hint": "číslo",
+   "answer": "32",
+   "solution": "Na každé z 5 pozic jsou dva znaky, tedy 2⁵ = 32 slov.",
+   "number": 55,
+   "id": "6-55"
+  },
+  {
+   "type": "input",
+   "text": "Kolik slov z množiny Σ* nad Σ = {0, 1} má délku nejvýše 3 (včetně prázdného slova)?",
+   "hint": "číslo",
+   "answer": "15",
+   "solution": "ε (1) + délka 1 (2) + délka 2 (4) + délka 3 (8) = 15. Bez prázdného slova (Σ⁺) by jich bylo 14.",
+   "number": 56,
+   "id": "6-56"
+  },
+  {
+   "type": "input",
+   "text": "Kolik slov z množiny Σ⁺ nad Σ = {0, 1} má délku nejvýše 3?",
+   "hint": "číslo",
+   "answer": "14",
+   "solution": "Σ⁺ neobsahuje ε: 2 + 4 + 8 = 14.",
+   "number": 57,
+   "id": "6-57"
+  },
+  {
+   "type": "input",
+   "text": "Jaká je délka slova 0110, tedy |0110|?",
+   "hint": "číslo",
+   "answer": "4",
+   "solution": "Počet znaků: 4.",
+   "number": 58,
+   "id": "6-58"
+  },
+  {
+   "type": "input",
+   "text": "Jaká je délka prázdného slova ε (na přednášce značené e), tedy |ε|?",
+   "hint": "číslo",
+   "answer": "0",
+   "solution": "Prázdné slovo nemá žádný znak, |ε| = 0.",
+   "number": 59,
+   "id": "6-59"
+  },
+  {
+   "type": "input",
+   "text": "Slovo u = ab. Jakou délku má slovo u⁴ (čtyřnásobné zřetězení)?",
+   "hint": "číslo",
+   "answer": "8",
+   "solution": "u⁴ = abababab, |u⁴| = 4 · |u| = 4 · 2 = 8.",
+   "number": 60,
+   "id": "6-60"
+  },
+  {
+   "type": "input",
+   "text": "Slovo u = ab. Jakou délku má slovo u⁰?",
+   "hint": "číslo",
+   "answer": "0",
+   "solution": "u⁰ = ε, délka 0.",
+   "number": 61,
+   "id": "6-61"
+  },
+  {
+   "type": "input",
+   "text": "Slova u = abc a v = cda. Jakou délku má zřetězení uv?",
+   "hint": "číslo",
+   "answer": "6",
+   "solution": "uv = abccda, |uv| = |u| + |v| = 3 + 3 = 6.",
+   "number": 62,
+   "id": "6-62"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Příklad 2 (dveře): stavy q₀ = zavřeno (0), q₁ = otevřeno (1), vstup 0 = nikdo není, 1 = někdo je před dveřmi. Zapiš automat jako pětici a ve všech čtyřech reprezentacích: přechodová funkce, tabulka, stavový diagram, stavový strom.",
+   "solution": "Pětice: A = (Q, Σ, δ, q₀, F), Q = {q₀, q₁}, Σ = {0, 1}, q₀ počáteční, F = {q₁}.\nPřechodová funkce: δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₁.\nTabulka (→ počáteční, ← koncový):\n        0    1\n→ q₀   q₀   q₁\n← q₁   q₀   q₁\nDiagram: šipka zvenku do q₀, q₀ má smyčku 0, q₀ –1→ q₁, q₁ má smyčku 1, q₁ –0→ q₀, z q₁ šipka ven (koncový).\nStrom (kořen q₀, ← = koncový):\nq₀: 0 → q₀ (už ve stromu), 1 → q₁ ←\nq₁ ←: 0 → q₀ (už ve stromu), 1 → q₁ ← (už ve stromu)\nNový stav je poslední přečtený znak, automat rozpoznává slova končící 1.",
+   "number": 63,
+   "id": "6-63"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Rozepiš po krocích δ*(q₀, 1001) a rozhodni, zda je slovo rozpoznáno.",
+   "solution": "Zevnitř ven, po jednom znaku: δ(q₀, 1) = q₂, δ(q₂, 0) = q₁, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃.\nδ*(q₀, 1001) = q₃ ∉ F, slovo není rozpoznáno, i když cestou prošel koncovými stavy q₂ a q₁. Zapsáno rekurzivně: δ*(q₀, 100·1) = δ(δ*(q₀, 100), 1) a tak dále, až u δ*(q₀, ε) = q₀.",
+   "number": 64,
+   "id": "6-64"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Vypiš všechna slova délky 2 nad {0, 1} a rozděl je na rozpoznaná a nerozpoznaná.",
+   "solution": "Všechna slova délky 2: 00 01 10 11.\nRozpoznaná: 01 10.\nNerozpoznaná: 00 11.\nPostup: pro každé slovo spočítej δ*(q₀, w) po dvou krocích a podívej se, jestli je výsledek ve F.",
+   "number": 65,
+   "id": "6-65"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Vysvětli vlastními slovy rozdíl mezi Σ, Σ⁺, Σ* a jazykem nad Σ. Uveď příklad pro Σ = {0, 1}.",
+   "solution": "Σ = {0, 1} je abeceda (konečná množina znaků).\nΣ⁺ = {0, 1, 00, 01, 10, 11, 000, …} = všechna neprázdná konečná slova.\nΣ* = Σ⁺ ∪ {ε} = {ε, 0, 1, 00, …} = totéž plus prázdné slovo.\nJazyk nad Σ = libovolná podmnožina Σ*, třeba {00, 01, 10, 11} (slova délky 2), nebo všechna slova končící 1, nebo prázdná množina.\nKonečný automat jazyk L(A) = {w ; δ*(q₀, w) ∈ F} rozpoznává, když přijme právě slova z jazyka.",
+   "number": 66,
+   "id": "6-66"
+  },
+  {
+   "type": "choice",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Která slova automat rozpoznává?",
+   "options": {
+    "A": "Slova se sudým počtem jedniček, která končí nulou.",
+    "B": "Slova s aspoň jednou 1 končící 0, nebo slova tvaru 0…01.",
+    "C": "Slova končící nulou, nebo slova obsahující přesně dvě jedničky.",
+    "D": "Slova obsahující aspoň jednu jedničku, bez ohledu na konec."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Doplněno z Claude (ve výpiscích, ověřeno výčtem do délky 12): po 1 je automat v q₂, po další 1 v q₃, nula z q₁, q₂, q₃ vede do q₁ ∈ F. Takže slovo s jedničkou končící 0 skončí v q₁, slovo 0…01 v q₂, jinak q₀ nebo q₃.",
+   "number": 67,
+   "id": "6-67"
+  },
+  {
+   "type": "choice",
+   "text": "Na nákresu z přednášky je q₀ označený ↔ (počáteční i koncový stav). Rozpozná tento automat prázdné slovo ε?",
+   "options": {
+    "A": "Ne, protože se nepřečte žádný znak.",
+    "B": "Ano, ale jen když má q₀ smyčku.",
+    "C": "Ano, protože q₀ ∈ F.",
+    "D": "Ne, prázdné slovo se nikdy nerozpoznává."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "ε ∈ L(A) ⇔ q₀ ∈ F. Po přečtení ε zůstane automat v q₀ (δ*(q₀, ε) = q₀), a ten je koncový.",
+   "number": 68,
+   "id": "6-68"
+  },
+  {
+   "type": "choice",
+   "text": "Co v tabulce přechodů znamenají značky →, ← a ↔ u stavu?",
+   "options": {
+    "A": "→ počáteční, ← koncový, ↔ stav se smyčkou.",
+    "B": "→ přechod na 1, ← přechod na 0, ↔ na oba.",
+    "C": "→ koncový, ← počáteční, ↔ počáteční i koncový.",
+    "D": "→ počáteční, ← koncový, ↔ počáteční i koncový."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Doplněno z Claude podle Chytila (s. 19): → počáteční stav, ← koncový, ↔ stav, který je počáteční i koncový.",
+   "number": 69,
+   "id": "6-69"
+  },
+  {
+   "type": "choice",
+   "text": "Σ′ = {a, b, c}. Patří slovo ccka do Σ′⁺?",
+   "options": {
+    "A": "Ne, slovo je delší než abeceda.",
+    "B": "Ano, Σ′⁺ obsahuje každé slovo z písmen.",
+    "C": "Ne, znak k není v abecedě Σ′.",
+    "D": "Ano, je to neprázdné konečné slovo."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Slovo nad Σ′ smí obsahovat jen znaky z Σ′. Ve výpiscích je příklad Σ′ = {a, b, c, …} a ccka ∈ Σ′⁺; to platí jen tehdy, když k ∈ Σ′.",
+   "number": 70,
+   "id": "6-70"
+  },
+  {
+   "type": "choice",
+   "text": "Přednáška: „my jako Češi rozumíme češtině, rozpoznáváme to“. Jak to zapadá do teorie jazyků?",
+   "options": {
+    "A": "Čeština je abeceda a jednotlivé věty jsou její písmena.",
+    "B": "Čeština je konečný automat, který rozpoznává všechny správné české věty.",
+    "C": "Čeština není jazyk ve smyslu teorie, protože je nekonečná.",
+    "D": "Čeština je jazyk nad konečnou abecedou, jeho slova jsou správné věty."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Doplněno z Claude podle Chytila (s. 21): přirozený jazyk je jazyk nad konečnou abecedou, jeho řetězy jsou správně utvořené věty. Jazyk může být i nekonečný.",
+   "number": 71,
+   "id": "6-71"
+  },
+  {
+   "type": "choice",
+   "text": "Proč je Σ⁺ pro Σ = {0, 1} spočetná, i když je nekonečná?",
+   "options": {
+    "A": "Protože slova jde seřadit do posloupnosti podle délky.",
+    "B": "Protože délka všech slov je shora omezená.",
+    "C": "Protože slov každé délky je nekonečně mnoho.",
+    "D": "Protože Σ⁺ je podmnožina konečné množiny Σ."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Přednáška: Σ⁺ je spočetná. Důvod je doplněk od Clauda: slov délky n je 2ⁿ (konečně mnoho), takže jde vypsat nejdřív slova délky 1, pak 2 atd. a každé slovo dostane pořadové číslo (bijekce s ℕ).",
+   "number": 72,
+   "id": "6-72"
+  },
+  {
+   "type": "input",
+   "text": "Slova u = 10, v = 0, w = 11. Napiš slovo (uv)w.",
+   "hint": "slovo z 0 a 1 bez mezer",
+   "answer": "10011",
+   "solution": "uv = 100, (uv)w = 10011. Vyjde totéž co u(vw) = 10·011 = 10011: zřetězení je asociativní, závorky jde vynechat.",
+   "number": 73,
+   "id": "6-73"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Rozepiš δ*(q₀, 110) rekurzivně podle pravidel 1 a 2 až k δ*(q₀, ε) = q₀ a pak výsledek vyhodnoť zevnitř ven.",
+   "solution": "Pravidlo 2 (δ*(q, wa) = δ(δ*(q, w), a)) opakovaně:\nδ*(q₀, 110)\n= δ(δ*(q₀, 11), 0)\n= δ(δ(δ*(q₀, 1), 1), 0)\n= δ(δ(δ(δ*(q₀, ε), 1), 1), 0)\nPravidlo 1 (δ*(q₀, ε) = q₀) a vyhodnocení zevnitř ven:\n= δ(δ(δ(q₀, 1), 1), 0)\n= δ(δ(q₂, 1), 0)\n= δ(q₃, 0)\n= q₁\nδ*(q₀, 110) = q₁ ∈ F, slovo je rozpoznáno.",
+   "number": 74,
+   "id": "6-74"
+  }
+ ]
+}

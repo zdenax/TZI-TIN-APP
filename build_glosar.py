@@ -109,6 +109,7 @@ SECTION_BANKS = [
     ("Množiny", ["03-2026-10-15"]),
     ("Rozklad", ["04-2026-10-22"]),
     ("Konečné automaty", ["05a-konecne-automaty"]),
+    ("Jazyky rozpoznatelné", ["06-2026-11-05"]),
 ]
 KOMB, KOMB22, KOMB29 = "04k-kombinatorika", "04k-kombinatorika", "05-2026-10-29"
 # do 04k (22. 10.: základy, kombinace, kombinační číslo, Pascal) patří jen tahle hesla; 05 (29. 10.) dostane všechna

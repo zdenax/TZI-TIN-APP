@@ -311,6 +311,44 @@
     "term": "Automat s výstupem (Moorův, Mealyho)",
     "body": "Navíc **výstupní symboly** O a výstupní funkce. U **Moorova** automatu λ: Q → O (výstup závisí jen na stavu, např. světlo nad dveřmi), u **Mealyho** λ: Q × Σ → O (výstup patří k přechodu).\n*Zdroj: **Doplněno z Claude** ([9, kap. 1.2, s. 6–7]); na přednášce nezaznělo, přesné značení vyučujícího neznám.*"
    }
+  ],
+  "06-2026-11-05": [
+   {
+    "term": "Slovo rozpoznané automatem",
+    "body": "Slovo je **rozpoznáno** konečným automatem, když je **celé přečteno** a automat se po posledním znaku nachází v **koncovém stavu**. Rozhoduje jen stav po posledním znaku, ne to, jestli automat cestou někdy prošel stavem z F.\n*Příklad (automat q_0–q_3, F = {q_1, q_2}):* slovo 1011 vede q_0, q_2, q_1, q_3, q_3, skončí v q_3 ∉ F, není rozpoznáno. Slovo 1011010 skončí v q_1 ∈ F, je rozpoznáno.\n*Zdroj: přednáška 5. 11. (definice důležitá); výklad a příklady **Doplněno z Claude** ([12, s. 22], [9, s. 14]).*"
+   },
+   {
+    "term": "Abeceda, slovo, prázdné slovo",
+    "body": "**Abeceda** Σ je konečná neprázdná množina symbolů. **Slovo** nad Σ je konečná posloupnost písmen z Σ, délka |w| je počet znaků. **Prázdné slovo** ε (na přednášce „e“) nemá žádný znak, |ε| = 0, a je to také slovo.\n*Zdroj: přednáška 5. 11.; definice **Doplněno z Claude** ([9, s. 40]).*"
+   },
+   {
+    "term": "Σ^(+) a Σ^(∗)",
+    "body": "Σ^(+) je množina **všech konečných neprázdných** slov nad Σ, Σ^(∗) = Σ^(+) ∪ {ε} je množina všech konečných slov **včetně prázdného**. Rozdíl je jediný prvek: ε. Pro Σ = {0, 1} je Σ^(+) = {0, 1, 00, 01, 10, 11, 000, …}. Obě množiny jsou nekonečné spočetné.\nZapamatuj si: + = aspoň jeden znak, ∗ = klidně i žádný.\n*Zdroj: přednáška 5. 11. (důležité); definice a spočetnost **Doplněno z Claude** ([12, s. 21, def. 1.2.1], [9, s. 41]).*"
+   },
+   {
+    "term": "Zřetězení a n-násobné zřetězení",
+    "body": "**Zřetězení** uv je slovo u a za ním slovo v (abc · cda = abccda). Je asociativní, **není komutativní**, prázdné slovo je neutrální (εu = uε = u) a délky se sčítají: |uv| = |u| + |v|.\n**n-násobné zřetězení:** u^(0) = ε, u^(i+1) = u^(i)u, tedy u^(n) je n kopií u za sebou a |u^(n)| = n · |u|.\n*Zdroj: přednáška 5. 11.; vlastnosti **Doplněno z Claude** ([12, s. 21], [9, s. 42–43]).*"
+   },
+   {
+    "term": "Jazyk nad abecedou",
+    "body": "**Jazyk** nad abecedou Σ je libovolná podmnožina L ⊆ Σ^(∗). Může být konečný (třeba {00, 01, 10, 11}), nekonečný i prázdný.\n*Zdroj: přednáška 5. 11. (definice důležitá); **Doplněno z Claude** ([12, s. 21, def. 1.2.2], [9, s. 41–42]).*"
+   },
+   {
+    "term": "Zobecněná přechodová funkce δ^(∗)",
+    "body": "Obyčejná δ : Q × Σ → Q čte **jeden znak**, zobecněná δ^(∗) : Q × Σ^(∗) → Q čte **celé slovo** a vrací stav, kde automat skončí.\n1. δ^(∗)(q, ε) = q\n2. δ^(∗)(q, wa) = δ(δ^(∗)(q, w), a)\n\nPočítá se zevnitř ven: δ^(∗)(q_0, 10) = δ(δ(q_0, 1), 0). Chytil obě funkce značí stejně (δ), proto vyučující píše u slova w δ bez hvězdičky.\n*Zdroj: přednáška 5. 11.; **Doplněno z Claude** ([12, s. 22, def. 1.2.3], [9, s. 14]).*"
+   },
+   {
+    "term": "Jazyk rozpoznávaný automatem L(A)",
+    "body": "L(A) = {w ∈ Σ^(∗) ; δ^(∗)(q_0, w) ∈ F}, všechna slova, která automat rozpozná. Zkrácený zápis: w ∈ L(A) ⇔ δ^(∗)(q_0, w) ∈ F. Jazyk L je **rozpoznatelný konečným automatem**, když existuje automat A s L = L(A). U deterministického automatu je výpočet na slovo jediný, proto stačí δ^(∗)(q_0, w) ∈ F místo „existuje posloupnost stavů q_1, …, q_(n+1) končící ve F“.\n*Zdroj: přednáška 5. 11.; **Doplněno z Claude** ([12, s. 22, def. 1.2.3–1.2.4], [9, s. 57]).*"
+   },
+   {
+    "term": "Prázdné slovo a počáteční stav",
+    "body": "Prázdné slovo je rozpoznáno, právě když je počáteční stav koncový: ε ∈ L(A) ⇔ q_0 ∈ F (plyne z δ^(∗)(q_0, ε) = q_0). Počáteční stav **nemusí** být koncový: F je libovolná podmnožina Q. Je-li q_0 ∈ F, značí se v tabulce ↔. V automatu q_0–q_3 je F = {q_1, q_2}, takže ε rozpoznáno není.\n*Zdroj: přednáška 5. 11. (důležité); **Doplněno z Claude** ([12, s. 18–19, 22]).*"
+   },
+   {
+    "term": "Příklad 2: dveře",
+    "body": "Dva stavy: q_0 = zavřeno (0), q_1 = otevřeno (1). Dva vstupy: 0 = nikdo není před dveřmi, 1 = někdo je. δ(q_0, 0) = q_0, δ(q_0, 1) = q_1, δ(q_1, 0) = q_0, δ(q_1, 1) = q_1, počáteční q_0, F = {q_1}. Nový stav je vždy poslední přečtený znak, automat rozpoznává **slova končící 1** (ověřeno výčtem). Tento model nahrazuje dveře z 29. 10., které byly jen odhad.\n*Zdroj: přednáška 5. 11.; ověření jazyka **Doplněno z Claude**.*"
+   }
   ]
  }
 }
