@@ -1784,9 +1784,13 @@
     "množina znaků",
     "množina vstupních symbolů",
     "vstupní symboly",
-    "alphabet"
+    "alphabet",
+    "konečná abeceda",
+    "konečná množina znaků",
+    "konečná množina symbolů",
+    "množina symbolů"
    ],
-   "words": "1-2",
+   "words": "1-4",
    "explanation": "Σ je konečná neprázdná množina znaků, (vstupní) abeceda, např. Σ = {0, 1} (Mareš, kap. 1.2). Přednáška 29. 10.",
    "number": 121,
    "id": "r-121"
