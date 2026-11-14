@@ -59,6 +59,13 @@ body {
 }
 button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+/* povrchy prohlížeče z palety: výběr textu, kurzor, posuvníky, čísla */
+::selection { background: var(--blue); color: var(--blue-ink); }
+input, textarea, select { caret-color: var(--blue); accent-color: var(--blue); }
+html { scrollbar-color: var(--line) transparent; }
+.bits, .lec .n, .lec .d, .brow b { font-variant-numeric: tabular-nums; }
+.top p a { color: var(--blue); text-underline-offset: 3px; white-space: nowrap; }
+.top p a:hover { text-decoration-thickness: 2px; }
 
 #app {
   max-width: 1120px;
@@ -198,8 +205,9 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .top p { text-align: left; }
   #app { padding: 28px 16px 40px; }
 }
+@media (max-width: 600px) { .lec { grid-template-columns: 2.2rem minmax(0, 1fr); } .lec .d { grid-column: 2; white-space: normal; } }
 @media (max-width: 420px) {
-  .lec { grid-template-columns: 1.8rem 1fr; }
+  .lec { grid-template-columns: 1.8rem minmax(0, 1fr); }
   .lec .d { grid-column: 2; }
   .filter { display: flex; }
   .filter button { flex: 1; padding: 8px 6px; font-size: .875rem; }
