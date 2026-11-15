@@ -20,6 +20,11 @@
     --blue: #6F7DFF; --blue-ink: #0F1729; --ok: #4CC38A; --bad: #FF7BA5; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F; }
 }
 html, body { height: 100%; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+/* povrchy prohlížeče z palety: výběr textu, kurzor, posuvníky, čísla */
+::selection { background: var(--blue); color: var(--blue-ink); }
+input, textarea, select { caret-color: var(--blue); accent-color: var(--blue); }
+html { scrollbar-color: var(--line) transparent; }
 body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -29,7 +34,9 @@ button { cursor: pointer; }
 #pane::-webkit-scrollbar-track, #zad::-webkit-scrollbar-track, .treebox::-webkit-scrollbar-track { background: var(--paper-2); }
 #pane::-webkit-scrollbar-thumb, #zad::-webkit-scrollbar-thumb, .treebox::-webkit-scrollbar-thumb { background: var(--thumb); border-radius: 8px; border: 3px solid var(--paper-2); }
 header { flex: none; display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-header a { color: var(--blue); text-decoration: none; font-weight: 500; }
+header a { color: var(--blue); text-decoration: none; font-weight: 500; padding: 6px 0; }
+header a:hover { text-decoration: underline; text-underline-offset: 3px; }
+button:hover:not(:disabled) { border-color: var(--blue); }
 header h1 { font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
 header select { max-width: 380px; }
 #app { flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); }
@@ -38,7 +45,8 @@ header select { max-width: 380px; }
 #zad { overflow-y: scroll; border-right: 1px solid var(--line); padding: 12px 14px; background: var(--card); }
 #zad h2 { font-size: 15px; margin-bottom: 6px; }
 #zad img { width: 100%; border: 1px solid var(--line); border-radius: 8px; margin: 6px 0; }
-#zad pre { font: 500 14px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; }
+#zad p, #zad pre { font: 400 15px/1.6 var(--font); white-space: pre-wrap; word-break: break-word; max-width: 62ch; }
+#zad pre code, #zad code { font: 500 .92em var(--mono); }
 #work { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 #tabs { flex: none; display: flex; gap: 6px; padding: 8px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; align-items: center; }
 .tab { border: 1px solid var(--line); background: var(--card); padding: 7px 16px; border-radius: 8px; font-weight: 700; }
@@ -46,9 +54,9 @@ header select { max-width: 380px; }
 .tab .ck { color: var(--ok); margin-left: 6px; }
 .tab[aria-selected="true"] .ck { color: var(--blue-ink); }
 #tabs .sp { flex: 1; }
-#pane { flex: 1; min-height: 0; overflow-y: scroll; padding: 14px 20px; }
+#pane { flex: 1; min-height: 0; overflow-y: scroll; padding: 20px 28px; }
 .panel[hidden] { display: none !important; }
-.panel > h2 { font-size: 20px; margin-bottom: 4px; }
+.panel > h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px; }
 #p-diagram:not([hidden]) { display: flex; flex-direction: column; height: 100%; min-height: 440px; }
 #boardWrap { flex: 1; min-height: 300px; position: relative; margin-bottom: 8px; }
 svg#board { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 10px; touch-action: none; user-select: none; }
@@ -82,7 +90,8 @@ td.miss { color: var(--bad); } td.multi { color: var(--warn); }
 .result.ok { border-color: var(--ok); color: var(--ok); } .result.bad { border-color: var(--bad); }
 .floating { position: fixed; z-index: 20; border: 2px solid var(--blue); background: var(--card); border-radius: 8px; padding: 4px 8px; width: 120px; }
 code { font-family: var(--mono); }
-.panel input[type=text].cell { width: 70px; text-align: center; font-family: var(--mono); }
+.panel input[type=text].cell { width: 84px; padding: 9px 10px; font-size: 1.05rem; text-align: center; font-family: var(--mono); }
+.panel > p, .panel > .hint { max-width: 62ch; }
 input.lv { width: min(100%, 520px); text-align: left; font-family: var(--mono); }
 input.bad { border-color: var(--bad) !important; }
 input.good { border-color: var(--ok) !important; }

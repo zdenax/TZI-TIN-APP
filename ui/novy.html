@@ -59,6 +59,13 @@ body {
 }
 button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+/* povrchy prohlížeče z palety: výběr textu, kurzor, posuvníky, čísla */
+::selection { background: var(--blue); color: var(--blue-ink); }
+input, textarea, select { caret-color: var(--blue); accent-color: var(--blue); }
+html { scrollbar-color: var(--line) transparent; }
+.bits, .lec .n, .lec .d, .brow b { font-variant-numeric: tabular-nums; }
+.top p a { color: var(--blue); text-underline-offset: 3px; white-space: nowrap; }
+.top p a:hover { text-decoration-thickness: 2px; }
 
 #app {
   max-width: 1120px;
@@ -198,8 +205,9 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .top p { text-align: left; }
   #app { padding: 28px 16px 40px; }
 }
+@media (max-width: 600px) { .lec { grid-template-columns: 2.2rem minmax(0, 1fr); } .lec .d { grid-column: 2; white-space: normal; } }
 @media (max-width: 420px) {
-  .lec { grid-template-columns: 1.8rem 1fr; }
+  .lec { grid-template-columns: 1.8rem minmax(0, 1fr); }
   .lec .d { grid-column: 2; }
   .filter { display: flex; }
   .filter button { flex: 1; padding: 8px 6px; font-size: .875rem; }
@@ -241,10 +249,10 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .chunk-detail-btns button:first-child { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); font-weight: 700; }
   .chunk-detail-btns button:first-child:hover { filter: brightness(1.1); }
   .cd-section { padding: 16px 0; border-top: 1px solid var(--line); }
-  .cd-section h3 { font-size: 1rem; font-weight: 700; margin: 0 0 10px; display: flex; align-items: baseline; gap: 10px; }
-  .cd-section h3 i { font: 700 1.1rem/1 var(--mono); font-style: normal; width: 1ch; }
-  .cd-section h3 em { font: 500 .875rem var(--mono); font-style: normal; color: var(--muted); }
-  .cd-section.good h3 i { color: var(--ok); } .cd-section.bad h3 i { color: var(--bad); } .cd-section.new h3 i { color: var(--new); }
+  .cd-section h2 { font-size: 1rem; font-weight: 700; margin: 0 0 10px; display: flex; align-items: baseline; gap: 10px; }
+  .cd-section h2 i { font: 700 1.1rem/1 var(--mono); font-style: normal; width: 1ch; }
+  .cd-section h2 em { font: 500 .875rem var(--mono); font-style: normal; color: var(--muted); }
+  .cd-section.good h2 i { color: var(--ok); } .cd-section.bad h2 i { color: var(--bad); } .cd-section.new h2 i { color: var(--new); }
   .cd-qlist { display: flex; flex-wrap: wrap; gap: 4px 6px; }
   .cd-empty { color: var(--muted); font-size: .9375rem; }
   .cd-qlist .q-pill { background: none; border: 0; border-bottom: 2px solid currentColor; border-radius: 0; min-width: 2.6rem; padding: 6px 6px 3px; font: 700 1.05rem/1.2 var(--mono); text-align: center; }
@@ -509,9 +517,9 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
         <button onclick="startChunkSubset('correct')">Správné</button>
         <button onclick="startChunkStudy()">Studuj, pak testuj</button>
       </div>
-      <div class="cd-section good"><h3><i>1</i>Správné</h3><div class="cd-qlist" id="cd-good"></div></div>
-      <div class="cd-section bad"><h3><i>0</i>Chybné</h3><div class="cd-qlist" id="cd-bad"></div></div>
-      <div class="cd-section new"><h3><i>·</i>Neznámé</h3><div class="cd-qlist" id="cd-new"></div></div>
+      <div class="cd-section good"><h2><i>1</i>Správné</h2><div class="cd-qlist" id="cd-good"></div></div>
+      <div class="cd-section bad"><h2><i>0</i>Chybné</h2><div class="cd-qlist" id="cd-bad"></div></div>
+      <div class="cd-section new"><h2><i>·</i>Neznámé</h2><div class="cd-qlist" id="cd-new"></div></div>
     </div>
     <button class="chunk-back" onclick="showChunks()">Zpět na bloky</button>
   </div>
