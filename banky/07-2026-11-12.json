@@ -1,0 +1,935 @@
+{
+ "title": "Gramatiky",
+ "lecture": 7,
+ "date": "2026-11-12",
+ "questions": [
+  {
+   "type": "choice",
+   "text": "Přepisovací systém je dvojice R = (V, P). Co je V a co P?",
+   "options": {
+    "A": "V je konečná abeceda, P konečná množina přepisovacích pravidel.",
+    "B": "V je množina stavů, P množina koncových stavů automatu.",
+    "C": "V je nekonečná množina slov, P libovolná relace na ní.",
+    "D": "V je množina neterminálů gramatiky, P je její počáteční symbol."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Každé pravidlo je dvojice (u, v), u, v ∈ V*, píše se u → v. Chytil, Def. 3.1.1, s. 118 (doplněno z Claude, ověřeno). Přednáška 12. 11.",
+   "number": 1,
+   "id": "7-1"
+  },
+  {
+   "type": "choice",
+   "text": "Co znamená přímý přepis u ⇒ z?",
+   "options": {
+    "A": "Každé pravidlo z P se použije právě jednou.",
+    "B": "Jedno pravidlo x → y použité jednou: u = vxw, z = vyw.",
+    "C": "Libovolný počet použití libovolných pravidel, klidně i žádné.",
+    "D": "Všechny výskyty x ve slově u se nahradí naráz za y."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "u ⇒ z ⇔ ∃ v, w, x, y ∈ V*: u = vxw, z = vyw, x → y ∈ P. Jedno pravidlo, jedenkrát. Chytil, Def. 3.1.2 bod 1, s. 118. Přednáška 12. 11.",
+   "number": 2,
+   "id": "7-2"
+  },
+  {
+   "type": "choice",
+   "text": "Co znamená zápis u ⇒* z (přepis, odvození)?",
+   "options": {
+    "A": "u a z mají stejnou délku a stejná písmena.",
+    "B": "z vznikne z u právě jedním použitím jednoho pravidla.",
+    "C": "z vznikne z u konečnou posloupností přímých přepisů.",
+    "D": "u vznikne ze z obrácením všech pravidel systému."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "u = u₁ ⇒ u₂ ⇒ … ⇒ uₙ = z; posloupnost je odvození (derivace) délky n. Šipka s hvězdičkou se čte „se přepíše“. Chytil, Def. 3.1.2 bod 2, s. 118. Přednáška 12. 11.",
+   "number": 3,
+   "id": "7-3"
+  },
+  {
+   "type": "choice",
+   "text": "Kdy je odvození u₁ ⇒ u₂ ⇒ … ⇒ uₙ minimální?",
+   "options": {
+    "A": "Když se v něm každé pravidlo z P použije nejvýš jednou.",
+    "B": "Když je výsledné slovo nejkratší, jaké jde odvodit.",
+    "C": "Když má nejmenší možný počet kroků ze všech odvození.",
+    "D": "Když se v něm žádné slovo neopakuje: uᵢ ≠ uⱼ pro i ≠ j."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Laicky: dvě slova se tam nebudou opakovat. Chytil, s. 118. Přednáška 12. 11.",
+   "number": 4,
+   "id": "7-4"
+  },
+  {
+   "type": "choice",
+   "text": "Co říká lemma o minimálním odvození?",
+   "options": {
+    "A": "Když u ⇒* z, existuje i minimální odvození z ze slova u.",
+    "B": "Minimální odvození má vždy právě jeden krok.",
+    "C": "Každé odvození v přepisovacím systému je minimální.",
+    "D": "Když u ⇒* z, platí i z ⇒* u v každém přepisovacím systému."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Důsledek: o odvození lze bez újmy na obecnosti předpokládat, že je minimální. Chytil, Lemma 3.1.4, s. 119. Přednáška 12. 11.",
+   "number": 5,
+   "id": "7-5"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se dokáže lemma o minimálním odvození?",
+   "options": {
+    "A": "Indukcí podle počtu pravidel v množině P.",
+    "B": "Sestrojí se k systému konečný automat se stejným jazykem.",
+    "C": "Úsek mezi dvěma stejnými slovy uᵢ = uⱼ se vypustí.",
+    "D": "Sporem: předpokládá se, že odvození neexistuje."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Není-li odvození minimální, obsahuje úsek uᵢ ⇒ … ⇒ uⱼ s uᵢ = uⱼ; ten je zbytečný a nahradí se slovem uᵢ. Po konečně mnoha krocích zbude minimální odvození. Chytil, s. 119. Přednáška 12. 11.",
+   "number": 6,
+   "id": "7-6"
+  },
+  {
+   "type": "choice",
+   "text": "Jaké vlastnosti má relace ⇒* (přepis)?",
+   "options": {
+    "A": "Je reflexivní a tranzitivní.",
+    "B": "Je to vždy ekvivalence.",
+    "C": "Je antireflexivní a tranzitivní.",
+    "D": "Je symetrická, ale ne reflexivní."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "⇒* je reflexivní a tranzitivní uzávěr relace ⇒ (u ⇒* u nulou kroků). Doplněno z Claude, Chytil, Def. 3.1.2, s. 118. Symetrická obecně není, symetrický je jen systém z příkladu. Přednáška 12. 11.",
+   "number": 7,
+   "id": "7-7"
+  },
+  {
+   "type": "choice",
+   "text": "Generativní gramatika G = (Π, Σ, S, P). Co je Π?",
+   "options": {
+    "A": "Množina neterminálů (proměnných).",
+    "B": "Množina koncových stavů automatu.",
+    "C": "Množina terminálů (písmen slov).",
+    "D": "Množina přepisovacích pravidel gramatiky."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Π a Σ jsou disjunktní konečné abecedy (Π ∩ Σ = ∅), S ∈ Π je počáteční symbol, P pravidla. Neterminály se píšou velkými písmeny. Chytil, Def. 3.1.5, s. 119. Přednáška 12. 11.",
+   "number": 8,
+   "id": "7-8"
+  },
+  {
+   "type": "choice",
+   "text": "Generativní gramatika G = (Π, Σ, S, P). Co je Σ?",
+   "options": {
+    "A": "Množina neterminálů (proměnných).",
+    "B": "Množina všech slov nad abecedou Π.",
+    "C": "Množina terminálů (písmen slov jazyka).",
+    "D": "Počáteční symbol gramatiky."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Terminály se píšou malými písmeny a číslicemi (a, b, 0, 1); ze slov jen z terminálů se skládá L(G). Chytil, Def. 3.1.5, s. 119. Přednáška 12. 11.",
+   "number": 9,
+   "id": "7-9"
+  },
+  {
+   "type": "choice",
+   "text": "Generativní gramatika G = (Π, Σ, S, P). Co je S?",
+   "options": {
+    "A": "Množina terminálů.",
+    "B": "Množina pravidel.",
+    "C": "Počáteční symbol, S ∈ Σ.",
+    "D": "Počáteční symbol, S ∈ Π."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Každé odvození začíná slovem S; S je jeden z neterminálů. Chytil, Def. 3.1.5, s. 119. Přednáška 12. 11.",
+   "number": 10,
+   "id": "7-10"
+  },
+  {
+   "type": "choice",
+   "text": "Jakou podmínku musí splňovat pravidlo α → β generativní gramatiky?",
+   "options": {
+    "A": "Pravá strana β je neprázdné slovo terminálů.",
+    "B": "Levá strana α obsahuje aspoň jeden neterminál.",
+    "C": "Pravá strana β obsahuje aspoň jeden neterminál.",
+    "D": "Levá strana α je právě jeden neterminál."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "α = uXv, X ∈ Π, u, v, β ∈ (Π ∪ Σ)*. Neterminál vpravo požaduje analytická gramatika. Chytil, Def. 3.1.5, s. 119. Přednáška 12. 11.",
+   "number": 11,
+   "id": "7-11"
+  },
+  {
+   "type": "choice",
+   "text": "Jak je definován jazyk L(G) generovaný gramatikou G?",
+   "options": {
+    "A": "L(G) = {w ∈ (Π ∪ Σ)*; S ⇒* w}",
+    "B": "L(G) = {w ∈ Σ*; w ⇒* S}",
+    "C": "L(G) = {w ∈ Π*; S ⇒ w}",
+    "D": "L(G) = {w ∈ Σ*; S ⇒* w}"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Všechna slova jen z terminálů, která jde odvodit z počátečního symbolu. Varianta w ⇒* S je jazyk analytické gramatiky. Chytil, s. 119. Přednáška 12. 11.",
+   "number": 12,
+   "id": "7-12"
+  },
+  {
+   "type": "choice",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Platí S ⇒* aBb. Patří aBb do L(G)?",
+   "options": {
+    "A": "Ne, obsahuje neterminál B.",
+    "B": "Ano, odvodí se z S jedním krokem.",
+    "C": "Ne, protože končí terminálem b.",
+    "D": "Ano, každé odvozené slovo patří do L(G)."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Do L(G) patří jen slova z Σ*. Slovo s neterminálem se odvozuje dál, dokud nezůstanou jen terminály. Přednáška 12. 11.",
+   "number": 13,
+   "id": "7-13"
+  },
+  {
+   "type": "choice",
+   "text": "Jakou podmínku musí splňovat pravidlo α → β analytické gramatiky?",
+   "options": {
+    "A": "Obě strany pravidla mají vždy stejnou délku.",
+    "B": "Pravá strana β je vždy jediný terminál.",
+    "C": "Levá strana α obsahuje aspoň jeden neterminál.",
+    "D": "Pravá strana β obsahuje aspoň jeden neterminál."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "β = uXv, X ∈ Π. U generativní gramatiky musí neterminál obsahovat levá strana. Chytil, Def. 3.1.8, s. 123. Přednáška 12. 11.",
+   "number": 14,
+   "id": "7-14"
+  },
+  {
+   "type": "choice",
+   "text": "Jak je definován jazyk L(G) analytické gramatiky?",
+   "options": {
+    "A": "L(G) = {w ∈ Σ*; w ⇒* S}",
+    "B": "L(G) = {w ∈ Π*; w ⇒* S}",
+    "C": "L(G) = {S}",
+    "D": "L(G) = {w ∈ Σ*; S ⇒* w}"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Slova z terminálů, která jde přepsat (zredukovat) na počáteční symbol. Chytil, Def. 3.1.8, s. 123. Přednáška 12. 11.",
+   "number": 15,
+   "id": "7-15"
+  },
+  {
+   "type": "choice",
+   "text": "V čem se liší generativní a analytická gramatika?",
+   "options": {
+    "A": "Generativní je vždy regulární, analytická bezkontextová.",
+    "B": "Generativní slovo z S vytváří, analytická ho redukuje na S.",
+    "C": "Analytická nemá počáteční symbol, generativní ho mít musí.",
+    "D": "Generativní má jen terminály, analytická jen neterminály."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Analytická gramatika postupuje pozpátku jako rozbor věty nebo programu. Obrácením šipek ve všech pravidlech se z jedné stane druhá se stejným jazykem. Chytil, s. 123–124. Přednáška 12. 11.",
+   "number": 16,
+   "id": "7-16"
+  },
+  {
+   "type": "choice",
+   "text": "Jak z generativní gramatiky G dostat analytickou gramatiku G′ s L(G′) = L(G)?",
+   "options": {
+    "A": "Obrátit šipky ve všech pravidlech.",
+    "B": "Vypustit pravidla s terminálem vpravo.",
+    "C": "Přidat pravidlo S → e.",
+    "D": "Prohodit terminály a neterminály."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Pojmy jsou rovnocenné, proto se dál pracuje jen s generativními gramatikami. Chytil, s. 124. Přednáška 12. 11.",
+   "number": 17,
+   "id": "7-17"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se jmenuje gramatika typu 0 v Chomského rozdělení?",
+   "options": {
+    "A": "Regulární",
+    "B": "Obecná",
+    "C": "Bezkontextová",
+    "D": "Kontextová"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Typ 0 obecná, 1 kontextová, 2 bezkontextová, 3 regulární. Jediná podmínka typu 0: levá strana obsahuje neterminál. Chytil, Def. 3.2.1, s. 124. Přednáška 12. 11.",
+   "number": 18,
+   "id": "7-18"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se jmenuje gramatika typu 1 v Chomského rozdělení?",
+   "options": {
+    "A": "Bezkontextová",
+    "B": "Kontextová",
+    "C": "Obecná",
+    "D": "Regulární"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Pravidla αXβ → αγβ, X se přepíše jen v kontextu α, β. Chytil, Def. 3.2.1 bod 2, Pozn. 3.2.3, s. 124–125. Přednáška 12. 11.",
+   "number": 19,
+   "id": "7-19"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se jmenuje gramatika typu 2 v Chomského rozdělení?",
+   "options": {
+    "A": "Regulární (pravá lineární)",
+    "B": "Bezkontextová",
+    "C": "Obecná",
+    "D": "Kontextová"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Pravidla X → γ, vlevo jediný neterminál bez ohledu na okolí. Chytil, Def. 3.2.1 bod 3, s. 124. Přednáška 12. 11.",
+   "number": 20,
+   "id": "7-20"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se jmenuje gramatika typu 3 v Chomského rozdělení?",
+   "options": {
+    "A": "Bezkontextová",
+    "B": "Regulární",
+    "C": "Obecná",
+    "D": "Kontextová"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Pravidla X → wY nebo X → w, w ∈ Σ* (pravá lineární). Chytil, Def. 3.2.1 bod 4, s. 125. Přednáška 12. 11.",
+   "number": 21,
+   "id": "7-21"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký tvar mají pravidla kontextové gramatiky (typ 1)?",
+   "options": {
+    "A": "α → β, α obsahuje aspoň jeden neterminál",
+    "B": "X → γ, X ∈ Π, γ ∈ (Π ∪ Σ)*",
+    "C": "X → wY nebo X → w, X, Y ∈ Π, w ∈ Σ*",
+    "D": "αXβ → αγβ, X ∈ Π, γ ∈ (Π ∪ Σ)⁺"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "γ je neprázdné: neterminál se nesmí přepsat na prázdné slovo (jediná výjimka S → e). Chytil, Def. 3.2.1 bod 2, Pozn. 3.2.4, s. 124–125. Přednáška 12. 11.",
+   "number": 22,
+   "id": "7-22"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký tvar mají pravidla bezkontextové gramatiky (typ 2)?",
+   "options": {
+    "A": "X → wY nebo X → w, w ∈ Σ*",
+    "B": "α → β, β obsahuje neterminál",
+    "C": "αXβ → αγβ, X ∈ Π, γ ∈ (Π ∪ Σ)⁺",
+    "D": "X → γ, X ∈ Π, γ ∈ (Π ∪ Σ)*"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Pravá strana smí být i prázdná (X → e). Chytil, Def. 3.2.1 bod 3, s. 124. Přednáška 12. 11.",
+   "number": 23,
+   "id": "7-23"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký tvar mají pravidla regulární gramatiky (typ 3)?",
+   "options": {
+    "A": "X → γ, X ∈ Π, γ ∈ (Π ∪ Σ)*",
+    "B": "X → wY nebo X → w, X, Y ∈ Π, w ∈ Σ*",
+    "C": "αXβ → αγβ, X ∈ Π, γ ∈ (Π ∪ Σ)⁺",
+    "D": "X → YZ nebo X → a, Y, Z ∈ Π, a ∈ Σ"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Vpravo je nejvýš jeden neterminál, a to úplně vpravo. Chytil, Def. 3.2.1 bod 4, s. 125. Přednáška 12. 11.",
+   "number": 24,
+   "id": "7-24"
+  },
+  {
+   "type": "choice",
+   "text": "Kontextová gramatika obsahuje pravidlo S → e. Co z toho plyne?",
+   "options": {
+    "A": "Gramatika už nesmí mít žádné další pravidlo s S vlevo.",
+    "B": "Jazyk gramatiky obsahuje jen prázdné slovo e.",
+    "C": "S se nesmí vyskytovat na pravé straně žádného pravidla.",
+    "D": "Každý neterminál smí mít pravidlo X → e."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "S → e je jediná výjimka z neprázdnosti γ; je v definici jen kvůli hierarchii L₂ ⊆ L₁. Chytil, Def. 3.2.1, Pozn. 3.2.4, s. 124–125. Přednáška 12. 11.",
+   "number": 25,
+   "id": "7-25"
+  },
+  {
+   "type": "choice",
+   "text": "Jak zní Chomského hierarchie tříd jazyků?",
+   "options": {
+    "A": "𝓛₁ ⊆ 𝓛₀ ⊆ 𝓛₂ ⊆ 𝓛₃",
+    "B": "𝓛₀ ⊆ 𝓛₁ ⊆ 𝓛₂ ⊆ 𝓛₃",
+    "C": "𝓛₃ ⊆ 𝓛₁ ⊆ 𝓛₂ ⊆ 𝓛₀",
+    "D": "𝓛₃ ⊆ 𝓛₂ ⊆ 𝓛₁ ⊆ 𝓛₀"
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Čím vyšší typ, tím přísnější tvar pravidel a menší třída jazyků; regulární jazyky jsou nejmenší třída. Chytil, Tvrzení 3.2.6, s. 125. Přednáška 12. 11.",
+   "number": 26,
+   "id": "7-26"
+  },
+  {
+   "type": "choice",
+   "text": "Proč 𝓛₂ ⊆ 𝓛₁ neplyne přímo z definice gramatik?",
+   "options": {
+    "A": "Bezkontextová smí mít víc pravidel X → e, kontextová jen S → e.",
+    "B": "Kontextová gramatika má vlevo jen jeden neterminál.",
+    "C": "Kontextová gramatika nesmí mít na pravé straně terminály.",
+    "D": "Bezkontextová gramatika nemá žádný počáteční symbol S."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Plyne až z Věty 3.2.8: bezkontextovou gramatiku jde upravit na nevypouštějící se stejným jazykem. 𝓛₁ ⊆ 𝓛₀ a 𝓛₃ ⊆ 𝓛₂ plynou přímo z definice. Chytil, s. 125–126. Přednáška 12. 11.",
+   "number": 27,
+   "id": "7-27"
+  },
+  {
+   "type": "choice",
+   "text": "Co rozpoznává jazyky typu 3 (regulární) v Chomského hierarchii?",
+   "options": {
+    "A": "Lineárně omezený Turingův stroj",
+    "B": "Konečný automat",
+    "C": "Nedeterministický zásobníkový automat",
+    "D": "Turingův stroj"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Typ 3 konečný automat, 2 nedeterministický zásobníkový automat, 1 lineárně omezený Turingův stroj, 0 Turingův stroj. Zdroj: Chytil, Věty 3.3.1 a 3.3.5, s. 130–132. Přednáška 12. 11.",
+   "number": 28,
+   "id": "7-28"
+  },
+  {
+   "type": "choice",
+   "text": "Co rozpoznává jazyky typu 2 (bezkontextové) v Chomského hierarchii?",
+   "options": {
+    "A": "Konečný automat",
+    "B": "Turingův stroj",
+    "C": "Nedeterministický zásobníkový automat",
+    "D": "Lineárně omezený Turingův stroj"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Typ 3 konečný automat, 2 nedeterministický zásobníkový automat, 1 lineárně omezený Turingův stroj, 0 Turingův stroj. Zdroj: Chytil, čl. 4.5, s. 172. Přednáška 12. 11.",
+   "number": 29,
+   "id": "7-29"
+  },
+  {
+   "type": "choice",
+   "text": "Co rozpoznává jazyky typu 1 (kontextové) v Chomského hierarchii?",
+   "options": {
+    "A": "Lineárně omezený Turingův stroj",
+    "B": "Turingův stroj",
+    "C": "Nedeterministický zásobníkový automat",
+    "D": "Konečný automat"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Typ 3 konečný automat, 2 nedeterministický zásobníkový automat, 1 lineárně omezený Turingův stroj, 0 Turingův stroj. Zdroj: Vais, kap. 2.8, s. 56 (z rukopisu nevyplývá, jestli to na přednášce zaznělo). Přednáška 12. 11.",
+   "number": 30,
+   "id": "7-30"
+  },
+  {
+   "type": "choice",
+   "text": "Co rozpoznává jazyky typu 0 (typu 0) v Chomského hierarchii?",
+   "options": {
+    "A": "Konečný automat",
+    "B": "Nedeterministický zásobníkový automat",
+    "C": "Turingův stroj",
+    "D": "Lineárně omezený Turingův stroj"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Typ 3 konečný automat, 2 nedeterministický zásobníkový automat, 1 lineárně omezený Turingův stroj, 0 Turingův stroj. Zdroj: Chytil, Důsledek 6.1.10, s. 267. Přednáška 12. 11.",
+   "number": 31,
+   "id": "7-31"
+  },
+  {
+   "type": "choice",
+   "text": "Co říká Kleeneova věta?",
+   "options": {
+    "A": "Jazyk je regulární, právě když je generován kontextovou gramatikou.",
+    "B": "Jazyk je regulární, právě když je rozpoznatelný konečným automatem.",
+    "C": "Každý bezkontextový jazyk je rozpoznatelný konečným automatem.",
+    "D": "Ke každé gramatice typu 0 existuje konečný automat se stejným jazykem."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Spojuje Věty 2.3.4 (regulární ⇒ rozpoznatelný KA) a 2.3.6 (rozpoznatelný KA ⇒ regulární). Chytil, Věta 2.3.7, s. 96; Habiballa, Věta 3, s. 67–68. Přednáška 12. 11.",
+   "number": 32,
+   "id": "7-32"
+  },
+  {
+   "type": "choice",
+   "text": "Platí: jazyk je typu 3, právě když je rozpoznatelný konečným automatem?",
+   "options": {
+    "A": "Ano, podle Vět 3.3.1 a 3.3.5.",
+    "B": "Ne, jen každý jazyk rozpoznatelný KA je typu 3.",
+    "C": "Ne, jen každý jazyk typu 3 je rozpoznatelný KA.",
+    "D": "Ano, ale jen pro abecedu {0, 1}."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Věta 3.3.5: jazyk typu 3 je rozpoznatelný KA; Věta 3.3.1: jazyk rozpoznatelný KA je typu 3. „Regulární jazyk“ z kap. 2.3 je tedy tatáž třída. Chytil, s. 130–132. Přednáška 12. 11.",
+   "number": 33,
+   "id": "7-33"
+  },
+  {
+   "type": "choice",
+   "text": "Konstrukce gramatiky ke konečnému automatu A = (Q, Σ, δ, q₀, F) (Věta 3.3.1): co jsou neterminály a počáteční symbol?",
+   "options": {
+    "A": "Π = Σ a S = q₀.",
+    "B": "Π = Q a S je nový symbol.",
+    "C": "Π = Q a S = q₀.",
+    "D": "Π = F a S = q₀."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Stavy automatu jsou neterminály, vstupní abeceda zůstává jako terminály, počáteční stav je počáteční symbol. Chytil, Věta 3.3.1 a důkaz, s. 130. Přednáška 12. 11.",
+   "number": 34,
+   "id": "7-34"
+  },
+  {
+   "type": "choice",
+   "text": "Konstrukce gramatiky ke konečnému automatu: jaké pravidlo odpovídá přechodu δ(q, a) = q′?",
+   "options": {
+    "A": "q → aq′",
+    "B": "q′ → aq",
+    "C": "q → q′a",
+    "D": "a → qq′"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Pravidlo zapíše přečtený znak a na konec slova a za něj nový stav; neterminál vpravo je aktuální stav. Chytil, důkaz Věty 3.3.1, s. 130. Přednáška 12. 11.",
+   "number": 35,
+   "id": "7-35"
+  },
+  {
+   "type": "choice",
+   "text": "Konstrukce gramatiky ke konečnému automatu: kdy je v P pravidlo q → e?",
+   "options": {
+    "A": "Pro každý stav q ∈ Q bez výjimky.",
+    "B": "Právě když q = q₀ (počáteční stav).",
+    "C": "Právě když q ∈ F (q je koncový stav).",
+    "D": "Právě když q ∉ F (q není koncový)."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "P = {q → aq′; δ(q, a) = q′} ∪ {q → e; q ∈ F}: odvození smí skončit jen v koncovém stavu. Chytil, důkaz Věty 3.3.1, s. 130. Přednáška 12. 11.",
+   "number": 36,
+   "id": "7-36"
+  },
+  {
+   "type": "choice",
+   "text": "Gramatika sestrojená k automatu: co říká neterminál na konci odvozeného slova a₁…aₙq?",
+   "options": {
+    "A": "Jestli je slovo a₁…aₙ prázdné, nebo neprázdné.",
+    "B": "Kolik znaků slova automat ještě musí přečíst.",
+    "C": "Ve kterém stavu je automat po přečtení a₁…aₙ.",
+    "D": "Které pravidlo se použije jako poslední."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "q₀ ⇒* a₁…aₙq, právě když automat ze q₀ přejde po a₁…aₙ do stavu q. Chytil, důkaz Věty 3.3.1, s. 130. Přednáška 12. 11.",
+   "number": 37,
+   "id": "7-37"
+  },
+  {
+   "type": "choice",
+   "text": "Kdy gramatika sestrojená ke konečnému automatu generuje prázdné slovo e?",
+   "options": {
+    "A": "Právě když q₀ ∈ F.",
+    "B": "Nikdy, typ 3 e negeneruje.",
+    "C": "Vždy, každá gramatika generuje e.",
+    "D": "Právě když má automat jen jeden stav."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "e ∈ L(A) ⇔ q₀ ∈ F ⇔ q₀ → e ∈ P ⇔ e ∈ L(G). Chytil, důkaz Věty 3.3.1, s. 130. Přednáška 12. 11.",
+   "number": 38,
+   "id": "7-38"
+  },
+  {
+   "type": "choice",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Jakého typu je tato gramatika?",
+   "options": {
+    "A": "Žádného, není to gramatika.",
+    "B": "Regulární (typ 3).",
+    "C": "Jen obecná (typ 0), kontextová ani bezkontextová není.",
+    "D": "Bezkontextová (typ 2), regulární není."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Všechna pravidla mají tvar X → γ. V aBb, aCc, bBa stojí za neterminálem terminál, takže typ 3 ne. Pravé strany jsou neprázdné, je tedy i kontextová (typ 1). Doplněno z Claude, ověřeno výpočtem. Přednáška 12. 11.",
+   "number": 39,
+   "id": "7-39"
+  },
+  {
+   "type": "choice",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Co tento systém zachovává?",
+   "options": {
+    "A": "Počet nul a počet jedniček ve slově.",
+    "B": "Počet výskytů dvojice 01 ve slově.",
+    "C": "První a poslední znak slova.",
+    "D": "Pořadí znaků ve slově."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Pravidla jen prohazují sousední 0 a 1, takže slovo jde přepsat na libovolné jiné se stejným počtem nul a jedniček (ověřeno výčtem do délky 7). Chytil, Př. 3.1.3, s. 118–119. Přednáška 12. 11.",
+   "number": 40,
+   "id": "7-40"
+  },
+  {
+   "type": "choice",
+   "text": "Jak se v přepisovacím systému značí slova u, z v zápisu u ⇒ z?",
+   "options": {
+    "A": "Malými písmeny, jsou to slova z V*.",
+    "B": "Řeckými písmeny, jsou to pravidla.",
+    "C": "Velkými písmeny, jsou to neterminály.",
+    "D": "Indexy, jsou to stavy automatu."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Velká písmena jsou pro R, V, P, Π, Σ, S a neterminály. Otázka z přednášky, odpověď z Chytila, Def. 3.1.2, s. 118. Přednáška 12. 11.",
+   "number": 41,
+   "id": "7-41"
+  },
+  {
+   "type": "input",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Kolik kroků (přímých přepisů) má nejkratší odvození 00110 ⇒* 00011?",
+   "hint": "číslo",
+   "answer": "2",
+   "solution": "00110 ⇒ 00101 ⇒ 00011, oba kroky pravidlem 2 (10 → 01): poprvé na poslední dvojici, podruhé na 3.–4. místě. Jedním krokem to nejde. Chytil, Př. 3.1.3, s. 118–119. Přednáška 12. 11.",
+   "number": 42,
+   "id": "7-42"
+  },
+  {
+   "type": "input",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Odvození 00110 ⇒ 00101 ⇒ 00011: napiš čísla použitých pravidel.",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "answer": "22",
+   "solution": "V obou krocích se přepisuje dvojice 10 na 01, tedy pravidlo 2 dvakrát. Přednáška 12. 11.",
+   "number": 43,
+   "id": "7-43"
+  },
+  {
+   "type": "input",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Jakou délku má odvození 00110 ⇒ 00101 ⇒ 00011 v Chytilově počítání?",
+   "hint": "číslo",
+   "answer": "3",
+   "solution": "Chytil bere u = u₁ ⇒ u₂ ⇒ … ⇒ uₙ = z, odvození délky n má n slov a n − 1 kroků. Tady 3 slova, 2 kroky. Doplněno z Claude, Chytil, Def. 3.1.2 bod 2, s. 118. Přednáška 12. 11.",
+   "number": 44,
+   "id": "7-44"
+  },
+  {
+   "type": "input",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Na kolik různých slov se 00110 přímo přepíše (jedním krokem)?",
+   "hint": "číslo",
+   "answer": "2",
+   "solution": "Dvojice 01 na 2.–3. místě dá 01010 (pravidlo 1), dvojice 10 na 4.–5. místě dá 00101 (pravidlo 2). Přednáška 12. 11.",
+   "number": 45,
+   "id": "7-45"
+  },
+  {
+   "type": "input",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Kolik různých slov z splňuje 00110 ⇒* z? (Počítá se i 00110 samo, ⇒* je reflexivní.)",
+   "hint": "číslo",
+   "answer": "10",
+   "solution": "Systém přepíše slovo právě na slova se stejným počtem nul a jedniček: 5 míst, 2 jedničky, 5! ÷ (2! · 3!) = 10 slov. Chytil, Př. 3.1.3, s. 119. Přednáška 12. 11.",
+   "number": 46,
+   "id": "7-46"
+  },
+  {
+   "type": "input",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Platí 00110 ⇒* 00111?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ne",
+   "solution": "Pravidla nemění počet jedniček: 00110 má dvě, 00111 tři. Přednáška 12. 11.",
+   "number": 47,
+   "id": "7-47"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Napiš čísla pravidel odvození S ⇒* aabaacb v pořadí použití.",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "answer": "1234",
+   "solution": "S ⇒ aBb (1) ⇒ aaCcb (2) ⇒ aabBacb (3) ⇒ aabaacb (4). Je to jediné odvození tohoto slova. Ověřeno výpočtem. Přednáška 12. 11.",
+   "number": 48,
+   "id": "7-48"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Kolik kroků má odvození S ⇒* aabaacb?",
+   "hint": "číslo",
+   "answer": "4",
+   "solution": "S ⇒ aBb ⇒ aaCcb ⇒ aabBacb ⇒ aabaacb: čtyři přímé přepisy. Přednáška 12. 11.",
+   "number": 49,
+   "id": "7-49"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Které pravidlo se v odvození S ⇒* aabaacb nepoužije?",
+   "hint": "číslo pravidla",
+   "answer": "5",
+   "solution": "Použijí se pravidla 1, 2, 3, 4; C → b ne, C se přepíše pravidlem 3 na bBa. Přednáška 12. 11.",
+   "number": 50,
+   "id": "7-50"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. V odvození S ⇒* aabaacb máme slovo aaCcb. Které pravidlo se musí použít dál?",
+   "hint": "číslo pravidla",
+   "answer": "3",
+   "solution": "Pravidlo 5 by dalo aabcb, z něj aabaacb nevznikne. Pravidlo 3 dá aabBacb a pravidlo 4 pak aabaacb. Přednáška 12. 11.",
+   "number": 51,
+   "id": "7-51"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Napiš nejkratší slovo jazyka L(G).",
+   "hint": "slovo z písmen a, b, c bez mezer",
+   "answer": "aab",
+   "solution": "S ⇒ aBb (1) ⇒ aab (4). Kratší slovo bez neterminálu odvodit nejde. Ověřeno výčtem. Přednáška 12. 11.",
+   "number": 52,
+   "id": "7-52"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Analytická verze má obrácené šipky (1) aBb → S, (2) aCc → B, (3) bBa → C, (4) a → B, (5) b → C. Napiš čísla pravidel redukce aabaacb ⇒* S v pořadí použití.",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "answer": "4321",
+   "solution": "aabaacb ⇒ aabBacb (4, na 4. symbol a) ⇒ aaCcb (3) ⇒ aBb (2) ⇒ S (1). Je to generativní odvození pozpátku. Chytil, Def. 3.1.8, s. 123. Přednáška 12. 11.",
+   "number": 53,
+   "id": "7-53"
+  },
+  {
+   "type": "input",
+   "text": "X, Y, Z ∈ Π, a, b ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie (0 až 3), jehož tvar splňuje pravidlo X → aY?",
+   "hint": "číslo 0 až 3",
+   "answer": "3",
+   "solution": "Typ 3: jeden neterminál vlevo, vpravo terminály a nejvýš jeden neterminál úplně vpravo. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 54,
+   "id": "7-54"
+  },
+  {
+   "type": "input",
+   "text": "X, Y, Z ∈ Π, a, b ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie (0 až 3), jehož tvar splňuje pravidlo X → aYb?",
+   "hint": "číslo 0 až 3",
+   "answer": "2",
+   "solution": "Typ 2: vlevo jediný neterminál, ale vpravo je za neterminálem terminál, takže ne typ 3. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 55,
+   "id": "7-55"
+  },
+  {
+   "type": "input",
+   "text": "X, Y, Z ∈ Π, a, b ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie (0 až 3), jehož tvar splňuje pravidlo aXb → aYZb?",
+   "hint": "číslo 0 až 3",
+   "answer": "1",
+   "solution": "Typ 1: tvar αXβ → αγβ s α = a, β = b, X přepsáno na neprázdné γ = YZ; vlevo víc symbolů, takže ne typ 2. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 56,
+   "id": "7-56"
+  },
+  {
+   "type": "input",
+   "text": "X, Y, Z ∈ Π, a, b ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie (0 až 3), jehož tvar splňuje pravidlo XY → YX?",
+   "hint": "číslo 0 až 3",
+   "answer": "0",
+   "solution": "Typ 0: vlevo víc symbolů a nejde o tvar αXβ → αγβ s neprázdným γ. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 57,
+   "id": "7-57"
+  },
+  {
+   "type": "input",
+   "text": "X, Y, Z ∈ Π, a, b ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie (0 až 3), jehož tvar splňuje pravidlo X → e?",
+   "hint": "číslo 0 až 3",
+   "answer": "3",
+   "solution": "Typ 3: X → w s w = e ∈ Σ*, takže typ 3 (i typ 2). Kontextové pravidlo to není: γ musí být neprázdné, výjimka je jen S → e. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 58,
+   "id": "7-58"
+  },
+  {
+   "type": "input",
+   "text": "X, Y, Z ∈ Π, a, b ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie (0 až 3), jehož tvar splňuje pravidlo XY → e?",
+   "hint": "číslo 0 až 3",
+   "answer": "0",
+   "solution": "Typ 0: vlevo víc symbolů a nejde o tvar αXβ → αγβ s neprázdným γ. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 59,
+   "id": "7-59"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {0, 1}, počáteční stav q₀, F = {q₀}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₂, δ(q₂, 0) = q₀, δ(q₂, 1) = q₂. Kolik pravidel má gramatika sestrojená podle Věty 3.3.1?",
+   "hint": "číslo",
+   "answer": "7",
+   "solution": "Za každý přechod (3 stavy · 2 znaky = 6) jedno pravidlo q → aq′ a za koncový stav q₀ pravidlo q₀ → e: 7. Chytil, Př. 3.3.2, s. 131. Přednáška 12. 11.",
+   "number": 60,
+   "id": "7-60"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {0, 1}, počáteční stav q₀, F = {q₀}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₂, δ(q₂, 0) = q₀, δ(q₂, 1) = q₂. Gramatika k automatu z přednášky: (1) q₀ → 0q₀, (2) q₀ → 1q₁, (3) q₀ → e, (4) q₁ → 0q₀, (5) q₁ → 1q₂, (6) q₂ → 0q₀, (7) q₂ → 1q₂. Napiš čísla pravidel odvození q₀ ⇒* 1100 v pořadí použití.",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "answer": "25613",
+   "solution": "q₀ ⇒ 1q₁ (2) ⇒ 11q₂ (5) ⇒ 110q₀ (6) ⇒ 1100q₀ (1) ⇒ 1100 (3). Každý krok je jeden přechod automatu q₀ → q₁ → q₂ → q₀ → q₀, poslední q₀ → e jde jen proto, že q₀ ∈ F. Chytil, Př. 3.3.2, s. 131. Přednáška 12. 11.",
+   "number": 61,
+   "id": "7-61"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {0, 1}, počáteční stav q₀, F = {q₀}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₂, δ(q₂, 0) = q₀, δ(q₂, 1) = q₂. Gramatika k automatu z přednášky: (1) q₀ → 0q₀, (2) q₀ → 1q₁, (3) q₀ → e, (4) q₁ → 0q₀, (5) q₁ → 1q₂, (6) q₂ → 0q₀, (7) q₂ → 1q₂. Napiš čísla pravidel odvození q₀ ⇒* 10 v pořadí použití.",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "answer": "243",
+   "solution": "q₀ ⇒ 1q₁ (2) ⇒ 10q₀ (4) ⇒ 10 (3). Automat: q₀ → q₁ → q₀ ∈ F. Ověřeno výpočtem. Přednáška 12. 11.",
+   "number": 62,
+   "id": "7-62"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {0, 1}, počáteční stav q₀, F = {q₀}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₂, δ(q₂, 0) = q₀, δ(q₂, 1) = q₂. Gramatika k automatu z přednášky: (1) q₀ → 0q₀, (2) q₀ → 1q₁, (3) q₀ → e, (4) q₁ → 0q₀, (5) q₁ → 1q₂, (6) q₂ → 0q₀, (7) q₂ → 1q₂. Kolik kroků má odvození q₀ ⇒* 1100?",
+   "hint": "číslo",
+   "answer": "5",
+   "solution": "Čtyři kroky za čtyři přečtené znaky a jeden krok q₀ → e na konci: n + 1 = 5. Přednáška 12. 11.",
+   "number": 63,
+   "id": "7-63"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {0, 1}, počáteční stav q₀, F = {q₀}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₂, δ(q₂, 0) = q₀, δ(q₂, 1) = q₂. Patří slovo 1101 do jazyka gramatiky sestrojené k automatu?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ne",
+   "solution": "Automat: q₀ → q₁ → q₂ → q₀ → q₁ ∉ F. V gramatice zůstane na konci q₁ a pravidlo q₁ → e neexistuje. Jazyk je {e} ∪ slova končící 0 (doplněno z Claude, ověřeno do délky 10). Přednáška 12. 11.",
+   "number": 64,
+   "id": "7-64"
+  },
+  {
+   "type": "input",
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {0, 1}, počáteční stav q₀, F = {q₀}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₂, δ(q₂, 0) = q₀, δ(q₂, 1) = q₂. Kolik slov délky 3 generuje gramatika sestrojená k automatu?",
+   "hint": "číslo",
+   "answer": "4",
+   "solution": "Generuje e a slova končící 0; délky 3 jsou to 000, 010, 100, 110. Ověřeno výčtem. Přednáška 12. 11.",
+   "number": 65,
+   "id": "7-65"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Ukaž odvození 00110 ⇒* 00011 a u každého kroku uveď číslo pravidla a přepsanou část.",
+   "solution": "00110 ⇒ 00101 (pravidlo 2 na poslední dvojici 10)\n00101 ⇒ 00011 (pravidlo 2 na dvojici 10 na 3.–4. místě)\nOdvození je minimální (slova se neopakují) a nejkratší. Z 00110 jde přímo také na 01010, ta cesta kratší není. Chytil, Př. 3.1.3, s. 118–119. Přednáška 12. 11.",
+   "number": 66,
+   "id": "7-66"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Ukaž, že aabaacb ∈ L(G).",
+   "solution": "S ⇒ aBb (1)\n⇒ aaCcb (2, na B)\n⇒ aabBacb (3, na C)\n⇒ aabaacb (4, na B)\nVýsledné slovo obsahuje jen terminály, proto aabaacb ∈ L(G). Ověřeno výpočtem (jediné odvození). Přednáška 12. 11.",
+   "number": 67,
+   "id": "7-67"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Obrať šipky ve všech pravidlech a ukaž v analytické gramatice, že aabaacb ⇒* S.",
+   "solution": "Pravidla: (1) aBb → S, (2) aCc → B, (3) bBa → C, (4) a → B, (5) b → C (vpravo vždy neterminál).\naabaacb ⇒ aabBacb (4, na 4. symbol a)\n⇒ aaCcb (3, na bBa)\n⇒ aBb (2, na aCc)\n⇒ S (1)\nJe to generativní odvození přečtené pozpátku. Chytil, Def. 3.1.8, s. 123–124. Přednáška 12. 11.",
+   "number": 68,
+   "id": "7-68"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Vypiš Chomského rozdělení gramatik: typ 0 až 3, název, tvar pravidel a co jazyky daného typu rozpoznává.",
+   "solution": "Typ 0, obecná: α → β, α = uXv, X ∈ Π; Turingův stroj.\nTyp 1, kontextová: αXβ → αγβ, γ ∈ (Π ∪ Σ)⁺ (výjimka S → e, pak S není vpravo); lineárně omezený Turingův stroj (Vais).\nTyp 2, bezkontextová: X → γ, γ ∈ (Π ∪ Σ)*; nedeterministický zásobníkový automat.\nTyp 3, regulární: X → wY nebo X → w, w ∈ Σ*; konečný automat.\nHierarchie 𝓛₃ ⊆ 𝓛₂ ⊆ 𝓛₁ ⊆ 𝓛₀. Chytil, Def. 3.2.1, Tvrzení 3.2.6, s. 124–125; Vais, kap. 2.8, s. 56. Přednáška 12. 11.",
+   "number": 69,
+   "id": "7-69"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {0, 1}, počáteční stav q₀, F = {q₀}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₂, δ(q₂, 0) = q₀, δ(q₂, 1) = q₂. Sestroj k automatu regulární gramatiku a ukaž, že automat slovo 1100 rozpozná a gramatika ho vygeneruje.",
+   "solution": "Π = Q = {q₀, q₁, q₂}, Σ = {0, 1}, S = q₀.\nP: q₀ → 0q₀ | 1q₁ | e, q₁ → 0q₀ | 1q₂, q₂ → 0q₀ | 1q₂ (q₀ → e, protože q₀ ∈ F).\nAutomat: q₀ –1→ q₁ –1→ q₂ –0→ q₀ –0→ q₀ ∈ F.\nGramatika: q₀ ⇒ 1q₁ ⇒ 11q₂ ⇒ 110q₀ ⇒ 1100q₀ ⇒ 1100.\nNeterminál na konci je vždy aktuální stav automatu. Chytil, Věta 3.3.1, Př. 3.3.2, s. 130–131. Přednáška 12. 11.",
+   "number": 70,
+   "id": "7-70"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Dveře z přednášky 5. 11.: Q = {q₀, q₁}, Σ = {0, 1}, počáteční q₀, F = {q₁}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₁, δ(q₁, 0) = q₀, δ(q₁, 1) = q₁. Sestroj podle Věty 3.3.1 gramatiku a odvoď v ní slovo 101.",
+   "solution": "Π = {q₀, q₁}, S = q₀, P: q₀ → 0q₀ | 1q₁, q₁ → 0q₀ | 1q₁ | e (q₁ → e, protože q₁ ∈ F; q₀ → e ne).\nq₀ ⇒ 1q₁ ⇒ 10q₀ ⇒ 101q₁ ⇒ 101.\nPrázdné slovo gramatika negeneruje, protože q₀ ∉ F. Ověřeno výpočtem. Úloha k procvičení z přednášky 12. 11. použitá na automat z 5. 11.",
+   "number": 71,
+   "id": "7-71"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Dokaž lemma: když u ⇒* z, existuje minimální odvození z ze slova u.",
+   "solution": "Vezmi libovolné odvození u = u₁ ⇒ … ⇒ uₙ = z. Není-li minimální, existují i < j s uᵢ = uⱼ. Úsek uᵢ ⇒ … ⇒ uⱼ vypustíme a nahradíme slovem uᵢ; dostaneme kratší odvození téhož z. Odvození je konečné, takže po konečně mnoha krocích zbude odvození bez opakování, tedy minimální. Chytil, Lemma 3.1.4, s. 119. Přednáška 12. 11.",
+   "number": 72,
+   "id": "7-72"
+  }
+ ]
+}

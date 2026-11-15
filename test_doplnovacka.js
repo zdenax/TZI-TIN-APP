@@ -31,6 +31,7 @@ const VAR_O = byText('Jak se nazývá uspořádaná k-tice prvků z n-prvkové m
 const PERM_O = byText('Jak se nazývá uspořádaná k-tice, ve které je každý prvek a_i základní množiny M = {a_1, …, a_n} přesně k_i-krát (k = k_1 + … + k_n)?');
 const DET = byText('Jaký je konečný automat, u kterého má každý stav pro každý vstupní symbol právě jeden přechod?');
 const START = byText('Jak se nazývá q₀ v pětici konečného automatu?');
+const SIGMA = byText('Jak se nazývá Σ v pětici konečného automatu?');
 const STROM = byText('Jak se nazývá zápis automatu z přednášky, ve kterém z počátečního stavu (kořene) vedou větve pro každý znak do stavu podle δ a stav, který už se objevil, se dál nerozvíjí?');
 const RJ = byText('Jak se na náčrtu konečného automatu z přednášky nazývá část Ř. J., ke které patří množina stavů Q?');
 
@@ -51,7 +52,8 @@ const cases = [
   ['variace', VAR, 'ok'], ['kombinace', VAR, null], ['permutace', VAR, null], ['variace s opakovanim', VAR_O, 'ok'],
   ['kombinace s opakováním', VAR_O, null], ['permutace s opakováním', PERM_O, 'ok'], ['permutace', PERM_O, null],
   ['deterministicky', DET, 'ok'], ['DFA', DET, 'ok'], ['nedeterministický', DET, null],
-  ['pocatecni stav', START, 'ok'], ['koncový stav', START, null], ['stavovy strom', STROM, 'ok'], ['stavový diagram', STROM, null],
+  ['konečná množina znaků', SIGMA, 'ok'], ['Konečná neprázdná množina symbolů.', SIGMA, 'ok'], ['množina stavů', SIGMA, null],
+  ['pocatecni stav', START, 'ok'],['koncový stav', START, null], ['stavovy strom', STROM, 'ok'], ['stavový diagram', STROM, null],
   ['řídící jednotka', RJ, 'ok'], ['ridici jednotka', RJ, 'ok'],
 ];
 let fail = 0;
