@@ -511,7 +511,7 @@
    "correct": [
     "C"
    ],
-   "explanation": "Typ 3 konečný automat, 2 nedeterministický zásobníkový automat, 1 lineárně omezený Turingův stroj, 0 Turingův stroj. Zdroj: Chytil, Důsledek 6.1.10, s. 267. Přednáška 12. 11.",
+   "explanation": "Typ 3 konečný automat, 2 nedeterministický zásobníkový automat, 1 lineárně omezený Turingův stroj, 0 Turingův stroj. Zdroj: Chytil, Důsledek 6.1.10, s. 267 (doplněk z literatury, z rukopisu nevyplývá). Přednáška 12. 11.",
    "number": 32,
    "id": "7-32"
   },
@@ -679,10 +679,10 @@
   },
   {
    "type": "input",
-   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Jakou délku má odvození 00110 ⇒ 00101 ⇒ 00011 v Chytilově počítání?",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Jakou délku má odvození 00110 ⇒ 00101 ⇒ 00011 (podle přednášky: u ⇒ u₁ ⇒ … ⇒ uₙ = z, odvození délky n je posloupnost u₁ až uₙ)?",
    "hint": "číslo",
-   "answer": "3",
-   "solution": "Chytil bere u = u₁ ⇒ u₂ ⇒ … ⇒ uₙ = z, odvození délky n má n slov a n − 1 kroků. Tady 3 slova, 2 kroky. Doplněno z Claude, Chytil, Def. 3.1.2 bod 2, s. 118. Přednáška 12. 11.",
+   "answer": "2",
+   "solution": "Podle rukopisu je u = 00110 a u₁ = 00101, u₂ = 00011 = z, takže n = 2, tedy tolik, kolik je kroků. Chytil počítá i první slovo jako u₁, odvození délky n má pak n slov a n − 1 kroků, tady 3 slova a 2 kroky. Počet kroků je v obou případech 2, liší se jen to, co se nazývá délkou. Doplněno z Claude, Chytil, Def. 3.1.2 bod 2, s. 118. Přednáška 12. 11.",
    "number": 44,
    "id": "7-44"
   },

@@ -234,7 +234,7 @@ def choice():
          "u¹ = u, uⁱ⁺¹ = uⁱuⁱ, u⁰ = ε",
          "u¹ = u, uⁱ⁺¹ = uⁱ, u⁰ = ε",
          "uⁿ je n-tý znak slova u."],
-        "Na tabuli u¹ = u, u² = uu, uⁱ⁺¹ = uⁱu (Chytil); u⁰ = ε doplňuje Vais. uⁿ je tedy n kopií u za sebou, "
+        "Na tabuli u¹ = u, u² = uu, uⁱ⁺¹ = uⁱu (Chytil) a u⁰ = ε (v rukopisu e). uⁿ je tedy n kopií u za sebou, "
         "např. pro u = ab je u³ = ababab. Délka je |uⁿ| = n · |u|.")
     add("Jak se čte zápis „∃ q₁, …, qₙ₊₁ : qₙ₊₁ ∈ F, q₁ = q₀, qᵢ₊₁ = δ(qᵢ, xᵢ)“ u slova w = x₁x₂…xₙ?",
         ["Existuje výpočet z q₀ po znacích slova w, který skončí ve F.",
@@ -441,13 +441,13 @@ def extra_choice():
     # 5. slovo nad jinou abecedou
     sig = set("abc")
     check(not set("ccka") <= sig)
-    add("Σ′ = {a, b, c}. Patří slovo ccka do Σ′⁺?",
-        ["Ne, znak k není v abecedě Σ′.",
+    add("Σ′ = {a, b, c}. Patří slovo cbax do Σ′⁺?",
+        ["Ne, znak x není v abecedě Σ′.",
          "Ano, je to neprázdné konečné slovo.",
          "Ano, Σ′⁺ obsahuje každé slovo z písmen.",
          "Ne, slovo je delší než abeceda."],
-        "Slovo nad Σ′ smí obsahovat jen znaky z Σ′. Ve výpiscích je příklad Σ′ = {a, b, c, …} a ccka ∈ Σ′⁺; "
-        "to platí jen tehdy, když k ∈ Σ′.")
+        "Slovo nad Σ′ smí obsahovat jen znaky z Σ′, a x tu mezi nimi není. Čárka u Σ′ je jen jméno další abecedy. "
+        "V rukopisu je Σ′ = {a, b, c, …} a ccka ∈ Σ′⁺, protože tam „…“ zahrnuje i k; tady má Σ′ jen tři písmena.")
     # 7. přirozený jazyk
     add("Přednáška: „my jako Češi rozumíme češtině, rozpoznáváme to“. Jak to zapadá do teorie jazyků?",
         ["Čeština je jazyk nad konečnou abecedou, jeho slova jsou správné věty.",
