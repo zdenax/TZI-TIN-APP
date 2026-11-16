@@ -106,19 +106,18 @@ def choice():
          "Když první přečtený znak vede automat do koncového stavu.",
          "Když se automat po přečtení slova vrátí do počátečního stavu."],
         "Rozhoduje jen stav po posledním znaku; cesta slovem a stavy uprostřed se nepočítají.")
-    add(f"{TAB} Čte slovo {w1}: {path1}. Je slovo rozpoznáno?",
-        [f"Ne, skončil v {s(st1[-1])} ∉ F.",
-         f"Ano, cestou prošel koncovým stavem {s(st1[2])}.",
-         "Ano, protože slovo začíná jedničkou.",
-         "Ne, protože slovo obsahuje víc jedniček než nul."],
-        f"Skončil v {s(st1[-1])} ∉ F, i když cestou prošel koncovými stavy {s(st1[1])} a {s(st1[2])}. "
-        "Počítá se jen stav po posledním znaku, ne průchod koncovým stavem uprostřed čtení.")
-    add(f"{TAB} Čte slovo {w2}: {path2}. Je slovo rozpoznáno?",
-        [f"Ano, skončil v {s(st2[-1])} ∈ F.",
-         f"Ne, protože prošel stavem {s(st2[3])} ∉ F.",
-         "Ne, protože slovo je delší než počet stavů.",
-         "Ano, protože cesta začíná i končí ve stejném stavu."],
-        "Slovo je celé přečteno a automat stojí v koncovém stavu, takže ho rozpoznává.")
+    # 6-2: teorie bez tabulky (pojem), trasování konkrétních slov je v příkladech 6-38, 6-39 a rozboru 6-64
+    check(st1[-1] not in AF and st1[1] in AF and st1[2] in AF and st2[-1] in AF)
+    add("Automat čte slovo a cestou projde koncovým stavem, ale po posledním znaku stojí ve stavu, který koncový není. "
+        "Je slovo rozpoznáno?",
+        ["Ne, rozhoduje jen stav po posledním znaku.",
+         "Ano, stačí aspoň jednou projít koncovým stavem.",
+         "Nedá se rozhodnout bez tabulky přechodů.",
+         "Ano, když koncovými stavy prošel vícekrát."],
+        "Slovo w je rozpoznáno, právě když δ*(q₀, w) ∈ F, tedy po přečtení celého slova. Průchod koncovým stavem "
+        f"uprostřed čtení nic neznamená: automat z přednášky na slově {w1} projde {s(st1[1])} a {s(st1[2])} ∈ F, "
+        f"ale skončí v {s(st1[-1])} ∉ F.")
+    c.append(None)  # 6-3 (trasování 1011010 v teorii) smazána, totéž počítá příklad 6-39; id zůstává prázdné
     add("Co je δ* (zobecněná přechodová funkce)?",
         ["δ* : Q × Σ* → Q, vrátí stav po přečtení celého slova.",
          "δ* : Q × Σ → Q, přečte jediný znak a vrátí další stav.",
@@ -206,7 +205,7 @@ def choice():
          "Nikdy, protože prázdné slovo se vůbec nedá přečíst.",
          "Právě když má automat jen jeden stav."],
         "ε ∈ L(A) ⇔ q₀ ∈ F. Plyne z δ*(q₀, ε) = q₀: automat nic nepřečte, takže zůstane v q₀.")
-    add(f"{TAB} Je v něm rozpoznáno prázdné slovo?",
+    add("Počáteční stav automatu není koncový (q₀ ∉ F). Je v něm rozpoznáno prázdné slovo?",
         ["Ne, protože q₀ ∉ F.", "Ano, každý automat přijímá ε.", "Ano, protože q₀ je počáteční.",
          "Ne, protože ε není slovo."],
         "ε ∈ L(A) ⇔ q₀ ∈ F, a tady q₀ není v F.")
@@ -282,12 +281,7 @@ def choice():
         ["Slova končící jedničkou.", "Slova obsahující aspoň jednu jedničku.", "Slova se sudým počtem jedniček.",
          "Slova začínající jedničkou."],
         "Nový stav je vždy poslední přečtený znak (1 → q₁, 0 → q₀), takže rozhoduje poslední znak. Ověřeno výčtem do délky 12.")
-    add("Dveře (příklad 2): slovo 01001. Jak vypadá posloupnost stavů a je slovo rozpoznáno?",
-        ["q₀ → q₀ → q₁ → q₀ → q₀ → q₁; skončí v q₁ ∈ F, rozpoznáno.",
-         "q₀ → q₀ → q₁ → q₀ → q₀ → q₀; skončí v q₀, nerozpoznáno.",
-         "q₀ → q₁ → q₁ → q₁ → q₁ → q₁; skončí v q₁, rozpoznáno.",
-         "q₁ → q₀ → q₁ → q₁ → q₀ → q₁; skončí v q₁, rozpoznáno."],
-        "Stavy po znacích 0, 1, 0, 0, 1: q₀, q₁, q₀, q₀, q₁. Poslední znak je 1, takže q₁ ∈ F.")
+    c.append(None)  # 6-34 (trasování 01001 v teorii) smazána, dveře po znacích počítají příklady 6-50 až 6-52
     add("Dveře (příklad 2): rozpozná se prázdné slovo ε?",
         ["Ne, q₀ ∉ F (F = {q₁}).", "Ano, každý automat přijímá ε.", "Ano, protože dveře jsou na začátku zavřené.",
          "Ne, protože ε nemá délku."],
@@ -422,11 +416,14 @@ def extra_choice():
                  lambda w: "1" in w}
     for p in wrong.values():
         check(any(p(w) != accepts(AD, AF, w) for w in upto(12)))
-    add(f"{TAB} Která slova automat rozpoznává?",
-        ["Slova s aspoň jednou 1 končící 0, nebo slova tvaru 0…01."] + list(wrong),
-        "Doplněno z Claude (ve výpiscích, ověřeno výčtem do délky 12): po 1 je automat v q₂, po další 1 v q₃, "
-        "nula z q₁, q₂, q₃ vede do q₁ ∈ F. Takže slovo s jedničkou končící 0 skončí v q₁, slovo 0…01 v q₂, "
-        "jinak q₀ nebo q₃.")
+    check(final("0") == "q0" and final("11") == "q3")  # protipříklady v řešení 6-67
+    # 6-67 je rozbor celé tabulky, ne teorie: přeřazeno na zadání na rozbor (2 prvky = reveal, viz build())
+    c.append((f"{TAB} Popiš slovy, která slova automat rozpoznává (jazyk L(A)).",
+              "L(A) = slova s aspoň jednou 1 končící 0, nebo slova tvaru 0…01.\n"
+              "Doplněno z Claude (ve výpiscích, ověřeno výčtem do délky 12): po 1 je automat v q₂, po další 1 v q₃, "
+              "nula z q₁, q₂, q₃ vede do q₁ ∈ F. Takže slovo s jedničkou končící 0 skončí v q₁, slovo 0…01 v q₂, "
+              "jinak q₀ nebo q₃.\nČasté omyly: „končí nulou“ (0 ∉ L(A), skončí v q₀), „aspoň jedna jednička“ "
+              "(11 ∉ L(A), skončí v q₃)."))
     # 2. automat s q₀ ∈ F (nákres z rukopisu, s. 6)
     add("Na nákresu z přednášky je q₀ označený ↔ (počáteční i koncový stav). Rozpozná tento automat prázdné slovo ε?",
         ["Ano, protože q₀ ∈ F.",
@@ -514,10 +511,17 @@ MAX_LONGEST = 0.35   # a nejdelší nejvýš u ~třetiny otázek (náhodou by to
 
 
 def build(groups, rnd, prefix):
-    qs, longest = [], 0
+    qs, nums, longest, idx = [], [], 0, 0
     for kind, items in groups:
         for it in items:
-            if kind == "choice":
+            idx += 1
+            k = kind
+            if k == "choice" and (it is None or len(it) == 2):
+                rnd.shuffle(list(range(4)))  # smazaná nebo přeřazená výběrová: pořadí možností ostatních se nemění
+                if it is None:  # smazaná otázka: id zůstane prázdné, aby uložený postup seděl
+                    continue
+                k = "reveal"  # (text, řešení) mezi výběrovými = přeřazeno na zadání na rozbor
+            if k == "choice":
                 text, opts, correct, expl = it
                 check(len(set(opts)) == len(opts) == 4 and correct == [0], text)
                 check(len(opts[0]) <= MAX_RATIO * max(map(len, opts[1:])), f"správná možnost je moc dlouhá: {text}")
@@ -526,7 +530,7 @@ def build(groups, rnd, prefix):
                 rnd.shuffle(order)
                 qs.append({"type": "choice", "text": text, "options": {"ABCD"[i]: opts[j] for i, j in enumerate(order)},
                            "correct": ["ABCD"[order.index(0)]], "explanation": expl})
-            elif kind == "input":
+            elif k == "input":
                 text, hint, ans, sol = it
                 check(norm(ans) != "" and sol, text)
                 check(ans == "0" or not ans.startswith("0"), f"odpověď začíná nulou: {text}")
@@ -534,10 +538,11 @@ def build(groups, rnd, prefix):
             else:
                 text, sol = it
                 qs.append({"type": "input", "reveal": True, "text": text, "solution": sol})
+            nums.append(idx)
     n_choice = sum(q["type"] == "choice" for q in qs)
     check(longest <= MAX_LONGEST * n_choice, f"správná možnost je nejdelší u {longest} z {n_choice} otázek")
-    for i, q in enumerate(qs, 1):
-        q["number"] = i
+    for i, q in zip(nums, qs):
+        q["number"] = i  # jako SMAZANA_ID v build_bank_5.py: číslo = id, smazaná zůstanou prázdná
         q["id"] = f"{prefix}-{i}"
         texts = [q["text"], q.get("explanation", ""), q.get("solution", "")] + list(q.get("options", {}).values())
         for t in texts:
@@ -553,7 +558,7 @@ def main():
     verify()
     groups = [("choice", choice()), ("input", inputs()), ("reveal", reveal()),
               ("choice", extra_choice()), ("input", extra_inputs()), ("reveal", extra_reveal())]
-    check(sum(len(g) for _, g in groups[:3]) == 66, "6-1…6-66 musí zůstat na místě")
+    check(sum(len(g) for _, g in groups[:3]) == 66, "6-1…6-66 musí zůstat na místě (smazané jsou None)")
     qs, longest = build(groups, random.Random(105), "6")
     other = {q["id"] for p in (HERE / "banky").glob("*.json") if p.name != "06-2026-11-05.json"
              for q in json.loads(p.read_text(encoding="utf-8"))["questions"]}

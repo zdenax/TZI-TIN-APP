@@ -21,35 +21,19 @@
   },
   {
    "type": "choice",
-   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Čte slovo 1011: q₀ → q₂ → q₁ → q₃ → q₃. Je slovo rozpoznáno?",
+   "text": "Automat čte slovo a cestou projde koncovým stavem, ale po posledním znaku stojí ve stavu, který koncový není. Je slovo rozpoznáno?",
    "options": {
-    "A": "Ne, protože slovo obsahuje víc jedniček než nul.",
-    "B": "Ano, protože slovo začíná jedničkou.",
-    "C": "Ano, cestou prošel koncovým stavem q₁.",
-    "D": "Ne, skončil v q₃ ∉ F."
+    "A": "Ano, když koncovými stavy prošel vícekrát.",
+    "B": "Nedá se rozhodnout bez tabulky přechodů.",
+    "C": "Ano, stačí aspoň jednou projít koncovým stavem.",
+    "D": "Ne, rozhoduje jen stav po posledním znaku."
    },
    "correct": [
     "D"
    ],
-   "explanation": "Skončil v q₃ ∉ F, i když cestou prošel koncovými stavy q₂ a q₁. Počítá se jen stav po posledním znaku, ne průchod koncovým stavem uprostřed čtení.",
+   "explanation": "Slovo w je rozpoznáno, právě když δ*(q₀, w) ∈ F, tedy po přečtení celého slova. Průchod koncovým stavem uprostřed čtení nic neznamená: automat z přednášky na slově 1011 projde q₂ a q₁ ∈ F, ale skončí v q₃ ∉ F.",
    "number": 2,
    "id": "6-2"
-  },
-  {
-   "type": "choice",
-   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Čte slovo 1011010: q₀ → q₂ → q₁ → q₃ → q₃ → q₁ → q₃ → q₁. Je slovo rozpoznáno?",
-   "options": {
-    "A": "Ano, protože cesta začíná i končí ve stejném stavu.",
-    "B": "Ne, protože prošel stavem q₃ ∉ F.",
-    "C": "Ano, skončil v q₁ ∈ F.",
-    "D": "Ne, protože slovo je delší než počet stavů."
-   },
-   "correct": [
-    "C"
-   ],
-   "explanation": "Slovo je celé přečteno a automat stojí v koncovém stavu, takže ho rozpoznává.",
-   "number": 3,
-   "id": "6-3"
   },
   {
    "type": "choice",
@@ -325,7 +309,7 @@
   },
   {
    "type": "choice",
-   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Je v něm rozpoznáno prázdné slovo?",
+   "text": "Počáteční stav automatu není koncový (q₀ ∉ F). Je v něm rozpoznáno prázdné slovo?",
    "options": {
     "A": "Ne, protože q₀ ∉ F.",
     "B": "Ano, každý automat přijímá ε.",
@@ -530,22 +514,6 @@
    "explanation": "Nový stav je vždy poslední přečtený znak (1 → q₁, 0 → q₀), takže rozhoduje poslední znak. Ověřeno výčtem do délky 12.",
    "number": 33,
    "id": "6-33"
-  },
-  {
-   "type": "choice",
-   "text": "Dveře (příklad 2): slovo 01001. Jak vypadá posloupnost stavů a je slovo rozpoznáno?",
-   "options": {
-    "A": "q₀ → q₁ → q₁ → q₁ → q₁ → q₁; skončí v q₁, rozpoznáno.",
-    "B": "q₀ → q₀ → q₁ → q₀ → q₀ → q₁; skončí v q₁ ∈ F, rozpoznáno.",
-    "C": "q₀ → q₀ → q₁ → q₀ → q₀ → q₀; skončí v q₀, nerozpoznáno.",
-    "D": "q₁ → q₀ → q₁ → q₁ → q₀ → q₁; skončí v q₁, rozpoznáno."
-   },
-   "correct": [
-    "B"
-   ],
-   "explanation": "Stavy po znacích 0, 1, 0, 0, 1: q₀, q₁, q₀, q₀, q₁. Poslední znak je 1, takže q₁ ∈ F.",
-   "number": 34,
-   "id": "6-34"
   },
   {
    "type": "choice",
@@ -846,18 +814,10 @@
    "id": "6-66"
   },
   {
-   "type": "choice",
-   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Která slova automat rozpoznává?",
-   "options": {
-    "A": "Slova se sudým počtem jedniček, která končí nulou.",
-    "B": "Slova s aspoň jednou 1 končící 0, nebo slova tvaru 0…01.",
-    "C": "Slova končící nulou, nebo slova obsahující přesně dvě jedničky.",
-    "D": "Slova obsahující aspoň jednu jedničku, bez ohledu na konec."
-   },
-   "correct": [
-    "B"
-   ],
-   "explanation": "Doplněno z Claude (ve výpiscích, ověřeno výčtem do délky 12): po 1 je automat v q₂, po další 1 v q₃, nula z q₁, q₂, q₃ vede do q₁ ∈ F. Takže slovo s jedničkou končící 0 skončí v q₁, slovo 0…01 v q₂, jinak q₀ nebo q₃.",
+   "type": "input",
+   "reveal": true,
+   "text": "Automat z přednášky: Q = {q₀, q₁, q₂, q₃}, Σ = {0, 1}, počáteční stav q₀, F = {q₁, q₂}, δ(q₀, 0) = q₀, δ(q₀, 1) = q₂, δ(q₁, 0) = q₁, δ(q₁, 1) = q₃, δ(q₂, 0) = q₁, δ(q₂, 1) = q₃, δ(q₃, 0) = q₁, δ(q₃, 1) = q₃. Popiš slovy, která slova automat rozpoznává (jazyk L(A)).",
+   "solution": "L(A) = slova s aspoň jednou 1 končící 0, nebo slova tvaru 0…01.\nDoplněno z Claude (ve výpiscích, ověřeno výčtem do délky 12): po 1 je automat v q₂, po další 1 v q₃, nula z q₁, q₂, q₃ vede do q₁ ∈ F. Takže slovo s jedničkou končící 0 skončí v q₁, slovo 0…01 v q₂, jinak q₀ nebo q₃.\nČasté omyly: „končí nulou“ (0 ∉ L(A), skončí v q₀), „aspoň jedna jednička“ (11 ∉ L(A), skončí v q₃).",
    "number": 67,
    "id": "6-67"
   },
