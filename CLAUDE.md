@@ -26,5 +26,7 @@ Přidat nový soubor `banky/NN-RRRR-MM-DD.json` (id otázek `N-číslo`, aby byl
 
 - Každý dokument z AI má mít deklaraci využití AI (viz README).
 - `novy.html` zobrazuje možnosti `choice` otázek zamíchané (Fisher-Yates, pořadí stálé v rámci sady, uvnitř se pracuje s původními klíči). Vysvětlení ani možnosti proto nesmí odkazovat na pořadí nebo písmena („druhá možnost“, „A i B“, „žádná z uvedených“).
+- Filtr „Teorie“ = všechny `choice` otázky, „Příklady“ = `input`. Teoretická (`choice`) otázka se ptá na pojem, definici, vlastnost nebo „proč“ a odpovídá se z porozumění. Žádná zeď vypsaných dat (celá δ-tabulka, seznam pravidel), žádné trasování přechodů ani dosazování čísel: to jsou příklady (`input`, případně `reveal`). Zadání do ~2 vět. U automatů v teorii mluvit o pojmech („skončí mimo F“), ne o konkrétní tabulce. Špatné možnosti = věcně pravděpodobné omyly, ne triky na přečtení textu. Kontrola: `node test_teorie.js` (délka zadání, počet δ(…), posloupnosti stavů).
+- Smazaná otázka nechává id prázdné (`SMAZANA_ID` v `build_bank_5.py`, `None` v seznamu v `build_bank_6.py`), aby seděl uložený postup; id se nepřečíslovávají.
 - UI měnit v `ui/novy.html`; `ui/klasicky.html` jen při opravě chyby. Logika (JS) je v obou UI stejná, id elementů nepřejmenovávat.
 - Staré screenshoty jsou v `docs/screenshots/legacy/`.

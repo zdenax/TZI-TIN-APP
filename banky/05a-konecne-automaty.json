@@ -325,7 +325,7 @@
   },
   {
    "type": "choice",
-   "text": "Dveře: Q = {zavřeno, otevřeno}, Σ = {vstup, odchod}. Podle popisu z přednášky (vstoupíme → otevřou, odejdeme → zavřou) jsou zadané jen přechody δ(zavřeno, vstup) = otevřeno a δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i δ(zavřeno, odchod) a δ(otevřeno, vstup)?",
+   "text": "Dveře (Σ = {vstup, odchod}) mají z přednášky jen přechody δ(zavřeno, vstup) = otevřeno a δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i δ(zavřeno, odchod) a δ(otevřeno, vstup)?",
    "options": {
     "A": "protože každý stav musí mít smyčku",
     "B": "deterministický automat musí mít pro každý stav a každý znak právě jeden přechod",
@@ -340,18 +340,11 @@
    "id": "5a-21"
   },
   {
-   "type": "choice",
-   "text": "Dveře (q₀ = zavřeno, δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno) dostanou události vstup, odchod, vstup. Kudy vede výpočet?",
-   "options": {
-    "A": "zavřeno → otevřeno → zavřeno → zavřeno",
-    "B": "zavřeno → otevřeno → otevřeno → otevřeno",
-    "C": "zavřeno → otevřeno → zavřeno → otevřeno",
-    "D": "zavřeno → zavřeno → otevřeno → zavřeno"
-   },
-   "correct": [
-    "C"
-   ],
-   "explanation": "δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno, δ(zavřeno, vstup) = otevřeno: zavřeno → otevřeno → zavřeno → otevřeno.",
+   "type": "input",
+   "text": "Dveře (q₀ = zavřeno, δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno) dostanou události vstup, odchod, vstup. Ve kterém stavu automat skončí?",
+   "hint": "zavřeno nebo otevřeno",
+   "answer": "otevřeno",
+   "solution": "δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno, δ(zavřeno, vstup) = otevřeno: zavřeno → otevřeno → zavřeno → otevřeno.",
    "number": 22,
    "id": "5a-22"
   },

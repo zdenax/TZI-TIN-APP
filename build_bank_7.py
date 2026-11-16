@@ -305,8 +305,8 @@ def choice():
          "L(G) = {w ∈ Σ*; w ⇒* S}", "L(G) = {w ∈ Π*; S ⇒ w}"],
         "Všechna slova jen z terminálů, která jde odvodit z počátečního symbolu. Varianta w ⇒* S je jazyk "
         f"analytické gramatiky. Chytil, s. 119. {P}")
-    add(f"{GR_TXT} Platí S ⇒* aBb. Patří aBb do L(G)?",
-        ["Ne, obsahuje neterminál B.", "Ano, odvodí se z S jedním krokem.",
+    add("V gramatice G s počátečním symbolem S a neterminálem B platí S ⇒* aBb. Patří aBb do L(G)?",
+        ["Ne, obsahuje neterminál B.", "Ano, protože se dá odvodit z S.",
          "Ano, každé odvozené slovo patří do L(G).", "Ne, protože končí terminálem b."],
         "Do L(G) patří jen slova z Σ*. Slovo s neterminálem se odvozuje dál, dokud nezůstanou jen terminály. "
         f"{P}")

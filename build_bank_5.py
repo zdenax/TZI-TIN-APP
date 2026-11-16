@@ -397,13 +397,6 @@ def verify_automata():
 
 
 def auto_choice():
-    path = run(DD, "zavřeno", ["vstup", "odchod", "vstup"])
-    used = set(zip(path, ["vstup", "odchod", "vstup"]))
-    check(used <= D_LECTURE, "cesta používá jen přechody z přednášky")
-    wrong = [["zavřeno", "otevřeno", "otevřeno", "otevřeno"], ["zavřeno", "zavřeno", "otevřeno", "zavřeno"],
-             ["zavřeno", "otevřeno", "zavřeno", "zavřeno"]]
-    check(all(w != path for w in wrong) and len({tuple(w) for w in wrong}) == 3)
-    arrow = lambda p: " → ".join(p)
     return [
         ("Co tvoří pětici A = (Q, Σ, δ, q₀, F) konečného automatu?",
          ["stavy, abeceda, přechodová funkce, počáteční stav, množina přijímacích stavů",
@@ -505,19 +498,25 @@ def auto_choice():
          ["události vstup a odchod", "stavy zavřeno a otevřeno", "jediný znak „dveře“", "počet lidí, kteří prošli"], [0],
          "Když vstoupíme, dveře se otevřou, když odejdeme, zavřou se. Události jsou vstupní znaky, Σ = {vstup, odchod}, "
          "Q = {zavřeno, otevřeno}, q₀ = zavřeno (zápis z výpisků)."),
-        ("Dveře: Q = {zavřeno, otevřeno}, Σ = {vstup, odchod}. Podle popisu z přednášky (vstoupíme → otevřou, "
-         "odejdeme → zavřou) jsou zadané jen přechody δ(zavřeno, vstup) = otevřeno a δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i "
-         "δ(zavřeno, odchod) a δ(otevřeno, vstup)?",
+        ("Dveře (Σ = {vstup, odchod}) mají z přednášky jen přechody δ(zavřeno, vstup) = otevřeno a "
+         "δ(otevřeno, odchod) = zavřeno. Proč je třeba doplnit i δ(zavřeno, odchod) a δ(otevřeno, vstup)?",
          ["deterministický automat musí mít pro každý stav a každý znak právě jeden přechod",
           "aby měl automat víc přijímacích stavů", "protože každý stav musí mít smyčku",
           "aby se dveře nikdy nezavřely"], [0],
          f"Úplná tabulka má |Q| · |Σ| = 2 · 2 = {len(DD)} políčka. Ve výpiscích jsou doplněná tak, že se stav nezmění "
          "(je to návrh, přesný model vyučujícího výpisky neznají)."),
-        ("Dveře (q₀ = zavřeno, δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno) dostanou události "
-         "vstup, odchod, vstup. Kudy vede výpočet?",
-         [arrow(path)] + [arrow(w) for w in wrong], [0],
-         f"δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno, δ(zavřeno, vstup) = otevřeno: {arrow(path)}."),
     ]
+
+
+def door_input():
+    """5a-22: trasování dveří, dřív výběrová (teorie), teď příklad na výsledek. Je hned za výběrovými, id se nemění."""
+    word = ["vstup", "odchod", "vstup"]
+    path = run(DD, "zavřeno", word)
+    check(set(zip(path, word)) <= D_LECTURE, "cesta používá jen přechody z přednášky")
+    return [("Dveře (q₀ = zavřeno, δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno) dostanou události "
+             "vstup, odchod, vstup. Ve kterém stavu automat skončí?", "zavřeno nebo otevřeno", path[-1],
+             f"δ(zavřeno, vstup) = otevřeno, δ(otevřeno, odchod) = zavřeno, δ(zavřeno, vstup) = otevřeno: "
+             f"{' → '.join(path)}.")]
 
 
 def st_word(word):
@@ -666,7 +665,7 @@ def main():
     banks = [
         (build(komb_choice(), komb_input(), komb_reveal(), rnd, "5"), "05-2026-10-29.json",
          "Variace, permutace a kombinace"),
-        (build(auto_choice(), auto_input(), auto_reveal(), rnd, "5a"), "05a-konecne-automaty.json", "Konečné automaty"),
+        (build(auto_choice(), door_input() + auto_input(), auto_reveal(), rnd, "5a"), "05a-konecne-automaty.json", "Konečné automaty"),
     ]
     mine = {f for _, f, _ in banks}
     other = {q["id"] for p in (HERE / "banky").glob("*.json") if p.name not in mine

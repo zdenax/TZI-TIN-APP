@@ -197,10 +197,10 @@
   },
   {
    "type": "choice",
-   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Platí S ⇒* aBb. Patří aBb do L(G)?",
+   "text": "V gramatice G s počátečním symbolem S a neterminálem B platí S ⇒* aBb. Patří aBb do L(G)?",
    "options": {
     "A": "Ne, obsahuje neterminál B.",
-    "B": "Ano, odvodí se z S jedním krokem.",
+    "B": "Ano, protože se dá odvodit z S.",
     "C": "Ne, protože končí terminálem b.",
     "D": "Ano, každé odvozené slovo patří do L(G)."
    },
