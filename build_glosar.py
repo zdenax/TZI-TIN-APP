@@ -6,6 +6,7 @@ Výstup: {"banks": {"<stem banky>": [{"term": ..., "body": ...}, ...], ...}}, po
 LaTeX se převádí na text, který umí `fmt` v ui/novy.html (zlomky „a / b“, „(n nad k)“, indexy _x, mocniny ^x).
 Neznámý LaTeX příkaz skript zastaví, ať nic nezůstane nepřeloženo.
 Na konec balíčků se připojí hesla z glosar/doplnky.json (stejný tvar jako výstup); duplicitní název hesla se vypíše a přeskočí.
+Záznam doplňku s "pripoj_k" místo "term" připojí svůj text na konec existujícího hesla (příloha, např. příklad a omyly).
 """
 import json
 import re
@@ -131,12 +132,21 @@ def banks_of(title, term):
 
 def pridej_doplnky(out):
     """Připojí hesla z glosar/doplnky.json (doplněná z Claude, ne z Glosar.md) na konec balíčků.
-    Heslo se stejným názvem, jaké už balíček má, se nepřidá a skript to vypíše."""
+    Heslo se stejným názvem, jaké už balíček má, se nepřidá a skript to vypíše.
+    Záznam s polem "pripoj_k" (místo "term") nové heslo nevytváří: jeho body se připojí jako další
+    odstavec na konec existujícího hesla s tímto názvem (tak se doplní heslo z Glosar.md, který se v repu nemění)."""
     if not DOPLNKY.exists():
         return
     for b, entries in json.loads(DOPLNKY.read_text(encoding="utf-8"))["banks"].items():
         mam = {e["term"] for e in out.get(b, [])}
         for e in entries:
+            if "pripoj_k" in e:
+                cil = [h for h in out.get(b, []) if h["term"] == e["pripoj_k"]]
+                if len(cil) != 1:  # překlep v názvu nebo heslo zmizelo z Glosar.md: nic tiše nezahodit
+                    raise SystemExit(f"pripoj_k: heslo „{e['pripoj_k']}“ v balíčku {b} není (nalezeno {len(cil)}×)")
+                cil[0]["body"] += "\n" + e["body"]
+                print(f"PŘIPOJENO k heslu „{e['pripoj_k']}“ v balíčku {b}")
+                continue
             if e["term"] in mam:
                 print(f"DUPLICITA: heslo „{e['term']}“ už v balíčku {b} je, z doplnky.json se nepřidává")
                 continue
