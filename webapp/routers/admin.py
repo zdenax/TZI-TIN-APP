@@ -32,7 +32,6 @@ def get_admin(request: Request, response: Response, limit: int = 100, user: Dict
             action_verb = "vrátit do" if hidden else "odebrat z"
             toggle_text = "Vrátit do žebříčku" if hidden else "Odebrat z žebříčku"
             btn_class = "btn-action-success" if hidden else "btn-action-danger"
-            toggle_icon = "👁️"
             confirm_toggle = f"return confirm('Opravdu chcete studenta {u_name} {action_verb} veřejného žebříčku?');"
             action_html = f"""
             <div style="display:inline-flex;align-items:center;gap:0.4rem;">
@@ -40,11 +39,11 @@ def get_admin(request: Request, response: Response, limit: int = 100, user: Dict
                     <input type="hidden" name="user_id" value="{uid}">
                     <input type="hidden" name="csrf_token" value="{csrf_tok}">
                     <button type="submit" class="btn-action {btn_class}">
-                        {toggle_icon} {toggle_text}
+                        {toggle_text}
                     </button>
                 </form>
                 <button type="button" class="btn-action btn-action-warning" onclick="openResetModal({uid}, '{u_name}', {pts}, {stk})">
-                    🔄 Vynulovat...
+                    Vynulovat
                 </button>
             </div>
             """
@@ -55,8 +54,8 @@ def get_admin(request: Request, response: Response, limit: int = 100, user: Dict
             <td><b>{escape(str(s['username']))}</b>{status_badge}</td>
             <td>{escape(str(s.get('theme', 'games')))}</td>
             <td><b style="color:var(--mauve);">{s.get('total_points') or 0} b.</b></td>
-            <td>🔥 {s.get('current_streak') or 0}</td>
-            <td>⭐ {s.get('best_streak') or 0}</td>
+            <td>{s.get('current_streak') or 0}</td>
+            <td>{s.get('best_streak') or 0}</td>
             <td>{role_badge}</td>
             <td style="white-space:nowrap;">{action_html}</td>
         </tr>

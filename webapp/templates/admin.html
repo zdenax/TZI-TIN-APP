@@ -2,45 +2,60 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TZI Trenér - Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="dark light">
+    <title>TZI Trenér · Správa</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
         :root {
+            color-scheme: dark;
+            --target-size: 24px;
             --bg: #1e1e2e;
             --card: #181825;
-            --border: #313244;
+            --raised: #242437;
+            --border: rgba(205, 214, 244, 0.1);
             --text: #cdd6f4;
             --text-dim: #a6adc8;
             --mauve: #cba6f7;
+            --accent-ink: #11111b;
             --green: #a6e3a1;
-            --yellow: #f9e2af;
+            --yellow: #fab387;
             --red: #f38ba8;
+            --font: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+            --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
+        @media (pointer: coarse) { :root { --target-size: 44px; } }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 2rem 1rem;
-            max-width: 900px;
+            font: 400 15px/1.5 var(--font);
+            padding: 24px 16px max(32px, env(safe-area-inset-bottom, 0px));
+            max-width: 960px;
             margin: 0 auto;
+            overflow-wrap: break-word;
         }
+        :focus-visible { outline: 2px solid var(--mauve); outline-offset: 2px; border-radius: 4px; }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 24px;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 1rem;
+            padding-bottom: 16px;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 12px 16px;
         }
-        h1 { font-size: 1.8rem; color: var(--mauve); }
+        h1 { font-size: clamp(1.35rem, 3vw, 1.75rem); font-weight: 500; line-height: 1.15; color: var(--text); text-wrap: balance; }
+        .sub { color: var(--text-dim); font-size: 0.875rem; margin-top: 4px; }
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 8px;
             flex-wrap: wrap;
         }
         .btn {
@@ -48,172 +63,211 @@
             align-items: center;
             justify-content: center;
             white-space: nowrap;
+            min-block-size: max(36px, var(--target-size));
             background: var(--mauve);
-            color: #11111b;
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.5rem;
+            color: var(--accent-ink);
+            padding: 8px 16px;
+            border-radius: 8px;
             text-decoration: none;
-            font-weight: 700;
-            border: none;
+            font: 500 0.875rem var(--font);
+            border: 1px solid transparent;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
-        .btn:hover { opacity: 0.9; }
+        .btn-secondary { background: var(--raised); color: var(--text); border-color: var(--border); }
+        .btn-danger { background: rgba(243, 139, 168, 0.14); color: var(--red); border-color: rgba(243, 139, 168, 0.35); }
+        .btn-warn { background: var(--yellow); color: var(--accent-ink); }
+        @media (hover: hover) {
+            .btn:hover { opacity: 0.92; }
+            .btn-secondary:hover { border-color: var(--mauve); }
+            .btn-danger:hover { background: rgba(243, 139, 168, 0.24); }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            .btn, .btn-action, .scope-option { transition: background-color 150ms var(--ease), border-color 150ms var(--ease), opacity 150ms var(--ease), scale 150ms var(--ease); }
+            .btn:active { scale: 0.98; }
+        }
         .card {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
         }
-        .card h2 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--text); }
+        .card h2 { font-size: 1.125rem; font-weight: 500; margin-bottom: 4px; color: var(--text); text-wrap: balance; }
+        .card-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+        .adm-input, .adm-select {
+            min-block-size: max(36px, var(--target-size));
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            font: 400 0.875rem var(--font);
+        }
+        .filter-bar {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .filter-meta {
+            margin-top: 12px;
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .link-btn {
+            background: none;
+            border: none;
+            color: var(--mauve);
+            cursor: pointer;
+            font: 500 0.875rem var(--font);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            min-block-size: var(--target-size);
+        }
         .code-box {
-            background: #11111b;
-            border: 2px dashed var(--mauve);
-            padding: 1rem;
-            border-radius: 0.6rem;
-            font-family: monospace;
-            font-size: 1.4rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font: 500 1.25rem var(--mono);
             color: var(--green);
             text-align: center;
             letter-spacing: 2px;
-            margin: 1rem 0;
+            margin: 16px 0;
             user-select: all;
             overflow-wrap: anywhere;
         }
         .table-wrap {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            margin-top: 1rem;
-            border-radius: 0.5rem;
+            margin-top: 12px;
+            border-radius: 8px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             min-width: 580px;
+            font-variant-numeric: tabular-nums;
         }
         th, td {
-            padding: 0.75rem 1rem;
+            padding: 8px 12px;
             text-align: left;
             border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
-        th { color: var(--text-dim); font-size: 0.85rem; }
-        tr:hover { background: rgba(255, 255, 255, 0.02); }
+        th { color: var(--text-dim); font-size: 0.8125rem; font-weight: 500; }
+        @media (hover: hover) { tr:hover { background: rgba(255, 255, 255, 0.02); } }
         .badge {
             display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 1rem;
-            font-size: 0.8rem;
-            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font: 500 0.75rem var(--mono);
         }
-        .badge-admin { background: rgba(203, 166, 247, 0.2); color: var(--mauve); }
-        .badge-student { background: rgba(166, 227, 161, 0.2); color: var(--green); }
-        .badge-hidden { background: rgba(243, 139, 168, 0.2); color: var(--red); margin-left: 6px; font-size: 0.75rem; }
+        .badge-admin { background: rgba(203, 166, 247, 0.14); color: var(--mauve); }
+        .badge-student { background: rgba(166, 227, 161, 0.14); color: var(--green); }
+        .badge-hidden { background: rgba(243, 139, 168, 0.14); color: var(--red); margin-left: 8px; font-size: 0.75rem; }
         .btn-action {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.28rem 0.6rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 0.45rem;
+            gap: 4px;
+            min-block-size: max(28px, var(--target-size));
+            padding: 4px 8px;
+            font: 500 0.75rem var(--font);
+            border-radius: 6px;
             border: 1px solid transparent;
             cursor: pointer;
-            transition: all 0.15s ease;
             white-space: nowrap;
             text-decoration: none;
-            font-family: inherit;
         }
-        .btn-action-danger {
-            background: rgba(243, 139, 168, 0.15);
-            color: var(--red);
-            border-color: rgba(243, 139, 168, 0.35);
-        }
-        .btn-action-danger:hover {
-            background: rgba(243, 139, 168, 0.3);
-        }
-        .btn-action-success {
-            background: rgba(166, 227, 161, 0.15);
-            color: var(--green);
-            border-color: rgba(166, 227, 161, 0.35);
-        }
-        .btn-action-success:hover {
-            background: rgba(166, 227, 161, 0.3);
-        }
-        .btn-action-warning {
-            background: rgba(249, 226, 175, 0.15);
-            color: var(--yellow);
-            border-color: rgba(249, 226, 175, 0.35);
-        }
-        .btn-action-warning:hover {
-            background: rgba(249, 226, 175, 0.3);
+        .btn-action-danger { background: rgba(243, 139, 168, 0.14); color: var(--red); border-color: rgba(243, 139, 168, 0.3); }
+        .btn-action-success { background: rgba(166, 227, 161, 0.14); color: var(--green); border-color: rgba(166, 227, 161, 0.3); }
+        .btn-action-warning { background: rgba(250, 179, 135, 0.14); color: var(--yellow); border-color: rgba(250, 179, 135, 0.3); }
+        @media (hover: hover) {
+            .btn-action-danger:hover { background: rgba(243, 139, 168, 0.26); }
+            .btn-action-success:hover { background: rgba(166, 227, 161, 0.26); }
+            .btn-action-warning:hover { background: rgba(250, 179, 135, 0.26); }
         }
         dialog#reset-modal {
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--text);
-            border-radius: 1rem;
-            padding: 1.5rem;
+            border-radius: 12px;
+            padding: 20px;
             max-width: 500px;
             width: 92vw;
             margin: auto;
         }
-        dialog#reset-modal::backdrop {
-            background: rgba(17, 17, 27, 0.82);
-        }
+        dialog#reset-modal::backdrop { background: rgba(17, 17, 27, 0.8); }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+        .modal-head h3 { font-size: 1.0625rem; font-weight: 500; color: var(--yellow); margin: 0; }
+        .modal-close { background: none; border: none; color: var(--text-dim); cursor: pointer; min-block-size: max(32px, var(--target-size)); min-inline-size: max(32px, var(--target-size)); display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; }
+        .scope-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
         .scope-option {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
-            padding: 0.75rem 0.9rem;
+            gap: 12px;
+            padding: 12px;
             border: 1px solid var(--border);
-            border-radius: 0.6rem;
-            background: #11111b;
-            cursor: pointer;
-            transition: border-color 150ms ease-out, background-color 150ms ease-out;
-        }
-        .scope-option:hover {
-            border-color: var(--mauve);
-            background: rgba(203, 166, 247, 0.05);
-        }
-        .scope-option input[type="radio"] {
-            margin-top: 0.2rem;
-            accent-color: var(--mauve);
+            border-radius: 8px;
+            background: var(--bg);
             cursor: pointer;
         }
+        @media (hover: hover) { .scope-option:hover { border-color: var(--mauve); } }
+        .scope-option input[type="radio"] { margin-top: 4px; accent-color: var(--mauve); cursor: pointer; }
+        .warn-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(243, 139, 168, 0.12);
+            border: 1px solid rgba(243, 139, 168, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            font-size: 0.8125rem;
+            color: var(--red);
+        }
+        .ico { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
         @media (max-width: 600px) {
-            body { padding: 1.25rem 0.75rem; }
-            h1 { font-size: 1.4rem; }
-            header { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+            body { padding: 16px 12px max(24px, env(safe-area-inset-bottom, 0px)); }
+            header { flex-direction: column; align-items: flex-start; gap: 12px; }
             .header-actions { width: 100%; }
             .header-actions .btn { flex: 1; text-align: center; }
-            .card { padding: 1rem; }
-            .code-box { font-size: 1.1rem; padding: 0.75rem; }
+            .card { padding: 16px; }
+            .code-box { font-size: 1rem; padding: 12px; }
         }
     </style>
 </head>
 <body>
     <header>
         <div>
-            <h1>TZI Admin Panel</h1>
-            <p style="color:var(--text-dim); font-size:0.9rem;">Přehled studentů a systémových chyb</p>
+            <h1>Správa TZI Trenéra</h1>
+            <p class="sub">Přehled studentů a systémových logů</p>
         </div>
         <div class="header-actions">
-            <a href="/" class="btn" style="background:var(--border); color:var(--text);">Zpět do trenéra</a>
-            <a href="/logout" class="btn" style="background:var(--red); color:#11111b;">Odhlásit</a>
+            <a href="/" class="btn btn-secondary">Zpět do trenéra</a>
+            <a href="/logout" class="btn btn-danger">Odhlásit</a>
         </div>
     </header>
 
     <main>
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
+        <div class="card-head">
             <div>
                 <h2>Registrovaní studenti a žebříček</h2>
-                <p id="students-count-text" style="color:var(--text-dim); font-size:0.85rem;">Přehled studentů a jejich výsledků</p>
+                <p id="students-count-text" class="sub">Přehled studentů a jejich výsledků</p>
             </div>
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-                <input type="search" id="student-search" placeholder="Hledat studenta" oninput="filterStudents()" style="padding:0.4rem 0.8rem; border-radius:0.5rem; background:#11111b; color:var(--text); border:1px solid var(--border); font-size:0.85rem; min-width:220px;">
+            <div>
+                <input type="search" id="student-search" class="adm-input" aria-label="Hledat studenta" placeholder="Hledat studenta" oninput="filterStudents()">
             </div>
         </div>
         <div class="table-wrap">
@@ -238,14 +292,14 @@
     </div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+        <div class="card-head">
             <div>
                 <h2>Systémové logy a komunikace</h2>
-                <p style="color:var(--text-dim); font-size:0.95rem;">Záznamy komunikace, varování a chyb z klienta i backendu.</p>
+                <p class="sub">Záznamy komunikace, varování a chyb z klienta i backendu</p>
             </div>
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-                <label for="limit-select" style="font-size:0.85rem; color:var(--text-dim); margin:0;">Zobrazit záznamů:</label>
-                <select id="limit-select" onchange="window.location.href='/admin?limit=' + this.value" style="padding:0.35rem 0.6rem; border-radius:0.4rem; background:#11111b; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
+            <div class="header-actions">
+                <label for="limit-select" class="sub">Zobrazit záznamů:</label>
+                <select id="limit-select" class="adm-select" onchange="window.location.href='/admin?limit=' + this.value">
                     <option value="30">30</option>
                     <option value="100">100</option>
                     <option value="300">300</option>
@@ -256,46 +310,34 @@
         </div>
 
         <!-- Filtrační lišta -->
-        <div style="margin-top:1.2rem; padding:0.9rem; background:#11111b; border:1px solid var(--border); border-radius:0.6rem; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
-            <div style="flex:2; min-width:200px;">
-                <input type="text" id="filter-search" placeholder="Hledat ve zprávě nebo stacktrace" style="width:100%; padding:0.45rem 0.75rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;" oninput="applyErrorFilters()">
-            </div>
-            <div style="flex:1; min-width:130px;">
-                <select id="filter-level" aria-label="Filtrovat podle úrovně" onchange="applyErrorFilters()" style="width:100%; padding:0.45rem 0.6rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
-                    <option value="">Všechny úrovně</option>
-                    <option value="UI_ERROR">UI_ERROR</option>
-                    <option value="ERROR">ERROR</option>
-                    <option value="WARNING">WARNING</option>
-                    <option value="INFO">INFO</option>
-                </select>
-            </div>
-            <div style="flex:1; min-width:140px;">
-                <input type="text" id="filter-endpoint" placeholder="Endpoint / Soubor" style="width:100%; padding:0.45rem 0.75rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;" oninput="applyErrorFilters()">
-            </div>
-            <div style="flex:1; min-width:100px;">
-                <input type="text" id="filter-uid" placeholder="User ID" style="width:100%; padding:0.45rem 0.75rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;" oninput="applyErrorFilters()">
-            </div>
-            <div style="flex:1; min-width:120px;">
-                <select id="filter-sort" aria-label="Řazení záznamů" onchange="applyErrorFilters()" style="width:100%; padding:0.45rem 0.6rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
-                    <option value="desc">Od nejnovějších</option>
-                    <option value="asc">Od nejstarších</option>
-                </select>
-            </div>
-            <div>
-                <button type="button" onclick="resetErrorFilters()" style="padding:0.45rem 0.75rem; border-radius:0.4rem; background:#313244; color:var(--text); border:none; cursor:pointer; font-size:0.85rem;">Reset</button>
-            </div>
+        <div class="filter-bar">
+            <input type="text" id="filter-search" class="adm-input" style="flex:2;min-width:180px;" aria-label="Hledat ve zprávě nebo stacktrace" placeholder="Hledat ve zprávě nebo stacktrace" oninput="applyErrorFilters()">
+            <select id="filter-level" class="adm-select" style="flex:1;min-width:160px;" aria-label="Filtrovat podle úrovně" onchange="applyErrorFilters()">
+                <option value="">Všechny úrovně</option>
+                <option value="UI_ERROR">UI_ERROR</option>
+                <option value="ERROR">ERROR</option>
+                <option value="WARNING">WARNING</option>
+                <option value="INFO">INFO</option>
+            </select>
+            <input type="text" id="filter-endpoint" class="adm-input" style="flex:1;min-width:140px;" aria-label="Endpoint nebo soubor" placeholder="Endpoint / Soubor" oninput="applyErrorFilters()">
+            <input type="text" id="filter-uid" class="adm-input" style="flex:1;min-width:100px;" aria-label="User ID" placeholder="User ID" oninput="applyErrorFilters()">
+            <select id="filter-sort" class="adm-select" style="flex:1;min-width:160px;" aria-label="Řazení záznamů" onchange="applyErrorFilters()">
+                <option value="desc">Od nejnovějších</option>
+                <option value="asc">Od nejstarších</option>
+            </select>
+            <button type="button" class="btn btn-secondary" onclick="resetErrorFilters()">Reset</button>
         </div>
 
-        <div style="margin-top:0.6rem; font-size:0.85rem; color:var(--text-dim); display:flex; justify-content:space-between; align-items:center;">
-            <span id="filter-stats">Zobrazeno záznamů: počítám...</span>
-            <button type="button" onclick="toggleAllStacks()" id="btn-toggle-stacks" style="background:none; border:none; color:var(--mauve); cursor:pointer; font-size:0.85rem; text-decoration:underline;">Rozbalit všechny stacktrace</button>
+        <div class="filter-meta">
+            <span id="filter-stats">Načítám záznamy</span>
+            <button type="button" class="link-btn" onclick="toggleAllStacks()" id="btn-toggle-stacks">Rozbalit všechny stacktrace</button>
         </div>
 
-        <div class="table-wrap" style="margin-top:0.8rem;">
+        <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th style="cursor:pointer;" onclick="toggleSort()">Čas ↕</th>
+                        <th><button type="button" class="link-btn" onclick="toggleSort()">Čas ↕</button></th>
                         <th>Úroveň</th>
                         <th>Endpoint / Soubor</th>
                         <th>User ID</th>
@@ -448,62 +490,63 @@
     </script>
 
     <dialog id="reset-modal">
-        <form method="POST" action="/admin/leaderboard/reset" style="margin:0;" id="reset-modal-form">
+        <form method="POST" action="/admin/leaderboard/reset" id="reset-modal-form">
             <input type="hidden" name="user_id" id="modal-user-id" value="">
             <input type="hidden" name="csrf_token" value="<!--CSRF_TOKEN-->">
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border); padding-bottom:0.75rem;">
-                <h3 style="font-size:1.15rem; color:var(--yellow); display:flex; align-items:center; gap:0.5rem; margin:0;">
-                    Vynulovat statistiky studenta
-                </h3>
-                <button type="button" onclick="closeResetModal()" style="background:none; border:none; color:var(--text-dim); font-size:1.3rem; cursor:pointer; padding:0.2rem 0.5rem; line-height:1;">✕</button>
+
+            <div class="modal-head">
+                <h3>Vynulovat statistiky studenta</h3>
+                <button type="button" class="modal-close" aria-label="Zavřít dialog" onclick="closeResetModal()">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
             </div>
-            
-            <p style="color:var(--text); margin-bottom:1rem; font-size:0.95rem;">
-                Student: <b id="modal-student-name" style="color:var(--mauve); font-size:1.05rem;"></b>
-                <span id="modal-student-stats" style="color:var(--text-dim); font-size:0.85rem; margin-left:0.5rem;"></span>
+
+            <p style="margin-bottom:16px;">
+                Student: <b id="modal-student-name" style="color:var(--mauve);"></b>
+                <span id="modal-student-stats" class="sub" style="margin-left:8px;"></span>
             </p>
-            
-            <p style="color:var(--text-dim); font-size:0.85rem; margin-bottom:0.75rem;">Vyberte rozsah vynulování:</p>
-            
-            <div style="display:flex; flex-direction:column; gap:0.45rem; margin-bottom:1.25rem;">
+
+            <p class="sub" style="margin-bottom:8px;">Vyber rozsah vynulování:</p>
+
+            <div class="scope-list">
                 <label class="scope-option">
                     <input type="radio" name="scope" value="all" checked>
                     <div>
-                        <div style="font-weight:600; color:var(--text);">Všechno (kompletní reset)</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim);">Vynuluje body, série i zápasy v aréně (FFA, Duely, KotH).</div>
+                        <div style="font-weight:500;">Všechno (kompletní reset)</div>
+                        <div class="sub">Vynuluje body, série i zápasy v aréně (FFA, Duely, KotH).</div>
                     </div>
                 </label>
                 <label class="scope-option">
                     <input type="radio" name="scope" value="points">
                     <div>
-                        <div style="font-weight:600; color:var(--text);">Pouze body (XP)</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim);">Vynuluje celkové skóre na 0. Ponechá streaky i záznamy v aréně.</div>
+                        <div style="font-weight:500;">Pouze body (XP)</div>
+                        <div class="sub">Vynuluje celkové skóre na 0, ponechá streaky i záznamy v aréně.</div>
                     </div>
                 </label>
                 <label class="scope-option">
                     <input type="radio" name="scope" value="streaks">
                     <div>
-                        <div style="font-weight:600; color:var(--text);">Pouze streaky</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim);">Vynuluje aktuální, nejlepší i denní série odpovědí.</div>
+                        <div style="font-weight:500;">Pouze streaky</div>
+                        <div class="sub">Vynuluje aktuální, nejlepší i denní série odpovědí.</div>
                     </div>
                 </label>
                 <label class="scope-option">
                     <input type="radio" name="scope" value="arena">
                     <div>
-                        <div style="font-weight:600; color:var(--text);">⚔️ Pouze arénu</div>
-                        <div style="font-size:0.8rem; color:var(--text-dim);">Smaže historii FFA běhů, Duelů a King of the Hill zápasů.</div>
+                        <div style="font-weight:500;">Pouze arénu</div>
+                        <div class="sub">Smaže historii FFA běhů, Duelů a King of the Hill zápasů.</div>
                     </div>
                 </label>
             </div>
 
-            <div style="background:rgba(243,139,168,0.12); border:1px solid rgba(243,139,168,0.3); border-radius:0.5rem; padding:0.6rem 0.8rem; margin-bottom:1.25rem; font-size:0.82rem; color:var(--red);">
-                ⚠️ Tato akce je nevratná a zvolená data budou trvale smazána.
+            <div class="warn-box">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Tato akce je nevratná a zvolená data budou trvale smazána.</span>
             </div>
 
-            <div style="display:flex; justify-content:flex-end; gap:0.6rem;">
-                <button type="button" class="btn" style="background:var(--border); color:var(--text); padding:0.45rem 1rem; font-size:0.85rem;" onclick="closeResetModal()">Zrušit</button>
-                <button type="submit" class="btn" style="background:var(--yellow); color:#11111b; padding:0.45rem 1rem; font-size:0.85rem;">Potvrdit vynulování</button>
+            <div class="header-actions" style="justify-content:flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeResetModal()">Zrušit</button>
+                <button type="submit" class="btn btn-warn">Potvrdit vynulování</button>
             </div>
         </form>
     </dialog>

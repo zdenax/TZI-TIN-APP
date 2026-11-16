@@ -2,7 +2,8 @@
 <html lang="cs" data-theme="catppuccin">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
 <title>TZI Trenér</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#1e1e2e">
@@ -13,8 +14,8 @@
 <link rel="apple-touch-icon" href="/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/style.css?v=14">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css?v=18">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
 </head>
@@ -356,11 +357,11 @@
       </div>
 
       <div style="margin-bottom:16px;">
-        <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px;">Last 7 Days Activity</div>
+        <div style="font-size:.8125rem;font-weight:500;color:var(--muted);margin-bottom:6px;">Aktivita za posledních 7 dní</div>
         <div id="dp-history"></div>
       </div>
 
-      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:16px;margin-bottom:6px;">Lecture Breakdown</div>
+      <div style="font-size:.8125rem;font-weight:500;color:var(--muted);margin-top:16px;margin-bottom:6px;">Přehled po přednáškách</div>
       <div class="recap-source-list" id="profile-recap-sources"></div>
     </div>
 
@@ -553,7 +554,7 @@
     </header>
     <figure class="res-bits" id="res-bits" role="img" aria-label="Grafický přehled výsledků"></figure>
     <p class="res-note" id="res-note"></p>
-    <section class="room-standings" id="room-results-board" style="display:none"><h3>🏆 Pořadí hráčů v místnosti</h3><ul id="room-results-list"></ul></section>
+    <section class="room-standings" id="room-results-board" style="display:none"><h3>Pořadí hráčů v místnosti</h3><ul id="room-results-list"></ul></section>
     <section id="res-meter-wrap" style="display:none">
       <div class="res-meter" id="res-meter"><i></i><u></u></div>
       <div class="res-meter-lab"><span>hranice 60 %</span></div>

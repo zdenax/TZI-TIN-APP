@@ -163,9 +163,11 @@ function treeSvg(m) {
 // ── vykreslení plátna a živých náhledů ───────────────────────────────────────
 function diagramInner(mid, interactive) { // obsah SVG s diagramem; stejný pro plátno i pro náhled pod čtením slova (mid = id šipky)
   const safeMid = esc(mid);
-  let h = `<defs><marker id="${safeMid}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="svg-arrow"/></marker></defs>`;
+  let h = `<defs><marker id="${safeMid}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="svg-arrow"/></marker>` +
+    (interactive ? `<pattern id="grid-${safeMid}" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="1" class="svg-grid-dot"/></pattern>` : '') +
+    `</defs>` + (interactive ? `<rect x="0" y="0" width="100%" height="100%" fill="url(#grid-${safeMid})" pointer-events="none"/>` : '');
   if (interactive && !M.states.length) {
-    h += `<g class="empty-hint"><rect x="${Math.round(VW / 2 - 140)}" y="232" width="280" height="56" rx="14"/><text x="${Math.round(VW / 2)}" y="260">+ Klikni kamkoli pro stav q₀</text></g>`;
+    h += `<g class="empty-hint"><rect x="${Math.round(VW / 2 - 140)}" y="232" width="280" height="56" rx="12"/><text x="${Math.round(VW / 2)}" y="260">Klikni na plátno pro stav q₀</text></g>`;
   }
   M.trans.forEach((t, i) => {
     const g = edgeGeom(t), label = t.symbols.join(', '), w = Math.max(24, label.length * 10 + 10);
@@ -212,7 +214,7 @@ function render() {
   renderWordDiagram(); syncDelta();
   const st = $('dStatus');
   if (!M.states.length) { st.className = 'status'; st.textContent = ''; }
-  else if (chk.ok) { st.className = 'status ok'; st.textContent = 'Deterministický a úplný automat.'; }
+  else if (chk.ok) { st.className = 'status ok'; st.textContent = 'Deterministický a úplný automat'; }
   else { st.className = 'status ' + (chk.multi.length ? 'bad' : 'warn'); st.textContent = chk.problems.map(p => p.text).join(' '); }
   if (!given) renderLive();
 }
@@ -352,51 +354,88 @@ function openRename(id) {
   const inp = $('renInput'); if (inp) { inp.focus(); inp.select(); }
 }
 
+const hasFocusGroup = 'focusGroup' in HTMLElement.prototype;
+const tbItems = bar => [...bar.querySelectorAll('button, select, input')].filter(el => !el.hidden && !el.closest('[hidden]'));
+function syncRovingToolbar(bar, focusEl) {
+  if (!bar) return;
+  const items = tbItems(bar);
+  if (!items.length || hasFocusGroup) { if (focusEl) focusEl.focus(); return; }
+  const target = focusEl && items.includes(focusEl) ? focusEl : (items.find(el => el.tabIndex === 0) || items[0]);
+  items.forEach(el => { el.tabIndex = el === target ? 0 : -1; });
+  if (focusEl && items.includes(focusEl)) focusEl.focus();
+}
+function wireRovingToolbar(bar) {
+  if (!bar || hasFocusGroup) return;
+  syncRovingToolbar(bar);
+  bar.addEventListener('focusin', ev => {
+    const t = ev.target.closest('button, select, input');
+    if (t && bar.contains(t)) tbItems(bar).forEach(el => { el.tabIndex = el === t ? 0 : -1; });
+  });
+  bar.addEventListener('keydown', ev => {
+    if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT') return;
+    const items = tbItems(bar), i = items.indexOf(ev.target);
+    if (i < 0) return;
+    const rtl = getComputedStyle(bar).direction === 'rtl';
+    const next = ev.key === 'ArrowRight' ? (rtl ? -1 : 1) : ev.key === 'ArrowLeft' ? (rtl ? 1 : -1) : null;
+    let dst = -1;
+    if (next !== null) dst = (i + next + items.length) % items.length;
+    else if (ev.key === 'Home') dst = 0;
+    else if (ev.key === 'End') dst = items.length - 1;
+    if (dst < 0) return;
+    ev.preventDefault();
+    items.forEach((el, idx) => { el.tabIndex = idx === dst ? 0 : -1; });
+    items[dst].focus();
+  });
+}
+
 function renderSelBar() {
   const bar = $('selBar'); if (!bar) return;
+  const act = document.activeElement, hadFocus = !!(act && bar.contains(act));
+  const prevId = hadFocus ? act.id : '', prevSym = hadFocus && act.dataset ? act.dataset.sym : undefined;
   if (renaming && !pos(renaming)) renaming = null;
   if (selE !== null && !M.trans[selE]) selE = null;
   if (selS && !pos(selS)) selS = null;
   if (linkFrom && !pos(linkFrom)) linkFrom = null;
 
+  let html = '';
   if (renaming) {
     const s = pos(renaming);
-    bar.innerHTML = `<span class="selbar-title">Přejmenovat ${esc(S(s.id))}</span>` +
+    html = `<span class="selbar-title">Přejmenovat ${esc(S(s.id))}</span>` +
       `<input type="text" id="renInput" class="selbar-rename" maxlength="8" value="${esc(s.id)}" autocomplete="off" aria-label="Nový název stavu">` +
       `<button type="button" class="btn primary" id="renSave">Uložit</button>` +
       `<button type="button" class="btn" id="renCancel">Zrušit</button>` +
       (selErr ? `<span class="status bad">${esc(selErr)}</span>` : '');
-    bar.hidden = false; return;
-  }
-  if (linkFrom) {
-    bar.innerHTML = `<span class="selbar-title">Šipka z ${esc(S(linkFrom))} → klikni na cílový stav</span>` +
+  } else if (linkFrom) {
+    html = `<span class="selbar-title">Šipka z ${esc(S(linkFrom))} → klikni na cílový stav</span>` +
       `<button type="button" class="btn" id="selCancelLink">Zrušit</button>`;
-    bar.hidden = false; return;
-  }
-  if (connectMode) {
-    bar.innerHTML = `<span class="selbar-title">Klikni na výchozí stav (nebo z něj táhni šipku)</span>` +
+  } else if (connectMode) {
+    html = `<span class="selbar-title">Klikni na výchozí stav (nebo z něj táhni šipku)</span>` +
       `<button type="button" class="btn" id="selCancelLink">Zrušit</button>`;
-    bar.hidden = false; return;
-  }
-  if (pendingEdge || (selE !== null && M.trans[selE])) {
+  } else if (pendingEdge || (selE !== null && M.trans[selE])) {
     const edge = pendingEdge || M.trans[selE], syms = pendingEdge ? [] : edge.symbols;
-    bar.innerHTML = `<span class="selbar-title">${esc(S(edge.from))} → ${esc(S(edge.to))}</span>` +
+    html = `<span class="selbar-title">${esc(S(edge.from))} → ${esc(S(edge.to))}</span>` +
       M.alphabet.map(a => `<button type="button" class="btn sym" data-sym="${esc(a)}" aria-pressed="${syms.includes(a)}">${esc(a)}</button>`).join('') +
       (M.alphabet.length > 8 ? `<input type="text" id="edgeSymInput" class="selbar-rename" maxlength="32" value="${esc(syms.join(', '))}" autocomplete="off" aria-label="Znaky přechodu"><button type="button" class="btn" id="edgeSymApply">Použít</button>` : '') +
       (pendingEdge ? `<button type="button" class="btn" id="edgeDiscard">Zrušit</button>` : `<button type="button" class="btn danger" id="edgeDel">Smazat šipku</button>`) +
       (selErr ? `<span class="status bad">${esc(selErr)}</span>` : '');
-    bar.hidden = false; return;
+  } else if (selS) {
+    const ico = d => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+    html = `<span class="selbar-title">Stav ${esc(S(selS))}</span>` +
+      `<button type="button" class="btn" id="stStart" aria-pressed="${M.start === selS}">${ico('<line x1="4" y1="12" x2="14" y2="12"/><polyline points="10 8 14 12 10 16"/><circle cx="18" cy="12" r="3"/>')}Počáteční</button>` +
+      `<button type="button" class="btn" id="stAcc" aria-pressed="${M.accept.includes(selS)}">${ico('<circle cx="6" cy="12" r="3"/><line x1="9" y1="12" x2="20" y2="12"/><polyline points="16 8 20 12 16 16"/>')}Přijímací</button>` +
+      `<button type="button" class="btn" id="stLink">${ico('<line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>')}Šipka</button>` +
+      `<button type="button" class="btn" id="stRen">${ico('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>')}Přejmenovat</button>` +
+      `<button type="button" class="btn danger" id="stDel">${ico('<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>')}Smazat</button>`;
   }
-  if (selS) {
-    bar.innerHTML = `<span class="selbar-title">Stav ${esc(S(selS))}</span>` +
-      `<button type="button" class="btn" id="stStart" aria-pressed="${M.start === selS}">▸ Počáteční</button>` +
-      `<button type="button" class="btn" id="stAcc" aria-pressed="${M.accept.includes(selS)}">Přijímací ▸</button>` +
-      `<button type="button" class="btn" id="stLink">→ Šipka</button>` +
-      `<button type="button" class="btn" id="stRen">Přejmenovat</button>` +
-      `<button type="button" class="btn danger" id="stDel">Smazat</button>`;
-    bar.hidden = false; return;
+  if (!html) { bar.hidden = true; bar.innerHTML = ''; return; }
+  bar.innerHTML = html;
+  bar.hidden = false;
+  let focusTarget = null;
+  if (hadFocus) {
+    if (prevSym !== undefined) focusTarget = tbItems(bar).find(el => el.dataset.sym === prevSym) || null;
+    else if (prevId) focusTarget = $(prevId);
   }
-  bar.hidden = true; bar.innerHTML = '';
+  syncRovingToolbar(bar, focusTarget);
 }
 
 $('selBar').addEventListener('click', ev => {
@@ -593,18 +632,76 @@ function renderZad() {
   $('zadBody').innerHTML = h;
 }
 const doneOf = id => !task ? false : task.steps ? ({ delta: RP.done.delta, table: RP.done.table, diagram: RP.done.diagram, tree: RP.done.tree, word: RP.wordsOk >= 3 })[id] : id === 'diagram' && !!doneMap()[task.id];
-function renderTabs() {
-  $('tabs').innerHTML = '<span class="row" role="tablist" aria-label="Kroky úlohy">' +
-    TABS.map(([id, label]) => `<button class="tab" role="tab" data-t="${esc(id)}" aria-selected="${id === tab}">${esc(label)}${doneOf(id) ? '<span class="ck">✓</span>' : ''}</button>`).join('') +
-    '</span><span class="sp"></span><button class="btn" id="zadToggle" title="Skrýt nebo ukázat zadání vlevo">Zadání ◧</button>';
-  $('zadToggle').onclick = () => $('app').classList.toggle('noZad');
+let tabScrollObs = null;
+function syncTabList(focusCurrent) {
+  const tl = $('tabList'); if (!tl) return;
+  const active = tl.querySelector('.tab[aria-selected="true"]');
+  if (active) {
+    try { active.scrollIntoView({ block: 'nearest', inline: 'nearest', container: 'nearest' }); }
+    catch (e) { active.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+    if (focusCurrent) active.focus();
+  }
+  if (tabScrollObs) { tabScrollObs.disconnect(); tabScrollObs = null; }
+  if (!CSS.supports('animation-timeline', 'scroll()') && tl.firstElementChild && tl.lastElementChild) {
+    const first = tl.firstElementChild, last = tl.lastElementChild;
+    tabScrollObs = new IntersectionObserver(entries => {
+      for (const { target, intersectionRatio } of entries) {
+        if (target === first) tl.classList.toggle('more-start', intersectionRatio < 1);
+        if (target === last) tl.classList.toggle('more-end', intersectionRatio < 1);
+      }
+    }, { root: tl, threshold: 1, rootMargin: '1px' });
+    tabScrollObs.observe(first); tabScrollObs.observe(last);
+  }
+}
+function renderTabs(focusCurrent) {
+  const openZad = !$('app').classList.contains('noZad');
+  if (!$('tabList')) {
+    $('tabs').innerHTML = '<div class="tablist" id="tabList" role="tablist" focusgroup="tablist nomemory" aria-label="Kroky úlohy">' +
+      TABS.map(([id, label]) => `<button type="button" class="tab" id="tab-${esc(id)}" role="tab" data-t="${esc(id)}"><span class="tab-lbl">${esc(label)}</span><span class="ck" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg></span></button>`).join('') +
+      `</div><button type="button" class="btn" id="zadToggle" aria-expanded="${openZad}" aria-controls="zad" title="Skrýt nebo ukázat zadání"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Zadání</button>`;
+    $('zadToggle').onclick = () => {
+      const hiddenNow = $('app').classList.toggle('noZad');
+      $('zadToggle').setAttribute('aria-expanded', String(!hiddenNow));
+    };
+  }
+  const tl = $('tabList');
+  if (tl) {
+    tl.querySelectorAll('.tab').forEach(b => {
+      const id = b.dataset.t, selTab = id === tab;
+      b.setAttribute('aria-selected', String(selTab));
+      b.toggleAttribute('focusgroupstart', selTab);
+      if (!hasFocusGroup) b.tabIndex = selTab ? 0 : -1;
+      const ck = b.querySelector('.ck'); if (ck) ck.hidden = !doneOf(id);
+    });
+  }
+  const zt = $('zadToggle'); if (zt) zt.setAttribute('aria-expanded', String(openZad));
+  syncTabList(focusCurrent);
 }
 $('tabs').addEventListener('click', ev => { const b = ev.target.closest('.tab'); if (b) showTab(b.dataset.t); });
-function showTab(id) {
+$('tabs').addEventListener('focusin', ev => {
+  const b = ev.target.closest('.tab');
+  if (b && b.dataset.t !== tab) showTab(b.dataset.t, false);
+});
+$('tabs').addEventListener('keydown', ev => {
+  if (hasFocusGroup) return;
+  const tabEl = ev.target.closest('.tab'), tl = $('tabList');
+  if (!tabEl || !tl || !tl.contains(tabEl)) return;
+  const list = [...tl.querySelectorAll('.tab')], i = list.indexOf(tabEl);
+  const rtl = getComputedStyle(tl).direction === 'rtl';
+  let dst = -1;
+  if (ev.key === 'ArrowRight') dst = (i + (rtl ? -1 : 1) + list.length) % list.length;
+  else if (ev.key === 'ArrowLeft') dst = (i + (rtl ? 1 : -1) + list.length) % list.length;
+  else if (ev.key === 'Home') dst = 0;
+  else if (ev.key === 'End') dst = list.length - 1;
+  if (dst < 0) return;
+  ev.preventDefault();
+  showTab(list[dst].dataset.t, true);
+});
+function showTab(id, focusCurrent) {
   tab = id;
   for (const [k] of [['delta'], ['table'], ['diagram'], ['tree'], ['word']]) $('p-' + k).hidden = k !== id;
   lsSet('tzi_automat_tab_' + (task ? task.id : 'volny'), id);
-  renderTabs();
+  renderTabs(focusCurrent);
   if (id === 'delta') {
     syncDelta();
     const t = $('dText');
@@ -779,7 +876,7 @@ function buildLive() {
 // ── výběr úlohy ──────────────────────────────────────────────────────────────
 const sel = $('task');
 function fillSelect() {
-  const all = allTasks(), opt = t => `<option value="${esc(t.id)}">${t.custom ? '★ ' : ''}${esc(t.title)}</option>`;
+  const all = allTasks(), opt = t => `<option value="${esc(t.id)}">${t.custom ? '[vlastní] ' : ''}${esc(t.title)}</option>`;
   sel.innerHTML = `<optgroup label="Zadaný automat: δ, tabulka, diagram, strom, slovo">${all.filter(t => t.steps).map(opt).join('')}</optgroup>` +
     `<optgroup label="Navrhni automat podle popisu">${all.filter(t => !t.steps).map(opt).join('')}</optgroup><option value="">Volný návrh</option>`;
   $('ex').innerHTML = '<option value="">Vyber…</option>' + all.map(t => `<option value="${esc(t.id)}">${esc(t.title)}</option>`).join('');
@@ -790,6 +887,7 @@ function setTask(id) {
   M = load(task ? task.alphabet.slice() : M.alphabet);
   clearSel(); sim = { word: '', pos: 0 };
   $('alpha').value = M.alphabet.join(', '); $('freeTools').hidden = !!task;
+  syncRovingToolbar($('tools'));
   exTask = task ? null : allTasks().find(t => t.id === lsGet('tzi_automat_ex')) || null; $('ex').value = exTask ? exTask.id : '';
   $('grade').hidden = !task; document.querySelectorAll('.gradeOut').forEach(o => { o.innerHTML = ''; }); $('delTask').hidden = !(task && task.custom);
   if (given) buildGiven(); else buildLive();
@@ -852,6 +950,8 @@ $('nSave').onclick = () => {
   fillSelect(); dlg.close(); setTask(t.id);
 };
 
+wireRovingToolbar($('tools'));
+wireRovingToolbar($('selBar'));
 fillSelect();
 const last = lsGet('tzi_automat_last');
 setTask(last !== null && (last === '' || allTasks().some(t => t.id === last)) ? last : 'repr');

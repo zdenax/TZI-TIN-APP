@@ -2,177 +2,233 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TZI Trenér - Vstup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="dark light">
+    <title>TZI Trenér · Přihlášení</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
         :root {
+            color-scheme: dark;
+            --target-size: 24px;
             --bg: #1e1e2e;
-            --card: #181825;
-            --border: #313244;
+            --surface: #181825;
+            --card: #242437;
+            --border: rgba(205, 214, 244, 0.1);
             --text: #cdd6f4;
             --text-dim: #a6adc8;
-            --mauve: #cba6f7;
-            --mauve-hover: #b4befe;
-            --pink: #f5c2e7;
+            --accent: #cba6f7;
+            --accent-ink: #11111b;
             --error: #f38ba8;
             --green: #a6e3a1;
+            --font: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+            --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
+        @media (pointer: coarse) { :root { --target-size: 44px; } }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font: 400 16px/1.5 var(--font);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 1.5rem;
+            min-height: 100dvh;
+            padding: 24px 16px max(24px, env(safe-area-inset-bottom, 0px));
+            overflow-wrap: break-word;
         }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
         .auth-card {
-            background-color: var(--card);
+            background-color: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 1.25rem;
-            padding: 2.5rem;
+            border-radius: 12px;
+            padding: 24px;
             width: 100%;
-            max-width: 440px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            max-width: 420px;
             text-align: center;
         }
-        .icon {
-            font-size: 3rem;
-            margin-bottom: 0.8rem;
-            display: inline-block;
+        .brand-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 32px;
+            margin-bottom: 12px;
+            color: var(--accent);
         }
         h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-            color: var(--mauve);
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 1.15;
+            margin-bottom: 4px;
+            color: var(--text);
+            text-wrap: balance;
         }
         p.subtitle {
             color: var(--text-dim);
-            font-size: 0.95rem;
-            margin-bottom: 1.8rem;
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+            font-family: var(--mono);
         }
         .tabs {
             display: flex;
-            background: #11111b;
-            border-radius: 0.75rem;
-            padding: 0.3rem;
-            margin-bottom: 1.5rem;
+            gap: 4px;
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
             border: 1px solid var(--border);
         }
         .tab-btn {
             flex: 1;
-            padding: 0.6rem;
+            min-block-size: max(36px, var(--target-size));
+            padding: 8px 12px;
             background: transparent;
             border: none;
             color: var(--text-dim);
-            font-weight: 600;
-            font-size: 0.95rem;
-            border-radius: 0.5rem;
+            font: 500 0.9375rem var(--font);
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
         }
         .tab-btn.active {
-            background: var(--mauve);
-            color: #11111b;
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 16px;
             text-align: left;
         }
         label {
             display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.4rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 6px;
             color: var(--text-dim);
         }
         input, select {
             width: 100%;
-            padding: 0.8rem 1rem;
-            background: #11111b;
+            min-block-size: max(40px, var(--target-size));
+            padding: 8px 12px;
+            background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 0.6rem;
+            border-radius: 8px;
             color: var(--text);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font: 400 1rem var(--font);
         }
-        input:focus, select:focus {
-            border-color: var(--mauve);
-            box-shadow: 0 0 0 3px rgba(203, 166, 247, 0.2);
-        }
+        input:focus { border-color: var(--accent); }
         button.submit-btn {
             width: 100%;
-            padding: 0.85rem 1rem;
-            background: var(--mauve);
-            color: #11111b;
+            min-block-size: max(40px, var(--target-size));
+            padding: 8px 16px;
+            background: var(--accent);
+            color: var(--accent-ink);
             border: none;
-            border-radius: 0.6rem;
-            font-size: 1rem;
-            font-weight: 700;
+            border-radius: 8px;
+            font: 500 1rem var(--font);
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 0.5rem;
+            margin-top: 4px;
         }
-        button.submit-btn:hover {
-            background: var(--mauve-hover);
+        .trial-wrap {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .trial-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            min-block-size: max(40px, var(--target-size));
+            text-decoration: none;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font: 500 0.875rem var(--font);
+        }
+        .ico { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+        @media (hover: hover) {
+            button.submit-btn:hover { opacity: 0.92; }
+            .trial-link:hover, .tab-btn:not(.active):hover { border-color: var(--accent); color: var(--text); }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            button.submit-btn, .trial-link, .tab-btn, input { transition: background-color 150ms var(--ease), border-color 150ms var(--ease), opacity 150ms var(--ease), scale 150ms var(--ease); }
+            button.submit-btn:active, .trial-link:active { scale: 0.98; }
         }
         .error-msg {
-            background: rgba(243, 139, 168, 0.15);
-            border: 1px solid var(--error);
+            background: rgba(243, 139, 168, 0.12);
+            border: 1px solid rgba(243, 139, 168, 0.35);
             color: var(--error);
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            margin-bottom: 1.2rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+            text-align: left;
         }
         .success-msg {
-            background: rgba(166, 227, 161, 0.15);
-            border: 1px solid var(--green);
+            background: rgba(166, 227, 161, 0.12);
+            border: 1px solid rgba(166, 227, 161, 0.35);
             color: var(--green);
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            margin-bottom: 1.2rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+            text-align: left;
         }
-        .notice {
-            font-size: 0.8rem;
+        .auth-foot {
+            margin-top: 20px;
+            font-size: 0.8125rem;
             color: var(--text-dim);
-            margin-top: 1.2rem;
-            line-height: 1.4;
+            text-align: center;
+            line-height: 1.5;
+            max-width: 420px;
+            text-wrap: pretty;
         }
+        .auth-foot a { color: var(--text-dim); text-decoration: underline; text-underline-offset: 3px; }
+        .auth-foot .privacy { margin-top: 8px; font-size: 0.75rem; opacity: 0.8; }
     </style>
 </head>
 <body>
     <main class="auth-card">
         <header>
-            <div class="icon">🎓</div>
+            <div class="brand-mark" aria-hidden="true">
+                <svg width="48" height="24" viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="2" y1="12" x2="10" y2="12"/>
+                    <circle cx="16" cy="12" r="6"/>
+                    <line x1="22" y1="12" x2="31" y2="12"/>
+                    <polyline points="28 9 31 12 28 15"/>
+                    <circle cx="38" cy="12" r="6"/>
+                    <line x1="44" y1="12" x2="47" y2="12"/>
+                </svg>
+            </div>
             <h1>TZI Trenér</h1>
-            <p class="subtitle">Teoretická informatika (KI/TIN)</p>
+            <p class="subtitle">KI/TIN · Teoretická informatika</p>
         </header>
 
         <!--MESSAGE-->
 
         <nav class="tabs" aria-label="Volba přihlášení nebo registrace">
-            <button class="tab-btn <!--LOGIN_ACTIVE-->" onclick="switchTab('login')">Přihlášení</button>
-            <button class="tab-btn <!--REG_ACTIVE-->" onclick="switchTab('reg')">Registrace</button>
+            <button type="button" class="tab-btn <!--LOGIN_ACTIVE-->" onclick="switchTab('login')">Přihlášení</button>
+            <button type="button" class="tab-btn <!--REG_ACTIVE-->" onclick="switchTab('reg')">Registrace</button>
         </nav>
 
         <section id="login-form" style="display: <!--LOGIN_DISPLAY-->;">
             <form method="POST" action="/login">
                 <!--CSRF-->
                 <div class="form-group">
-                    <label>Uživatelské jméno</label>
-                    <input type="text" name="username" placeholder="Zadejte své jméno..." required autofocus>
+                    <label for="login-username">Uživatelské jméno</label>
+                    <input type="text" id="login-username" name="username" placeholder="Přezdívka" required autofocus>
                 </div>
                 <div class="form-group">
-                    <label>Heslo</label>
-                    <input type="password" name="password" placeholder="Zadejte heslo..." required>
+                    <label for="login-password">Heslo</label>
+                    <input type="password" id="login-password" name="password" placeholder="Heslo" required>
                 </div>
                 <button type="submit" class="submit-btn">Přihlásit se</button>
             </form>
@@ -182,32 +238,33 @@
             <form method="POST" action="/register">
                 <!--CSRF-->
                 <div class="form-group">
-                    <label>Uživatelské jméno</label>
-                    <input type="text" name="username" placeholder="Zvolte si přezdívku..." required minlength="2">
+                    <label for="reg-username">Uživatelské jméno</label>
+                    <input type="text" id="reg-username" name="username" placeholder="Nová přezdívka" required minlength="2">
                 </div>
                 <div class="form-group">
-                    <label>Heslo</label>
-                    <input type="password" name="password" placeholder="Min. 8 znaků" required minlength="8">
+                    <label for="reg-password">Heslo</label>
+                    <input type="password" id="reg-password" name="password" placeholder="Minimálně 8 znaků" required minlength="8">
                 </div>
                 <div class="form-group">
-                    <label>Potvrzení hesla</label>
-                    <input type="password" name="password_confirm" placeholder="Zopakujte heslo..." required minlength="8">
+                    <label for="reg-password-confirm">Potvrzení hesla</label>
+                    <input type="password" id="reg-password-confirm" name="password_confirm" placeholder="Potvrzení hesla" required minlength="8">
                 </div>
                 <button type="submit" class="submit-btn">Zaregistrovat se</button>
             </form>
         </section>
 
-        <nav style="margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border);" aria-label="Zkušební přístup">
-            <a href="/trial" style="display:block; text-decoration:none; background:#11111b; border:1px solid var(--border); color:var(--text-dim); padding:0.75rem; border-radius:0.6rem; font-weight:600; font-size:0.9rem; text-align:center; transition:all 0.2s;">
-                🚀 Vyzkoušet bez přihlášení (Trial mód)
+        <nav class="trial-wrap" aria-label="Zkušební přístup">
+            <a href="/trial" class="trial-link">
+                <span>Vyzkoušet bez přihlášení (Trial)</span>
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
         </nav>
 
     </main>
 
-    <footer style="margin-top: 1.5rem; font-size: 0.78rem; color: var(--text-dim); text-align: center; line-height: 1.6; max-width: 440px;">
-        <div>Made with AI · Poděkování <b>Zdenax</b> za vytvoření apky · <a href="https://github.com/zdenax/TZI-TIN-APP" target="_blank" rel="noopener noreferrer" style="color: var(--text-dim); text-decoration: underline;">GitHub: TZI-TIN-APP</a></div>
-        <div style="margin-top: 0.5rem; font-size: 0.72rem; opacity: 0.75;">Soukromí: Žádný tracking, e-maily ani analytika. V databázi je jen hash hesla, zvolená přezdívka a skóre pro synchronizaci mezi zařízeními a fungování arény. Kompletní smazání účtu i historie je dostupné v profilu.</div>
+    <footer class="auth-foot">
+        <div>Poděkování <b>Zdenax</b> za vytvoření aplikace · <a href="https://github.com/zdenax/TZI-TIN-APP" target="_blank" rel="noopener noreferrer">GitHub: TZI-TIN-APP</a></div>
+        <div class="privacy">Soukromí: Žádný tracking, e-maily ani analytika. V databázi je jen hash hesla, přezdívka a studijní postup s možností smazání účtu v profilu.</div>
     </footer>
 
     <script>
