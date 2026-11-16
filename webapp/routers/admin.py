@@ -1,7 +1,7 @@
 """Admin panel: přehled uživatelů a správa žebříčku."""
 from html import escape
 from typing import Dict, Any, Optional
-from fastapi import APIRouter, Request, Response, Form, Depends
+from fastapi import APIRouter, Request, Response, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 import db
 import scoring
@@ -116,6 +116,8 @@ async def post_admin_leaderboard_toggle(
     admin: Dict[str, Any] = Depends(require_admin),
 ):
     await validate_csrf(request, response, csrf_token=csrf_token)
+    if user_id < 1 or user_id > 9223372036854775807:
+        raise HTTPException(status_code=400, detail="Neplatné user_id.")
     db.toggle_user_leaderboard_visibility(user_id)
     return RedirectResponse(url="/admin", status_code=303)
 
@@ -130,6 +132,8 @@ async def post_admin_leaderboard_reset(
     admin: Dict[str, Any] = Depends(require_admin),
 ):
     await validate_csrf(request, response, csrf_token=csrf_token)
+    if user_id < 1 or user_id > 9223372036854775807:
+        raise HTTPException(status_code=400, detail="Neplatné user_id.")
     allowed_scopes = {"all", "points", "streaks", "arena"}
     clean_scope = scope if scope in allowed_scopes else "all"
     db.reset_user_score(user_id, scope=clean_scope)

@@ -444,8 +444,10 @@ def test_glosar_and_automat_routes():
         assert chk.returncode == 0, f"{js_file}: {chk.stderr}"
 
 
-def test_pentest_regressions():
+def test_pentest_regressions(monkeypatch):
     """Verify no premature XP grant, room detail IDOR, or browser-UA CSRF bypass."""
+    from webapp.routers import pwa
+    monkeypatch.setattr(pwa, "WEBHOOK_SECRET", "ascii_webhook_secret_123")
     test_db = BASE / "test_temp_pentest_reg.db"
     _cleanup_db(test_db)
     from webapp import questions
@@ -485,6 +487,13 @@ def test_pentest_regressions():
         pts2_before = c2.get("/api/me").json()["points"]
         assert c2.post(f"/api/rooms/{room['id']}/submit", json={"answers": [{"id": q1["id"], "userKeys": q1["correct"]}], "time_ms": 1}, headers={"X-CSRF-Token": csrf2}).status_code == 403
         assert c2.get("/api/me").json()["points"] == pts2_before
+
+        # 4. Non-ASCII secrets/CSRF and huge SQLite integers must never trigger 500
+        assert c1.post("/webhook?secret=%C4%8D%C5%99%C5%BE").status_code == 403
+        assert c1.post("/api/progress?source=01-2026-10-01", json={"seen": {}, "csrf_token": "\u010d\u0159\u017e"}).status_code == 403
+        assert c1.get("/api/rooms/99999999999999999999").status_code == 404
+        assert c1.post("/api/rooms/99999999999999999999/leave", headers={"X-CSRF-Token": csrf1}).status_code == 200
+        assert c1.post("/api/duel/start", json={"duel_id": 99999999999999999999}, headers={"X-CSRF-Token": csrf1}).status_code == 400
     finally:
         _cleanup_db(test_db)
 

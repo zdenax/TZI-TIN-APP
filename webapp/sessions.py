@@ -6,6 +6,7 @@ from typing import Optional, Dict, Any
 from fastapi import Request, HTTPException, status
 from itsdangerous import BadSignature, SignatureExpired
 from .config import SESSION_COOKIE, SESSION_MAX_AGE, serializer
+from .csrf import safe_compare
 
 
 # --- Session Helpers ---
@@ -41,7 +42,7 @@ def verify_session_token(
     # IP/UA binding — porovná fingerprint z tokenu s aktuálním klientem
     if request and data.get("fp"):
         current_fp = _client_fingerprint(request)
-        if not secrets.compare_digest(data["fp"], current_fp):
+        if not safe_compare(str(data["fp"]), current_fp):
             return None
     return data
 

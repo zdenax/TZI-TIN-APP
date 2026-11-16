@@ -9,6 +9,15 @@ from .config import SESSION_COOKIE
 CSRF_COOKIE_NAME = "csrf_token"
 
 
+def safe_compare(a: str, b: str) -> bool:
+    """Konstantně časové porovnání řetězců bezpečné i pro non-ASCII vstupy."""
+    if not isinstance(a, str) or not isinstance(b, str):
+        return False
+    if a.isascii() and b.isascii():
+        return secrets.compare_digest(a, b)
+    return secrets.compare_digest(a.encode("utf-8"), b.encode("utf-8"))
+
+
 def generate_csrf_token(resp: Response) -> str:
     """Vygeneruje nový CSRF token a uloží ho do cookie."""
     token = secrets.token_hex(32)
@@ -81,9 +90,9 @@ async def validate_csrf(
     if is_testing and not token:
         return True
 
-    if not token or not cookie_token:
+    if not token or not cookie_token or not isinstance(token, str):
         raise HTTPException(status_code=403, detail="Chybějící CSRF token.")
-    if not secrets.compare_digest(token, cookie_token):
+    if not safe_compare(token, cookie_token):
         raise HTTPException(status_code=403, detail="Neplatný CSRF token.")
 
     # Rotace tokenu po každém úspěšném requestu (volitelná pro paralelní fetch)

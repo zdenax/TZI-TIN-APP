@@ -7,7 +7,7 @@ import tzi_trener
 from ..config import WEBHOOK_SECRET
 from ..git_sync import git_pull
 from ..sessions import get_current_user, require_user
-from ..csrf import CSRF_COOKIE_NAME, generate_csrf_token, ensure_csrf_token
+from ..csrf import CSRF_COOKIE_NAME, generate_csrf_token, ensure_csrf_token, safe_compare
 
 router = APIRouter()
 
@@ -87,7 +87,7 @@ def get_glosar(request: Request):
 @router.post("/webhook")
 def post_webhook(request: Request, secret: str = ""):
     header_secret = request.headers.get("X-Webhook-Secret") or secret
-    if not WEBHOOK_SECRET or not secrets.compare_digest(header_secret, WEBHOOK_SECRET):
+    if not WEBHOOK_SECRET or not safe_compare(header_secret, WEBHOOK_SECRET):
         raise HTTPException(status_code=403, detail="Forbidden")
     out = git_pull()
     return PlainTextResponse(f"OK: {out}")

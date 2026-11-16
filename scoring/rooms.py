@@ -77,7 +77,16 @@ def list_comp_rooms(user_id: Optional[int] = None) -> Dict[str, Any]:
     }
 
 
+SQLITE_MAX_INT = 9223372036854775807
+
+
+def _valid_id(val: Any) -> bool:
+    return isinstance(val, int) and not isinstance(val, bool) and 1 <= val <= SQLITE_MAX_INT
+
+
 def get_comp_room(room_id: int) -> Optional[Dict[str, Any]]:
+    if not _valid_id(room_id):
+        return None
     conn = get_db()
     row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()
     if not row:
@@ -127,6 +136,8 @@ def create_comp_room(
 
 def join_comp_room(room_id: int, user_id: int, username: str, auto_start_duel: bool = False) -> Dict[str, Any]:
     """Připojí hráče do čekající místnosti v lobby."""
+    if not _valid_id(room_id):
+        return {"ok": False, "error": "Místnost neexistuje."}
     conn = get_db()
     with conn:
         row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()
@@ -178,6 +189,8 @@ def join_comp_room(room_id: int, user_id: int, username: str, auto_start_duel: b
 
 def start_comp_room(room_id: int, user_id: int) -> Dict[str, Any]:
     """Hostitel (👑) spustí hru pro všechny připojené hráče v místnosti."""
+    if not _valid_id(room_id):
+        return {"ok": False, "error": "Místnost neexistuje."}
     conn = get_db()
     with conn:
         row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()
@@ -199,6 +212,8 @@ def start_comp_room(room_id: int, user_id: int) -> Dict[str, Any]:
 
 def leave_comp_room(room_id: int, user_id: int) -> Dict[str, Any]:
     """Hráč opustí místnost. Pokud odejde 👑 hostitel z čekající místnosti, předá se korunka dalšímu hráči nebo se prázdná místnost zruší."""
+    if not _valid_id(room_id):
+        return {"ok": True, "deleted": True}
     conn = get_db()
     with conn:
         row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()

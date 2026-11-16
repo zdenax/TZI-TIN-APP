@@ -154,7 +154,7 @@ def _parse_competitive_submission(payload: Dict[str, Any]):
 
     try:
         raw_time = payload.get("time_ms", 0)
-        time_ms = max(0, int(0 if raw_time is None else raw_time))
+        time_ms = min(86400000, max(0, int(0 if raw_time is None else raw_time)))
     except (ValueError, TypeError):
         raise HTTPException(status_code=400, detail="Neplatný čas (time_ms).")
 
@@ -446,6 +446,16 @@ def api_duel_status(user: Dict[str, Any] = Depends(require_user)):
     return scoring.get_duel_status(user.get("user_id") or 0)
 
 
+def _parse_sqlite_id(val: Any, name: str) -> int:
+    try:
+        ival = int(val)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail=f"Neplatné {name}.")
+    if isinstance(val, bool) or ival < 1 or ival > 9223372036854775807:
+        raise HTTPException(status_code=400, detail=f"Neplatné {name}.")
+    return ival
+
+
 @router.post("/api/duel/start")
 async def api_duel_start(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
     await validate_csrf(request, response, rotate=False)
@@ -466,20 +476,14 @@ async def api_duel_start(request: Request, response: Response, user: Dict[str, A
         pass
 
     if opponent_id is not None:
-        try:
-            opponent_id_val = int(opponent_id)
-        except (ValueError, TypeError):
-            raise HTTPException(status_code=400, detail="Neplatné opponent_id.")
+        opponent_id_val = _parse_sqlite_id(opponent_id, "opponent_id")
         if opponent_id_val == uid:
             raise HTTPException(status_code=400, detail="Nelze vyzvat sám sebe.")
 
     conn = db.get_db()
     open_row = None
     if duel_id is not None:
-        try:
-            duel_id_val = int(duel_id)
-        except (ValueError, TypeError):
-            raise HTTPException(status_code=400, detail="Neplatné duel_id.")
+        duel_id_val = _parse_sqlite_id(duel_id, "duel_id")
         open_row = conn.execute("SELECT * FROM duel_matches WHERE id = ? AND status = 'open'", (duel_id_val,)).fetchone()
         if open_row is not None and open_row["creator_id"] == uid:
             raise HTTPException(status_code=400, detail="Nelze vyzvat sám sebe.")
@@ -531,12 +535,7 @@ async def api_duel_submit(request: Request, response: Response, user: Dict[str, 
         raise HTTPException(status_code=400, detail="Neplatný JSON")
 
     duel_id = payload.get("duel_id")
-    duel_id_val = None
-    if duel_id is not None:
-        try:
-            duel_id_val = int(duel_id)
-        except (ValueError, TypeError):
-            raise HTTPException(status_code=400, detail="Neplatné duel_id.")
+    duel_id_val = _parse_sqlite_id(duel_id, "duel_id") if duel_id is not None else None
 
     correct_count, total_q, time_ms, q_ids, eval_results = _parse_competitive_submission(payload)
     token_to_consume = payload.get("match_token")

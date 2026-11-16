@@ -52,7 +52,7 @@
       <div class="xp-row">
         <span class="lvl-box" id="u-lvl">1</span>
         <strong class="lvl-title" id="u-rank-title">NPC</strong>
-        <div class="xp-track" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div class="xp-track" role="progressbar" aria-label="Postup XP k další úrovni" aria-valuemin="0" aria-valuemax="100">
           <div class="xp-fill" id="xp-bar-fill" style="width: 33%;"></div>
         </div>
         <span class="xp-stat"><b id="u-xp">0</b> XP</span>
@@ -71,7 +71,7 @@
           <span id="dp-count">Denní cíl: <b>0</b>/5 odpovědí (+50 XP)</span>
           <span id="dp-status"></span>
         </div>
-        <div class="daily-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div class="daily-bar" role="progressbar" aria-label="Denní cíl odpovědí" aria-valuemin="0" aria-valuemax="100">
           <div class="daily-bar-fill" id="dp-bar-fill"></div>
         </div>
       </div>
@@ -95,12 +95,12 @@
       </section>
 
       <section aria-label="Režimy">
-        <nav class="filter" id="type-row" role="toolbar" aria-label="Typ otázek">
+        <div class="filter" id="type-row" role="toolbar" aria-label="Typ otázek">
           <button data-t="all" aria-pressed="true" onclick="setType('all')">Vše</button>
           <button data-t="choice" aria-pressed="false" onclick="setType('choice')"><span>Teorie</span><span class="filter-sub"> (A/B/C/D)</span></button>
           <button data-t="input" aria-pressed="false" onclick="setType('input')"><span>Příklady</span><span class="filter-sub"> (výsledek)</span></button>
           <button data-t="recall" id="btn-recall" aria-pressed="false" onclick="setType('recall')">Doplňovačka</button>
-        </nav>
+        </div>
 
         <button class="go" id="go" onclick="goPrimary()">
           <strong id="go-title">Načítám…</strong>
@@ -527,7 +527,7 @@
       <output class="score" id="score-label"></output>
     </header>
     <div class="pchain" id="pchain" aria-hidden="true"></div>
-    <figure class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="fill" id="pbar"></div></figure>
+    <figure class="progress-bar" role="progressbar" aria-label="Průběh kvízu" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="fill" id="pbar"></div></figure>
     <article class="question-box">
       <header class="qsrc" id="q-src"></header>
       <div class="question-text" id="q-text"></div>
