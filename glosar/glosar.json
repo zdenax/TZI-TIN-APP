@@ -348,6 +348,124 @@
    {
     "term": "Příklad 2: dveře",
     "body": "Dva stavy: q_0 = zavřeno (0), q_1 = otevřeno (1). Dva vstupy: 0 = nikdo není před dveřmi, 1 = někdo je. δ(q_0, 0) = q_0, δ(q_0, 1) = q_1, δ(q_1, 0) = q_0, δ(q_1, 1) = q_1, počáteční q_0, F = {q_1}. Nový stav je vždy poslední přečtený znak, automat rozpoznává **slova končící 1** (ověřeno výčtem). Tento model nahrazuje dveře z 29. 10., které byly jen odhad.\n*Zdroj: přednáška 5. 11.; ověření jazyka **Doplněno z Claude**.*"
+   },
+   {
+    "term": "Délka slova |w|",
+    "body": "**Délka** slova |w| je **počet znaků** slova. Prázdné slovo nemá žádný znak, **|ε| = 0** (na přednášce se prázdné slovo píše e). Při zřetězení se délky sčítají, |uv| = |u| + |v|, a u n-násobného zřetězení je |u^(n)| = n · |u|.\n*Příklady:* |0110| = 4; u = abc, v = cda: |uv| = 3 + 3 = 6; u = ab: |u^(4)| = |abababab| = 8, |u^(0)| = |ε| = 0.\n*Zdroj: přednáška 5. 11. (rukopis: „e – prázdné slovo“, |u_1 … u_n| = n); **Doplněno z Claude** (Chytil [12, s. 21], Vais [9, s. 40–43]; příklady spočítány skriptem).*"
+   },
+   {
+    "term": "Počet slov dané délky",
+    "body": "Nad abecedou s k znaky je slov délky n právě **k^(n)**: na každé z n pozic je k možností. Pro Σ = {0, 1} je slov délky 3 právě 2^(3) = 8 a délky 5 právě 2^(5) = 32.\nSlova délky **nejvýše** n se sečtou přes všechny délky: v Σ^(∗) jich je pro n = 3 celkem 1 + 2 + 4 + 8 = 15 (včetně ε), v Σ^(+) jen 2 + 4 + 8 = 14.\n*Příklad (dveře, rozpoznávají slova končící 1):* poslední znak je pevný, zbylé tři libovolné, slov délky 4 je tedy 2^(3) = 8.\n*Zdroj: příklady v otázkách 6. přednášky; **Doplněno z Claude** (pravidlo součinu z kombinatoriky 22. 10.; počty ověřeny výčtem skriptem).*"
+   },
+   {
+    "term": "Proč je Σ^(+) spočetná",
+    "body": "**Spočetná** množina je taková, kterou jde seřadit do posloupnosti x_1, x_2, … (existuje bijekce s ℕ). Σ^(+) je nekonečná, protože délky slov nejsou shora omezené, ale **slov každé délky n je konečně mnoho** (|Σ|^(n)). Proto jde vypsat nejdřív všechna slova délky 1, pak délky 2 atd. a každé slovo dostane pořadové číslo; pro {0, 1}: 0, 1, 00, 01, 10, 11, 000, … Totéž platí pro Σ^(∗) (ε na začátek).\n*Zdroj: přednáška 5. 11. (rukopis: „Σ^(+) je spočetné množství“); důvod, řazení podle délky, **Doplněno z Claude** (výklad ve výpiscích; pojem spočetnosti [6]).*"
+   },
+   {
+    "term": "Σ′ (abeceda s čárkou)",
+    "body": "Čárka u Σ′ („sigma s čárkou“) **není operace**, je to jen **jméno další abecedy**, aby se odlišila od Σ. V rukopisu je Σ = {0, 1}, Σ′ = {a, b, c, …} a Σ′^(+) = {bca, ccka, …}. Pro Σ′ platí totéž co pro každou abecedu: slovo nad Σ′ smí obsahovat **jen znaky ze Σ′**.\n*Příklad:* pro Σ′ = {a, b, c} je bca ∈ Σ′^(+), ale ccka ∉ Σ′^(+), protože k ∉ Σ′. Slovo ccka z rukopisu patří do Σ′^(+) jen tehdy, když „…“ v abecedě zahrnuje i k.\n*Zdroj: přednáška 5. 11. (rukopis); čtení čárky jako jména **Doplněno z Claude** (vlastní znalost běžného značení, v literatuře nedohledáno; podmínka k ∈ Σ′ je ve výpiscích).*"
+   },
+   {
+    "term": "Přirozený jazyk jako jazyk",
+    "body": "Vyučující: „my jako Češi rozumíme češtině, rozpoznáváme to“. V teorii je **přirozený jazyk** (čeština) **jazyk nad konečnou abecedou** a jeho slova (řetězy) jsou **správně utvořené věty**. Takový jazyk může být i nekonečný a pořád je to jazyk ve smyslu L ⊆ Σ^(∗). „Rozumět češtině“ odpovídá **rozpoznávání**: o větě umíme říct, jestli do jazyka patří.\n*Zdroj: přednáška 5. 11. (rukopis); **Doplněno z Claude** (Chytil [12, s. 21]: přirozený jazyk je jazyk nad konečnou abecedou, jeho řetězy jsou správně utvořené věty).*"
+   },
+   {
+    "term": "Diskrétní automat",
+    "body": "Vyučující: „existují diskrétní a spojité, budeme brát diskrétní“. **Diskrétní** automat mění stav **po krocích**: jeden krok = jeden přečtený znak, mezi kroky se stav nemění. Spojitý by měnil stav plynule v čase. Konečný automat z přednášky je diskrétní a má konečně mnoho stavů.\n*Zdroj: přednáška 5. 11. (rukopis, jen citovaná věta); výklad **Doplněno z Claude** (vlastní výklad ve výpiscích, v Chytilovi ani Vaisovi nedohledán, přednáška to dál nerozvedla).*"
+   },
+   {
+    "term": "Představa automatu: řídicí jednotka, hlava, páska",
+    "body": "Automat si představujeme jako **řídicí jednotku** (Ř. J.), která drží aktuální stav z Q = {q_1, …, q_n}, **čtecí hlavu** a **pásku** rozdělenou na buňky, ve kterých je vstupní slovo. Hlava čte pásku po jednom znaku zleva doprava; podle stavu a přečteného znaku se jednotka přepne do dalšího stavu, (q_i, a_j) → nový stav, a hlava se posune o buňku dál.\n*Zdroj: přednáška 5. 11. (rukopis: nákres Ř. J., čtecí hlava, páska s buňkami a_1 | a_2 | … | a_m); popis činnosti **Doplněno z Claude** (vlastní výklad; Chytil tuto představu v kap. 1.1 nemá).*"
+   },
+   {
+    "term": "Značky →, ←, ↔ v tabulce přechodů",
+    "body": "V tabulce přechodů se před jméno stavu píše značka: **→ počáteční stav**, **← koncový stav** (stav z F), **↔ stav počáteční i koncový**. Stav bez značky není ani jedno. Značky patří ke stavu (řádku), ne k přechodům na 0 nebo 1.\n| δ | 0 | 1 |\n|---|---|---|\n| → q_0 | q_0 | q_1 |\n| ← q_1 | q_0 | q_1 |\n*Příklad (dveře):* q_0 je jen počáteční, q_1 jen koncový. Automat z 12. 11. má q_0 ∈ F, proto ↔ q_0.\n*Zdroj: přednáška 5. 11. (rukopis: nákres q_0 se značkou ↔); **Doplněno z Claude** (Chytil [12, s. 19]).*"
+   },
+   {
+    "term": "Výpočet automatu na slově (zápis s ∃)",
+    "body": "Pro neprázdné slovo w = x_1 x_2 … x_n: w ∈ L(A) ⇔ ∃ q_1, …, q_(n+1): q_1 = q_0, q_(i+1) = δ(q_i, x_i), q_(n+1) ∈ F. Indexy tu číslují **kroky čtení**, nejsou to jména stavů automatu: q_1 = q_0 je start, každý další stav vznikne z předchozího stavu a přečteného znaku a **poslední** musí být ve F. Je to totéž co tabulka „slovo nad čarou, stavy pod ní“ i co δ^(∗)(q_0, w) ∈ F.\n**Deterministický automat** má δ jako funkci Q × Σ → Q, každé dvojici (stav, znak) přiřadí jediný stav, takže **výpočet na slovo je jen jeden**. „Existuje výpočet končící ve F“ proto znamená „ten jediný výpočet končí ve F“ a stačí psát δ^(∗)(q_0, w) ∈ F.\n*Zdroj: přednáška 5. 11. (rukopis: zápis s ∃ a tabulka); vysvětlení **Doplněno z Claude** (zápis s ∃ v Chytilovi ani Vaisovi nenalezen; shoda s δ^(∗) ověřena skriptem pro slova délky 1 až 9, viz výpisky).*"
+   },
+   {
+    "term": "Čtyři reprezentace automatu (úkol)",
+    "body": "Na další týden byl ohlášen úkol: konečný automat ve **všech čtyřech reprezentacích**, od jednodušších po složitější: **přechodová funkce** (vypsané δ(q, a) = q′), **tabulka přechodů**, **stavový diagram** a **stavový strom**. Vždy se uvádí i pětice A = (Q, Σ, δ, q_0, F).\nÚplný deterministický automat má **|Q| · |Σ| přechodů** (políček tabulky): z každého stavu pro každý znak právě jeden. *Příklad (dveře):* 2 stavy · 2 znaky = 4 přechody.\n*Zdroj: přednáška 5. 11. (rukopis: úkol „všechny 4 reprezentace“) a 29. 10.; počet přechodů **Doplněno z Claude** (plyne z δ : Q × Σ → Q, Chytil [12, s. 18]).*"
+   },
+   {
+    "term": "Automat z přednášky q_0–q_3: výpočty a jazyk",
+    "body": "Q = {q_0, q_1, q_2, q_3}, Σ = {0, 1}, F = {q_1, q_2}; δ(q_0, 0) = q_0, δ(q_0, 1) = q_2 a ze stavů q_1, q_2, q_3 vede 0 do q_1 a 1 do q_3.\n**Rekurzivní rozpis** podle pravidla 2: δ^(∗)(q_0, 110) = δ(δ^(∗)(q_0, 11), 0) = δ(δ(δ^(∗)(q_0, 1), 1), 0) = δ(δ(δ(δ^(∗)(q_0, ε), 1), 1), 0), pak pravidlo 1 a vyhodnocení zevnitř ven: q_0, q_2, q_3, q_1 ∈ F.\n**Jazyk:** L(A) = slova s aspoň jednou 1, která **končí 0**, nebo slova tvaru **0…01**. Časté omyly: „končí nulou“ (slovo 0 skončí v q_0) a „obsahuje 1“ (slovo 11 skončí v q_3). ε ∉ L(A), protože q_0 ∉ F; nejkratší rozpoznané slovo je 1.\n**Počty rozpoznaných slov:** délky 2 jsou 2 (01, 10), délky 3 jsou 4 (001, 010, 100, 110), délky 4 je 8 z 16.\n*Zdroj: přednáška 5. 11. (rukopis; Chytil [12, př. 1.1.5]); popis jazyka a počty **Doplněno z Claude** (ověřeno skriptem: popis jazyka výčtem všech slov do délky 12, počty výčtem).*"
+   }
+  ],
+  "07-2026-11-12": [
+   {
+    "term": "Přepisovací systém R = (V, P)",
+    "body": "**Přepisovací (produkční) systém** je uspořádaná dvojice R = (V, P): V je **konečná abeceda**, P **konečná množina přepisovacích pravidel**. Pravidlo je uspořádaná dvojice (u, v), u, v ∈ V^(∗), píše se **u → v**.\n**Značení:** slova z V^(∗) (u, v, w, x, y, z) se píšou **malými** písmeny; velká písmena jsou pro R, V, P, Π, Σ, S a neterminály.\n*Zdroj: přednáška 12. 11. (rukopis: R = (V, P), pravidlo (u, v), u, v ∈ V^(∗), otázka „malé nebo velké z a u“); „konečná“ a odpověď o značení **Doplněno z Claude** (Chytil [12, Def. 3.1.1–3.1.2, s. 118]).*"
+   },
+   {
+    "term": "Přímý přepis u ⇒ z",
+    "body": "u ⇒ z ⇔ ∃ v, w, x, y ∈ V^(∗): u = vxw, z = vyw, x → y ∈ P. Slovo u obsahuje levou stranu x nějakého pravidla, ta se nahradí pravou stranou y a okolí v, w zůstane. **Jedno pravidlo použité jedenkrát**, na jeden výskyt (ne na všechny výskyty naráz).\n*Příklad (systém 01 → 10, 10 → 01):* 00110 ⇒ 01010 (pravidlo 1 na 2.–3. místě) a 00110 ⇒ 00101 (pravidlo 2 na 4.–5. místě); jiný přímý přepis 00110 nemá.\n*Zdroj: přednáška 12. 11. (rukopis); **Doplněno z Claude** (Chytil [12, Def. 3.1.2 bod 1, s. 118]; přímé přepisy 00110 vypsány skriptem).*"
+   },
+   {
+    "term": "Přepis (odvození) u ⇒^(∗) z a délka odvození",
+    "body": "u ⇒^(∗) z (čti „u se přepíše na z“, také „z u se odvodí z“): z vznikne z u **konečnou posloupností přímých přepisů**. Posloupnost slov se nazývá **odvození (derivace)**.\n**Délka odvození, dvě konvence:**\n- **rukopis:** u ⇒ u_1 ⇒ u_2 ⇒ … ⇒ u_n = z, odvození délky n = **n kroků** (u stojí před u_1),\n- **Chytil:** u = u_1 ⇒ u_2 ⇒ … ⇒ u_n = z, n ≥ 1, odvození délky n má **n slov a n − 1 kroků** (u je samo u_1).\n\n*Příklad:* 00110 ⇒ 00101 ⇒ 00011 má 2 kroky; podle rukopisu je to odvození délky 2, podle Chytila délky 3. Otázky na „počet kroků“ počítají přímé přepisy.\nRelace ⇒^(∗) je **reflexivní** (u ⇒^(∗) u nulou kroků) a **tranzitivní**, je to reflexivní a tranzitivní uzávěr relace ⇒. Symetrická obecně není.\n*Zdroj: přednáška 12. 11. (rukopis); Chytilova konvence a vlastnosti ⇒^(∗) **Doplněno z Claude** (Chytil [12, Def. 3.1.2 bod 2, s. 118]).*"
+   },
+   {
+    "term": "Minimální odvození a lemma",
+    "body": "Odvození u_1 ⇒ u_2 ⇒ … ⇒ u_n je **minimální**, když se v něm **žádné slovo neopakuje**: u_i ≠ u_j pro i ≠ j. Neznamená to nejmenší počet kroků ani nejkratší výsledné slovo.\n**Lemma:** je-li R přepisovací systém a u ⇒^(∗) z, pak existuje **minimální** odvození z ze slova u.\n**Důkaz:** není-li odvození minimální, obsahuje úsek u_i ⇒ … ⇒ u_j s u_i = u_j. Ten je zbytečný: vypustí se a nahradí slovem u_i, odvození se zkrátí a pořád vede k z. Odvození je konečné, takže po konečně mnoha krocích zbude odvození bez opakování.\n**Důsledek:** o odvození lze bez újmy na obecnosti předpokládat, že je minimální.\n*Zdroj: přednáška 12. 11. (rukopis: definice, „laicky: dvě slova se tam nebudou opakovat“, lemma a důkaz); **Doplněno z Claude** (porovnáno s Chytil [12, s. 118–119, Lemma 3.1.4]).*"
+   },
+   {
+    "term": "Příklad: systém 01 → 10, 10 → 01",
+    "body": "V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Pravidla jen **prohazují sousední 0 a 1**, takže **zachovávají počet nul i počet jedniček**: slovo jde přepsat právě na všechna slova stejné délky se stejným počtem nul a jedniček.\n- 00110 ⇒ 00101 ⇒ 00011: oba kroky pravidlem 2 (poprvé na poslední dvojici 10, podruhé na 3.–4. místě); 2 kroky je nejméně, jedním krokem to nejde.\n- Ze 00110 jde přímo na 2 slova (01010, 00101) a celkem na 10 slov (5 míst, 2 jedničky: (5 nad 2) = 10), včetně 00110 samotného.\n- 00110 ⇒^(∗) 00111 neplatí: 00111 má o jedničku víc.\n\nPři zápisu odvození podtrhni přepisovanou část a nad ⇒ napiš číslo pravidla.\n*Zdroj: přednáška 12. 11. (rukopis; Chytil [12, Př. 3.1.3, s. 118–119], Barilla, kap. 4, úkol 1); počty a nejkratší odvození **Doplněno z Claude** (ověřeno skriptem prohledáním do šířky; dosažitelnost právě slov se stejným počtem nul a jedniček výčtem do délky 7).*"
+   },
+   {
+    "term": "Generativní gramatika G = (Π, Σ, S, P)",
+    "body": "Uspořádaná čtveřice:\n- **Π** konečná množina **neterminálů** (proměnných), píšou se velkými písmeny S, A, B, C,\n- **Σ** konečná množina **terminálů** (písmena slov jazyka), malá písmena a číslice a, b, 0, 1; Π ∩ Σ = ∅,\n- **S ∈ Π** je **počáteční symbol**, každé odvození začíná slovem S,\n- **P** konečná množina pravidel **α → β**, kde **levá strana α obsahuje aspoň jeden neterminál**: α = uXv, X ∈ Π, u, v, β ∈ (Π ∪ Σ)^(∗).\n\nGramatika určuje přepisovací systém (Π ∪ Σ, P), ⇒ a ⇒^(∗) platí stejně. Pravá strana neterminál obsahovat nemusí. Bez dalších omezení je to gramatika **typu 0**.\n*Zdroj: přednáška 12. 11.; **Doplněno z Claude** (porovnáno s Chytil [12, Def. 3.1.5, s. 119]).*"
+   },
+   {
+    "term": "Jazyk generovaný gramatikou L(G)",
+    "body": "L(G) = {w ∈ Σ^(∗); S ⇒^(∗) w}: všechna slova **jen z terminálů**, která jde odvodit z počátečního symbolu. Slovo, ve kterém zbývá neterminál (třeba aBb), do L(G) **nepatří**, i když S ⇒^(∗) aBb; odvozuje se dál, dokud nezůstanou jen terminály. Zápis w ⇒^(∗) S patří k analytické gramatice.\n*Zdroj: přednáška 12. 11.; **Doplněno z Claude** (Chytil [12, s. 119]).*"
+   },
+   {
+    "term": "Příklad: gramatika S → aBb",
+    "body": "Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b.\n**Odvození** S ⇒ aBb (1) ⇒ aaCcb (2) ⇒ aabBacb (3) ⇒ aabaacb (4): 4 kroky, pravidla 1, 2, 3, 4; pravidlo 5 se nepoužije (z aaCcb by dalo aabcb, z něj aabaacb nevznikne). Je to jediné odvození slova aabaacb a výsledek obsahuje jen terminály, takže aabaacb ∈ L(G).\n**Nejkratší slovo** L(G) je aab (S ⇒ aBb ⇒ aab).\n**Typ:** všechna pravidla mají tvar X → γ, gramatika je tedy **bezkontextová (typ 2)**; regulární není (v aBb, aCc, bBa stojí za neterminálem terminál); pravé strany jsou neprázdné, takže je i kontextová (typ 1).\n*Zdroj: přednáška 12. 11. (rukopis: odvození S ⇒^(∗) aabaacb); jedinečnost odvození, nejkratší slovo a typ **Doplněno z Claude** (ověřeno skriptem: prohledání všech odvození, výčet slov L(G) do délky 9, kontrola tvaru pravidel).*"
+   },
+   {
+    "term": "Analytická gramatika",
+    "body": "Čtveřice G = (Π, Σ, S, P) jako u generativní gramatiky, ale v pravidle α → β musí neterminál obsahovat **pravá strana β** (β = uXv, X ∈ Π). Jazyk: L(G) = {w ∈ Σ^(∗); w ⇒^(∗) S}, slova z terminálů, která jde **zredukovat na počáteční symbol** (postup pozpátku, jako rozbor věty nebo programu).\n**Generativní × analytická:** generativní slovo z S **vytváří**, analytická ho **redukuje** na S. **Obrácením šipek** ve všech pravidlech vznikne z generativní gramatiky analytická se stejným jazykem a naopak; pojmy jsou rovnocenné, dál se pracuje jen s generativními.\n*Příklad (obrácená gramatika S → aBb):* (1) aBb → S, (2) aCc → B, (3) bBa → C, (4) a → B, (5) b → C; aabaacb ⇒ aabBacb (4, na 4. symbol a) ⇒ aaCcb (3) ⇒ aBb (2) ⇒ S (1). Pravidla 4, 3, 2, 1 jsou generativní odvození pozpátku.\n*Zdroj: přednáška 12. 11. (rukopis, příklad redukce); **Doplněno z Claude** (Chytil [12, Def. 3.1.8, s. 123–124]; redukce ověřena skriptem).*"
+   },
+   {
+    "term": "Chomského hierarchie: typy 0–3",
+    "body": "Gramatiky se třídí podle **tvaru pravidel** (N. Chomsky), všude G = (Π, Σ, S, P), X, Y ∈ Π:\n| Typ | Název | Tvar pravidel |\n|---|---|---|\n| 0 | obecná | α → β, α = uXv obsahuje neterminál |\n| 1 | kontextová | αXβ → αγβ, γ ∈ (Π ∪ Σ)^(+), výjimka S → e |\n| 2 | bezkontextová | X → γ, γ ∈ (Π ∪ Σ)^(∗) |\n| 3 | regulární (pravá lineární) | X → wY nebo X → w, w ∈ Σ^(∗) |\n**Kontextová:** X se přepíše na γ jen v okolí (kontextu) α, β. **Bezkontextová:** vlevo jediný neterminál, přepíše se bez ohledu na okolí, pravá strana smí být prázdná (X → e). **Regulární:** vpravo nejvýš jeden neterminál, a to úplně vpravo. **Jazyk typu i** je jazyk generovaný nějakou gramatikou typu i, 𝓛_i je třída všech jazyků typu i.\n*Zdroj: přednáška 12. 11. (rukopis a tabule: L_0 až L_3, „bude se zkoušet“); **Doplněno z Claude** (Chytil [12, Def. 3.2.1, Pozn. 3.2.3, Označení 3.2.5, s. 124–125]).*"
+   },
+   {
+    "term": "Kontextová gramatika a pravidlo S → e",
+    "body": "V kontextovém pravidle αXβ → αγβ je **γ neprázdné** (γ ∈ (Π ∪ Σ)^(+)): neterminál se **nesmí přepsat na prázdné slovo**. **Jediná výjimka je S → e**; má-li ji gramatika, **S se nesmí vyskytovat na pravé straně žádného pravidla**. Pravidlo S → e neznamená, že jazyk obsahuje jen e. Výjimka je v definici jen proto, aby platila hierarchie 𝓛_2 ⊆ 𝓛_1.\n*Zdroj: přednáška 12. 11. (tabule: γ ∈ (Π ∪ Σ)^(+)); **Doplněno z Claude** (Chytil [12, Def. 3.2.1 bod 2, Pozn. 3.2.4, s. 124–125]).*"
+   },
+   {
+    "term": "Hierarchie 𝓛_3 ⊆ 𝓛_2 ⊆ 𝓛_1 ⊆ 𝓛_0",
+    "body": "Čím vyšší typ, tím přísnější tvar pravidel a tím menší třída jazyků; regulární jazyky (𝓛_3) jsou nejmenší třída.\n- 𝓛_1 ⊆ 𝓛_0 a 𝓛_3 ⊆ 𝓛_2 plynou **přímo z definice**: kontextová gramatika je i obecná, regulární je i bezkontextová.\n- 𝓛_2 ⊆ 𝓛_1 **přímo neplyne**: bezkontextová gramatika smí mít libovolně mnoho pravidel X → e, kontextová jen S → e. Plyne až z věty, že každou bezkontextovou gramatiku jde upravit na **nevypouštějící** se stejným jazykem.\n*Zdroj: přednáška 12. 11. (tabule: L_3 ⊆ L_2 ⊆ L_1 ⊆ L_0); **Doplněno z Claude** (Chytil [12, Tvrzení 3.2.6, Věta 3.2.8, s. 125–126]).*"
+   },
+   {
+    "term": "Určení typu pravidla a gramatiky",
+    "body": "Typ pravidla se určuje od nejpřísnějšího: **3** (X → wY nebo X → w), jinak **2** (vlevo jediný neterminál), jinak **1** (αXβ → αγβ s neprázdným γ), jinak **0** (vlevo aspoň jeden neterminál). Gramatika je typu i, když tvar typu i splňují **všechna** její pravidla. Příklady (X, Y, Z ∈ Π, a, b ∈ Σ):\n| Pravidlo | Nejvyšší typ | Proč |\n|---|---|---|\n| X → aY | 3 | neterminál jen úplně vpravo |\n| X → e | 3 | X → w s w = e; kontextové není, výjimka je jen S → e |\n| X → aYb | 2 | za neterminálem stojí terminál |\n| aXb → aYZb | 1 | α = a, β = b, X se přepíše na neprázdné YZ |\n| XY → YX | 0 | vlevo víc symbolů a nejde o tvar αXβ → αγβ |\n| XY → e | 0 | vlevo víc symbolů, vpravo prázdné slovo |\n*Zdroj: tvary pravidel z přednášky 12. 11.; postup a příklady **Doplněno z Claude** (Chytil [12, Def. 3.2.1, s. 124–125]; typy ověřeny skriptem podle tvarů z definice).*"
+   },
+   {
+    "term": "Gramatiky a automaty: co rozpoznává který typ",
+    "body": "| Typ | Jazyky | Rozpoznává je |\n|---|---|---|\n| 3 | regulární | konečný automat |\n| 2 | bezkontextové | nedeterministický zásobníkový automat |\n| 1 | kontextové | lineárně omezený Turingův stroj |\n| 0 | typu 0 (rekurzivně spočetné) | Turingův stroj |\nKonečné a zásobníkové automaty zazněly na přednášce; typ 1 a typ 0 jsou doplněk z literatury (z rukopisu nevyplývá, jestli zazněly).\n*Zdroj: přednáška 12. 11. (rukopis: konečné a zásobníkové automaty); typ 1 a 0 **Doplněno z Claude** (Vais [9, kap. 2.8, s. 56]; Chytil [12, Věty 3.3.1 a 3.3.5, s. 130–132; čl. 4.5, s. 172; Důsledek 6.1.10, s. 267]).*"
+   },
+   {
+    "term": "Kleeneova věta a jazyky typu 3",
+    "body": "**Kleeneova věta:** jazyk je **regulární, právě když je rozpoznatelný konečným automatem**. Skládá se ze dvou vět: každý regulární jazyk je rozpoznatelný konečným automatem a každý jazyk rozpoznatelný konečným automatem je regulární.\nU Chytila je „regulární“ v kap. 2.3 jazyk popsaný regulárním výrazem. Že je to tatáž třída jako **jazyky typu 3**, říkají Věta 3.3.5 (jazyk typu 3 je rozpoznatelný konečným automatem) a Věta 3.3.1 (jazyk rozpoznatelný konečným automatem je typu 3). Tedy **jazyk je typu 3, právě když je rozpoznatelný konečným automatem**.\n*Zdroj: přednáška 12. 11. (rukopis: obě věty a Kleeneova věta); **Doplněno z Claude** (Chytil [12, Věty 2.3.4, 2.3.6, 2.3.7, s. 94–96; Věty 3.3.1, 3.3.5, s. 130–132]; Habiballa, Základy teoretické informatiky, Věta 3, s. 67–68).*"
+   },
+   {
+    "term": "Gramatika ke konečnému automatu (Věta 3.3.1)",
+    "body": "K automatu A = (Q, Σ, δ, q_0, F) se sestrojí regulární gramatika G = (Π, Σ, S, P):\n- **Π = Q**: stavy jsou neterminály,\n- **Σ** zůstává: vstupní abeceda jsou terminály,\n- **S = q_0**: počáteční stav je počáteční symbol,\n- za každý přechod δ(q, a) = q′ pravidlo **q → aq′**, za každý koncový stav q ∈ F pravidlo **q → e**.\n\nP = {q → aq′; δ(q, a) = q′} ∪ {q → e; q ∈ F}, u úplného automatu je tedy |Q| · |Σ| + |F| pravidel. **Neterminál na konci** odvozeného slova a_1 … a_n q říká, **ve kterém stavu je automat** po přečtení a_1 … a_n: q_0 ⇒^(∗) a_1 … a_n q, právě když automat přejde z q_0 po a_1 … a_n do q. Odvození smí skončit (q → e) jen v koncovém stavu, proto L(G) = L(A). Odvození slova délky n má n + 1 kroků.\n*Zdroj: přednáška 12. 11. (rukopis: Věta 3.3.1, konstruktivní důkaz); počet pravidel a kroků **Doplněno z Claude** (Chytil [12, Věta 3.3.1, s. 130]; ověřeno skriptem na dvou automatech).*"
+   },
+   {
+    "term": "Prázdné slovo v gramatice k automatu",
+    "body": "Gramatika sestrojená ke konečnému automatu generuje prázdné slovo, **právě když q_0 ∈ F**: e ∈ L(A) ⇔ q_0 ∈ F ⇔ q_0 → e ∈ P ⇔ e ∈ L(G). Je to totéž jako u automatu z 5. 11.: prázdné slovo je rozpoznáno, právě když je počáteční stav koncový.\n*Příklady:* automat z 12. 11. má F = {q_0}, gramatika má q_0 → e a generuje e; dveře mají F = {q_1}, gramatika má jen q_1 → e a e negeneruje.\n*Zdroj: přednáška 12. 11. (rukopis, důkaz Věty 3.3.1); **Doplněno z Claude** (Chytil [12, s. 130]; příklady ověřeny skriptem).*"
+   },
+   {
+    "term": "Příklad: gramatika k automatu q_0–q_2",
+    "body": "Automat: Q = {q_0, q_1, q_2}, Σ = {0, 1}, F = {q_0} (↔ q_0); z každého stavu vede 0 do q_0, z q_0 vede 1 do q_1 a z q_1 i q_2 vede 1 do q_2.\n**Gramatika:** Π = Q, S = q_0, pravidla (1) q_0 → 0q_0, (2) q_0 → 1q_1, (3) q_0 → e, (4) q_1 → 0q_0, (5) q_1 → 1q_2, (6) q_2 → 0q_0, (7) q_2 → 1q_2: 6 přechodů + 1 koncový stav = 7 pravidel. Zkráceně q_0 → 0q_0 | 1q_1 | e.\n**Slovo 1100:** automat q_0, q_1, q_2, q_0, q_0 ∈ F; gramatika q_0 ⇒ 1q_1 ⇒ 11q_2 ⇒ 110q_0 ⇒ 1100q_0 ⇒ 1100 (pravidla 2, 5, 6, 1, 3), 5 kroků. Slovo 10: pravidla 2, 4, 3.\n**Jazyk:** {e} ∪ slova končící 0. Slovo 1101 nepatří (automat skončí v q_1, pravidlo q_1 → e není); slov délky 3 jsou 4 (000, 010, 100, 110).\n*Dveře z 5. 11.:* q_0 → 0q_0 | 1q_1, q_1 → 0q_0 | 1q_1 | e; q_0 ⇒ 1q_1 ⇒ 10q_0 ⇒ 101q_1 ⇒ 101.\n*Zdroj: přednáška 12. 11. (rukopis: automat, pravidla, odvození 1100; Chytil [12, obr. 32, Př. 3.3.2, s. 130–131]); jazyk, další slova a dveře **Doplněno z Claude** (ověřeno skriptem: L(G) = L(A) pro všechna slova do délky 10).*"
    }
   ]
  }
