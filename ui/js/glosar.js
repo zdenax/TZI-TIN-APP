@@ -1,3 +1,8 @@
+try {
+  const th = localStorage.getItem('tzi_theme');
+  if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th);
+} catch (e) {}
+
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[c]));

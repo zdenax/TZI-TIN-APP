@@ -1,3 +1,8 @@
+try {
+  const th = localStorage.getItem('tzi_theme');
+  if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th);
+} catch (e) {}
+
 const svg = document.getElementById('board'), $ = id => document.getElementById(id);
 const R = 28;
 const RESERVED_IDS = new Set(['__proto__', 'constructor', 'prototype', 'toString', 'valueOf', 'hasOwnProperty']);
@@ -201,7 +206,7 @@ function renderLive() { // tabulka, strom a čtení slova z vlastního návrhu (
     for (const a of M.alphabet) { const c = (d[s.id] && d[s.id][a]) || []; t += `<td class="${!c.length ? 'miss' : c.length > 1 ? 'multi' : ''}">${c.length ? c.map(x => esc(S(x))).join(', ') : '–'}</td>`; }
     t += '</tr>';
   }
-  $('lTable').innerHTML = M.states.length ? t + '</table><p class="hint">Tabulka se plní sama z tvého automatu. → počáteční, ← přijímací, „–“ = chybí přechod.</p>' : '<span class="hint">Zatím žádný stav. V kroku Diagram přidej stavy.</span>';
+  $('lTable').innerHTML = M.states.length ? `<div class="table-wrap">${t}</table></div><p class="hint">Tabulka se plní sama z tvého automatu. → počáteční, ← přijímací, „–“ = chybí přechod.</p>` : '<span class="hint">Zatím žádný stav. V kroku Diagram přidej stavy.</span>';
   $('lTree').innerHTML = treeSvg(M);
   renderTrace();
 }
@@ -473,9 +478,9 @@ function buildGiven() {
   $('p-delta').innerHTML = h + '</div><div class="row"><button class="btn primary" id="rD">Zkontrolovat δ</button><span id="rDo"></span></div>';
   const dgrid = $('p-delta').querySelector('.dgrid');
   if (dgrid) dgrid.style.gridTemplateColumns = `repeat(${al.length},auto)`;
-  h = '<h2>2. Tabulka přechodů</h2><p class="hint">Vyplň buňky. Zaškrtni → u počátečního a ← u přijímacích stavů.</p><table><tr><th>→</th><th>←</th><th></th>' + al.map(a => `<th>${esc(a)}</th>`).join('') + '</tr>';
+  h = '<h2>2. Tabulka přechodů</h2><p class="hint">Vyplň buňky. Zaškrtni → u počátečního a ← u přijímacích stavů.</p><div class="table-wrap"><table><tr><th>→</th><th>←</th><th></th>' + al.map(a => `<th>${esc(a)}</th>`).join('') + '</tr>';
   for (const q of ids) h += `<tr><td><input type="checkbox" data-m="${esc(q)}|start" ${(RP.marks[q] || {}).start ? 'checked' : ''}></td><td><input type="checkbox" data-m="${esc(q)}|accept" ${(RP.marks[q] || {}).accept ? 'checked' : ''}></td><th>${esc(S(q))}</th>` + al.map(a => `<td>${cellIn('t', q, a)}</td>`).join('') + '</tr>';
-  $('p-table').innerHTML = h + '</table><div class="row"><button class="btn primary" id="rTb">Zkontrolovat tabulku</button><span id="rTo"></span></div>';
+  $('p-table').innerHTML = h + '</table></div><div class="row"><button class="btn primary" id="rTb">Zkontrolovat tabulku</button><span id="rTo"></span></div>';
   h = '<h2>4. Stavový strom</h2><p class="hint">Po úrovních shora dolů, stavy zleva doprava oddělené mezerou (znaky na hranách nepiš). Stav, který už je ve stromu rozvinutý, se dál nerozvíjí. Po správné odpovědi se strom nakreslí.</p>';
   for (let i = 0; i < nLevels; i++) h += `<div class="row"><label class="lv-label">Úroveň ${i}</label><input type="text" class="lv" maxlength="512" data-l="${i}" value="${esc(RP.levels[i] || '')}" autocomplete="off" placeholder="např. q0 q1"></div>`;
   $('p-tree').innerHTML = h + '<div class="row"><button class="btn primary" id="rSb">Zkontrolovat strom</button><span id="rSo"></span></div><div id="rSt" class="treebox" hidden></div>';

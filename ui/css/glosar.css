@@ -1,33 +1,36 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
-/* barvy stejné jako v novy.html */
 :root {
-  --paper: #EEF2F6; --paper-2: #E2E8F0; --ink: #13203A; --muted: #55627A; --line: #C5CEDB; --blue: #2538D8; --blue-ink: #FFFFFF;
+  --paper: #1e1e2e; --paper-2: #181825; --ink: #cdd6f4; --muted: #a6adc8; --line: #313244; --blue: #cba6f7; --blue-ink: #11111b;
   --font: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root { --paper: #0F1729; --paper-2: #1A2540; --ink: #E8EDF5; --muted: #9AA7BF; --line: #2C3957; --blue: #6F7DFF; --blue-ink: #0F1729; }
+:root[data-theme="light"] {
+  --paper: #EEF2F6; --paper-2: #E2E8F0; --ink: #13203A; --muted: #55627A; --line: #C5CEDB; --blue: #2538D8; --blue-ink: #FFFFFF;
 }
-body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
-main { max-width: 760px; margin: 0 auto; padding: 32px 20px 96px; }
+:root[data-theme="dark"] {
+  --paper: #0F1729; --paper-2: #1A2540; --ink: #E8EDF5; --muted: #9AA7BF; --line: #2C3957; --blue: #6F7DFF; --blue-ink: #0F1729;
+}
+body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100dvh; overflow-x: hidden; }
+main { max-width: 760px; margin: 0 auto; padding: 28px 16px 72px; }
 a { color: var(--blue); text-underline-offset: 3px; }
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
-/* povrchy prohlížeče z palety: výběr textu, kurzor, posuvníky, čísla */
 ::selection { background: var(--blue); color: var(--blue-ink); }
 input, textarea, select { caret-color: var(--blue); accent-color: var(--blue); }
 html { scrollbar-color: var(--line) transparent; }
-.back { font-size: .9375rem; font-weight: 500; display: inline-block; padding: 4px 0; }
-h1 { font-size: clamp(2rem, 6vw, 3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin: 20px 0 6px; }
-.sub { color: var(--muted); margin-bottom: 8px; }
-h2 { font-size: 1.25rem; font-weight: 800; margin: 40px 0 4px; padding-top: 16px; border-top: 3px solid var(--ink); }
-.entry { padding: 14px 0; border-top: 1px solid var(--line); }
-.entry h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 6px; }
-.entry p, .entry ul { margin: 0 0 6px; line-height: 1.55; }
-.entry ul { padding-left: 1.2em; }
-.entry table { border-collapse: collapse; margin: 6px 0; font-size: .9375rem; }
-.entry td, .entry th { border: 1px solid var(--line); padding: 4px 10px; text-align: left; }
+.back { font-size: .9375rem; font-weight: 600; display: inline-flex; align-items: center; min-height: 38px; padding: 4px 0; text-decoration: none; }
+.back:hover { text-decoration: underline; }
+h1 { font-size: clamp(1.85rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; margin: 14px 0 6px; }
+.sub { color: var(--muted); margin-bottom: 12px; }
+h2 { font-size: 1.2rem; font-weight: 800; margin: 32px 0 4px; padding-top: 16px; border-top: 2px solid var(--line); }
+.entry { padding: 14px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.entry h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 6px; color: var(--blue); }
+.entry p, .entry ul { margin: 0 0 6px; line-height: 1.58; }
+.entry ul { padding-left: 1.25em; }
+.entry table { display: block; overflow-x: auto; max-width: 100%; border-collapse: collapse; margin: 8px 0; font-size: .9375rem; -webkit-overflow-scrolling: touch; }
+.entry td, .entry th { border: 1px solid var(--line); padding: 5px 10px; text-align: left; }
+.entry th { background: var(--paper-2); }
 .entry .src { color: var(--muted); font-size: .875rem; }
-.entry code { font-family: var(--mono); font-size: .9em; }
+.entry code { font-family: var(--mono); font-size: .9em; background: var(--paper-2); padding: 1px 5px; border-radius: 4px; }
 sub, sup { font-size: .72em; line-height: 0; }
 .frac, .binom > span { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .85em; line-height: 1.3; }
 .frac { margin: 0 .1em; }

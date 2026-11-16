@@ -205,6 +205,7 @@
         </div>
     </header>
 
+    <main>
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
             <div>
@@ -260,7 +261,7 @@
                 <input type="text" id="filter-search" placeholder="Hledat ve zprávě nebo stacktrace" style="width:100%; padding:0.45rem 0.75rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;" oninput="applyErrorFilters()">
             </div>
             <div style="flex:1; min-width:130px;">
-                <select id="filter-level" onchange="applyErrorFilters()" style="width:100%; padding:0.45rem 0.6rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
+                <select id="filter-level" aria-label="Filtrovat podle úrovně" onchange="applyErrorFilters()" style="width:100%; padding:0.45rem 0.6rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
                     <option value="">Všechny úrovně</option>
                     <option value="UI_ERROR">UI_ERROR</option>
                     <option value="ERROR">ERROR</option>
@@ -275,7 +276,7 @@
                 <input type="text" id="filter-uid" placeholder="User ID" style="width:100%; padding:0.45rem 0.75rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;" oninput="applyErrorFilters()">
             </div>
             <div style="flex:1; min-width:120px;">
-                <select id="filter-sort" onchange="applyErrorFilters()" style="width:100%; padding:0.45rem 0.6rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
+                <select id="filter-sort" aria-label="Řazení záznamů" onchange="applyErrorFilters()" style="width:100%; padding:0.45rem 0.6rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
                     <option value="desc">Od nejnovějších</option>
                     <option value="asc">Od nejstarších</option>
                 </select>
@@ -307,6 +308,7 @@
             </table>
         </div>
     </div>
+    </main>
 
     <script>
         const initialLimit = "<!--CURRENT_LIMIT-->";
