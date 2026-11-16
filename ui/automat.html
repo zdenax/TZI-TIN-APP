@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/automat.css?v=16">
+<link rel="stylesheet" href="/static/css/automat.css?v=17">
 </head>
 <body>
 <header>
@@ -26,24 +26,16 @@
       <div class="panel" id="p-table" hidden></div>
       <div class="panel" id="p-diagram" hidden>
         <div class="tools" id="tools">
-          <button data-mode="move" aria-pressed="true" title="Táhni stavy, klikni na stav nebo hranu pro výběr">Posun</button>
-          <button data-mode="state" aria-pressed="false" title="Klikni na plátno a přidáš stav">+ Stav</button>
-          <button data-mode="edge" aria-pressed="false" title="Táhni od stavu ke stavu a zadej znak">→ Přechod</button>
-          <button data-mode="start" aria-pressed="false" title="Klikni na stav: šipka dovnitř = počáteční stav">▸ Počáteční</button>
-          <button data-mode="acc" aria-pressed="false" title="Klikni na stav: šipka ven = přijímací stav (patří do F)">Přijímací ◂</button>
-          <button data-mode="erase" aria-pressed="false" title="Klikni na stav nebo hranu a smažeš ji">Smazat</button>
-          <button id="clear" class="btn" title="Vymaže celý návrh">Vyčistit vše</button>
+          <button type="button" class="btn" id="btnAddState">+ Stav</button>
+          <button type="button" class="btn" id="btnConnect" aria-pressed="false">→ Připojit</button>
+          <button type="button" id="clear" class="btn">Vyčistit vše</button>
           <span class="row" id="freeTools"><label for="alpha">Σ</label><input type="text" id="alpha" size="8" maxlength="64" value="0, 1">
             <label for="ex">Hotový příklad</label><select id="ex"></select></span>
         </div>
         <div id="boardWrap"><svg id="board" viewBox="0 0 800 520" aria-label="Plátno automatu"></svg></div>
-        <div class="row" id="addRow"><b>Přidat šipku bez tažení:</b>
-          <select id="aFrom" aria-label="Ze stavu"></select> → <select id="aTo" aria-label="Do stavu"></select>
-          <label for="aSym">znak</label><input type="text" id="aSym" size="5" maxlength="32" placeholder="0, 1" autocomplete="off">
-          <button class="btn" id="aAdd">+ Šipka</button></div>
-        <div class="row"><button id="grade" class="btn primary" hidden>Zkontrolovat diagram</button><span id="dStatus" class="status"></span></div>
+        <div id="selBar" class="selbar" hidden></div>
+        <div class="row"><button type="button" id="grade" class="btn primary" hidden>Zkontrolovat diagram</button><span id="dStatus" class="status"></span></div>
         <div id="gradeOut" class="gradeOut"></div>
-        <p class="hint">Počáteční a přijímací stav nastavíš tlačítky nahoře (klikni na stav). Dvojklik na prázdné místo přidá stav, na stav ho přejmenuje, na hranu změní znaky. Delete smaže vybranou věc.</p>
       </div>
       <div class="panel" id="p-tree" hidden></div>
       <div class="panel" id="p-word" hidden></div>
@@ -61,6 +53,6 @@
   <div class="row mt-lg"><button type="button" class="btn primary" id="nSave" disabled>Uložit úlohu</button><button type="button" class="btn" id="nCancel">Zrušit</button></div>
 </dialog>
 <script src="/automat-core.js?v=16"></script>
-<script src="/static/js/automat.js?v=16"></script>
+<script src="/static/js/automat.js?v=17"></script>
 </body>
 </html>

@@ -24,8 +24,8 @@ const safeParseJson = raw => {
 };
 
 const fresh = alphabet => ({ alphabet, states: [], start: null, accept: [], trans: [] });
-let M = fresh(['0', '1']), mode = 'move', selS = null, selE = null, task = null, given = false, tab = 'diagram', TABS = [];
-let exTask = null, drag = null, rubber = null, sim = { word: '', pos: 0 }, VW = 800, RP = null;
+let M = fresh(['0', '1']), selS = null, selE = null, pendingEdge = null, connectMode = false, linkFrom = null, renaming = null, selErr = '', lastAddedAt = 0, task = null, given = false, tab = 'diagram', TABS = [];
+let exTask = null, drag = null, linkDrag = null, emptyDown = null, activePointerId = null, sim = { word: '', pos: 0 }, VW = 800, RP = null;
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
 
@@ -113,17 +113,22 @@ function load(alphabet) {
 // ── geometrie ────────────────────────────────────────────────────────────────
 const pos = id => M.states.find(s => s.id === id);
 function toSvg(ev) { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return { x: q.x, y: q.y }; }
-function toClient(x, y) { const p = svg.createSVGPoint(); p.x = x; p.y = y; return p.matrixTransform(svg.getScreenCTM()); }
 function fitBoard() { // plátno má pevnou výšku 520 a šířku podle poměru stran okna
   const r = $('boardWrap').getBoundingClientRect(); if (!r.width || !r.height) return;
-  VW = Math.max(600, Math.round(520 * r.width / r.height)); svg.setAttribute('viewBox', `0 0 ${VW} 520`);
+  const nextVW = Math.max(600, Math.round(520 * r.width / r.height));
+  if (nextVW !== VW) { VW = nextVW; svg.setAttribute('viewBox', `0 0 ${VW} 520`); if (tab === 'diagram' && !M.states.length) render(); }
+  else svg.setAttribute('viewBox', `0 0 ${VW} 520`);
 }
 new ResizeObserver(fitBoard).observe($('boardWrap'));
-const hasBack = t => M.trans.some(u => u.from === t.to && u.to === t.from) && t.from !== t.to;
+const hasBack = t => t.from !== t.to && (M.trans.some(u => u.from === t.to && u.to === t.from) || (pendingEdge && pendingEdge.from === t.to && pendingEdge.to === t.from));
 function edgeGeom(t) {
   const a = pos(t.from), b = pos(t.to);
+  if (!a || !b) return { d: '', lx: 0, ly: 0 };
   if (t.from === t.to) {
-    return { d: `M ${a.x - 16} ${a.y - R + 4} C ${a.x - 40} ${a.y - R - 62}, ${a.x + 40} ${a.y - R - 62}, ${a.x + 16} ${a.y - R + 4}`, lx: a.x, ly: a.y - R - 46 };
+    const down = a.y < 110;
+    const sy = down ? a.y + R - 4 : a.y - R + 4;
+    const cy = down ? a.y + R + 62 : a.y - R - 62;
+    return { d: `M ${a.x - 16} ${sy} C ${a.x - 40} ${cy}, ${a.x + 40} ${cy}, ${a.x + 16} ${sy}`, lx: a.x, ly: down ? a.y + R + 46 : a.y - R - 46 };
   }
   const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len, nx = -uy, ny = ux;
   const bend = hasBack(t) ? 34 : 0;
@@ -156,21 +161,38 @@ function treeSvg(m) {
 }
 
 // ── vykreslení plátna a živých náhledů ───────────────────────────────────────
-function diagramInner(mid, withRubber) { // obsah SVG s diagramem; stejný pro plátno i pro náhled pod čtením slova (mid = id šipky)
+function diagramInner(mid, interactive) { // obsah SVG s diagramem; stejný pro plátno i pro náhled pod čtením slova (mid = id šipky)
   const safeMid = esc(mid);
   let h = `<defs><marker id="${safeMid}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" class="svg-arrow"/></marker></defs>`;
+  if (interactive && !M.states.length) {
+    h += `<g class="empty-hint"><rect x="${Math.round(VW / 2 - 140)}" y="232" width="280" height="56" rx="14"/><text x="${Math.round(VW / 2)}" y="260">+ Klikni kamkoli pro stav q₀</text></g>`;
+  }
   M.trans.forEach((t, i) => {
     const g = edgeGeom(t), label = t.symbols.join(', '), w = Math.max(24, label.length * 10 + 10);
-    h += `<g class="ed${withRubber && selE === i ? ' sel' : ''}" ${withRubber ? `data-e="${i}"` : ''}><path d="${g.d}" marker-end="url(#${safeMid})"/>` +
-      (withRubber ? `<path d="${g.d}" class="svg-hit" marker-end=""/>` : '') +
+    h += `<g class="ed${interactive && selE === i ? ' sel' : ''}" ${interactive ? `data-e="${i}"` : ''}><path d="${g.d}" marker-end="url(#${safeMid})"/>` +
+      (interactive ? `<path d="${g.d}" class="svg-hit" marker-end=""/>` : '') +
       `<rect x="${g.lx - w / 2}" y="${g.ly - 11}" width="${w}" height="22" rx="6"/><text x="${g.lx}" y="${g.ly}">${esc(label)}</text></g>`;
   });
+  if (interactive && pendingEdge && pos(pendingEdge.from) && pos(pendingEdge.to)) {
+    const g = edgeGeom(pendingEdge);
+    h += `<g class="ed pending"><path d="${g.d}" marker-end="url(#${safeMid})"/><rect x="${g.lx - 14}" y="${g.ly - 11}" width="28" height="22" rx="6"/><text x="${g.lx}" y="${g.ly}">?</text></g>`;
+  }
   M.states.forEach(s => {
     if (M.start === s.id) h += `<line class="mark" x1="${s.x - R - 46}" y1="${s.y}" x2="${s.x - R - 2}" y2="${s.y}" marker-end="url(#${safeMid})"/>`;
     if (M.accept.includes(s.id)) h += `<line class="mark" x1="${s.x + R}" y1="${s.y}" x2="${s.x + R + 44}" y2="${s.y}" marker-end="url(#${safeMid})"/>`;
-    h += `<g class="st${withRubber && selS === s.id ? ' sel' : ''}${sim.cur === s.id ? ' cur' : ''}" data-s="${esc(s.id)}"><circle cx="${s.x}" cy="${s.y}" r="${R}"/><text x="${s.x}" y="${s.y}">${esc(S(s.id))}</text></g>`;
+    const cls = `st${interactive && selS === s.id ? ' sel' : ''}${interactive && linkFrom === s.id ? ' src' : ''}${sim.cur === s.id ? ' cur' : ''}`;
+    h += `<g class="${cls}" data-s="${esc(s.id)}">${interactive ? `<circle class="st-hit" cx="${s.x}" cy="${s.y}" r="${R + 14}"/>` : ''}<circle cx="${s.x}" cy="${s.y}" r="${R}"/><text x="${s.x}" y="${s.y}">${esc(S(s.id))}</text></g>`;
   });
-  if (withRubber && rubber) h += `<line class="rubber" x1="${rubber.x1}" y1="${rubber.y1}" x2="${rubber.x2}" y2="${rubber.y2}"/>`;
+  if (interactive && selS && !linkFrom && !(drag && drag.moved) && !(linkDrag && linkDrag.moved)) {
+    const ss = pos(selS);
+    if (ss) {
+      const px = Math.min(VW - 20, ss.x + 26), py = ss.y < 76 ? ss.y + 26 : ss.y - 26;
+      h += `<g class="svg-port" data-port="${esc(ss.id)}"><title>Táhni k dalšímu stavu</title><circle class="port-hit" cx="${px}" cy="${py}" r="22"/><circle class="port-dot" cx="${px}" cy="${py}" r="12"/><text x="${px}" y="${py}">→</text></g>`;
+    }
+  }
+  if (interactive && linkDrag && linkDrag.moved) {
+    h += `<line class="rubber" x1="${linkDrag.x1}" y1="${linkDrag.y1}" x2="${linkDrag.x2}" y2="${linkDrag.y2}"/>`;
+  }
   return h;
 }
 function renderWordDiagram() { // diagram pod čtením slova (jen k prohlížení)
@@ -183,17 +205,15 @@ function renderWordDiagram() { // diagram pod čtením slova (jen k prohlížen�
 }
 function render() {
   const chk = Auto.check(M);
+  svg.classList.toggle('mode-connect', connectMode || !!linkFrom);
+  $('btnConnect').setAttribute('aria-pressed', String(connectMode || !!linkFrom));
   svg.innerHTML = diagramInner('arrow', true);
+  renderSelBar();
   renderWordDiagram(); syncDelta();
   const st = $('dStatus');
   if (!M.states.length) { st.className = 'status'; st.textContent = ''; }
   else if (chk.ok) { st.className = 'status ok'; st.textContent = 'Deterministický a úplný automat.'; }
   else { st.className = 'status ' + (chk.multi.length ? 'bad' : 'warn'); st.textContent = chk.problems.map(p => p.text).join(' '); }
-  const key = M.states.map(x => x.id).join(','); // výběr stavů pro „+ Šipka“ se přepisuje, jen když se změnil seznam stavů
-  if ($('aFrom').dataset.key !== key) {
-    const keep = [$('aFrom').value, $('aTo').value], opts = M.states.map(x => `<option value="${esc(x.id)}">${esc(S(x.id))}</option>`).join('');
-    [$('aFrom'), $('aTo')].forEach((el, i) => { el.innerHTML = opts; el.dataset.key = key; if (M.states.some(x => x.id === keep[i])) el.value = keep[i]; });
-  }
   if (!given) renderLive();
 }
 
@@ -231,118 +251,288 @@ function changed() { save(); sim.active = false; sim.cur = null; render(); }
 
 // ── akce na plátně ───────────────────────────────────────────────────────────
 function nextId() { let i = 0; while (pos('q' + i)) i++; return 'q' + i; }
+function freeSpot() {
+  const cols = Math.max(2, Math.floor((VW - 120) / 130));
+  for (let i = 0; i < 64; i++) {
+    const c = i % cols, r = Math.floor(i / cols);
+    const x = 90 + c * 130 + (r % 2 ? 40 : 0), y = 90 + r * 110;
+    if (x > VW - 50 || y > 470) break;
+    if (!M.states.some(s => Math.hypot(s.x - x, s.y - y) < 76)) return { x, y };
+  }
+  return { x: Math.round(VW / 2 + (M.states.length * 37 % 140) - 70), y: Math.round(260 + (M.states.length * 53 % 140) - 70) };
+}
+function clearSel() { selS = null; selE = null; pendingEdge = null; connectMode = false; linkFrom = null; renaming = null; selErr = ''; }
 function addState(x, y) {
   if (M.states.length >= 64) { alert('Maximální počet stavů je 64.'); return; }
   const id = nextId();
-  M.states.push({ id, x: Math.round(x), y: Math.round(y) });
+  const cx = Math.min(VW - 44, Math.max(44, Math.round(x)));
+  const cy = Math.min(480, Math.max(40, Math.round(y)));
+  M.states.push({ id, x: cx, y: cy });
   if (!M.start) M.start = id;
-  selS = id; selE = null; changed();
+  lastAddedAt = Date.now();
+  clearSel(); selS = id; changed();
 }
 function removeState(id) {
   M.states = M.states.filter(s => s.id !== id); M.trans = M.trans.filter(t => t.from !== id && t.to !== id);
   M.accept = M.accept.filter(x => x !== id); if (M.start === id) M.start = null;
-  if (selS === id) selS = null; changed();
+  clearSel(); changed();
 }
-function removeEdge(i) { M.trans.splice(i, 1); selE = null; changed(); }
+function removeEdge(i) { M.trans.splice(i, 1); clearSel(); changed(); }
 function parseSymbols(text) { return [...new Set([...String(text)].filter(c => !/[\s,;]/.test(c)))].slice(0, 32); }
-function setSymbols(from, to, text, replaceIndex) {
-  const syms = parseSymbols(text), bad = syms.filter(a => !M.alphabet.includes(a));
-  if (bad.length) { alert(`Znak ${bad.join(', ')} není v abecedě {${M.alphabet.join(', ')}}.`); return; }
-  if (replaceIndex !== undefined) M.trans.splice(replaceIndex, 1);
-  if (syms.length) {
-    const ex = M.trans.find(t => t.from === from && t.to === to);
-    if (ex) ex.symbols = [...new Set([...ex.symbols, ...syms])].sort(); else M.trans.push({ from, to, symbols: syms.sort() });
+function startConnection(from, to) {
+  clearSel();
+  const idx = M.trans.findIndex(t => t.from === from && t.to === to);
+  if (idx >= 0) selE = idx;
+  else pendingEdge = { from, to };
+  render();
+}
+function toggleEdgeSymbol(sym) {
+  if (!M.alphabet.includes(sym)) return;
+  selErr = '';
+  if (pendingEdge) {
+    const { from, to } = pendingEdge;
+    pendingEdge = null;
+    const ex = M.trans.findIndex(t => t.from === from && t.to === to);
+    if (ex >= 0) {
+      if (!M.trans[ex].symbols.includes(sym)) M.trans[ex].symbols = [...M.trans[ex].symbols, sym].sort();
+      selE = ex;
+    } else {
+      M.trans.push({ from, to, symbols: [sym] });
+      selE = M.trans.length - 1;
+    }
+    changed(); return;
   }
-  selE = null; changed();
+  if (selE === null || !M.trans[selE]) return;
+  const t = M.trans[selE];
+  if (t.symbols.includes(sym)) {
+    if (t.symbols.length === 1) {
+      pendingEdge = { from: t.from, to: t.to };
+      M.trans.splice(selE, 1);
+      selE = null;
+      changed(); return;
+    }
+    t.symbols = t.symbols.filter(x => x !== sym);
+  } else {
+    t.symbols = [...t.symbols, sym].sort();
+  }
+  changed();
 }
-function ask(x, y, initial, cb) {
-  document.querySelectorAll('.floating').forEach(n => n.remove());
-  const c = toClient(x, y), inp = document.createElement('input');
-  inp.className = 'floating'; inp.type = 'text'; inp.value = initial; inp.autocomplete = 'off'; inp.maxLength = 64;
-  inp.style.left = Math.max(4, c.x - 60) + 'px'; inp.style.top = Math.max(4, c.y - 16) + 'px';
-  let done = false;
-  const finish = ok => { if (done) return; done = true; const v = inp.value; inp.remove(); if (ok) cb(v); };
-  inp.onkeydown = e => { if (e.key === 'Enter') finish(true); else if (e.key === 'Escape') finish(false); };
-  inp.onblur = () => finish(true);
-  document.body.appendChild(inp); inp.focus(); inp.select();
+function applyEdgeText(text) {
+  const syms = parseSymbols(text), bad = syms.filter(a => !M.alphabet.includes(a));
+  if (bad.length) { selErr = `Mimo abecedu: ${bad.join(', ')}`; renderSelBar(); return; }
+  selErr = '';
+  const edge = pendingEdge || (selE !== null ? M.trans[selE] : null);
+  if (!edge) return;
+  if (!syms.length) {
+    if (pendingEdge) { pendingEdge = null; changed(); }
+    else { pendingEdge = { from: edge.from, to: edge.to }; M.trans.splice(selE, 1); selE = null; changed(); }
+    return;
+  }
+  if (pendingEdge) {
+    const { from, to } = pendingEdge; pendingEdge = null;
+    M.trans.push({ from, to, symbols: syms.sort() }); selE = M.trans.length - 1;
+  } else {
+    edge.symbols = syms.sort();
+  }
+  changed();
 }
-function renameState(id) {
+function applyRename(id, nextName) {
   const s = pos(id); if (!s) return;
-  ask(s.x, s.y, id, v => {
-    v = v.trim();
-    if (v === id) return;
-    if (!/^[A-Za-z0-9_′']{1,8}$/.test(v) || RESERVED_IDS.has(v)) { alert('Název stavu: 1 až 8 znaků (písmena, čísla, _).'); return; }
-    if (pos(v)) { alert(`Stav ${v} už existuje.`); return; }
-    s.id = v; M.trans.forEach(t => { if (t.from === id) t.from = v; if (t.to === id) t.to = v; });
-    M.accept = M.accept.map(x => x === id ? v : x); if (M.start === id) M.start = v; if (selS === id) selS = v; changed();
-  });
+  const v = String(nextName).trim();
+  if (v === id) { renaming = null; selErr = ''; renderSelBar(); return; }
+  if (!/^[A-Za-z0-9_′']{1,8}$/.test(v) || RESERVED_IDS.has(v)) { selErr = 'Název: 1–8 znaků (písmena, čísla, _).'; renderSelBar(); return; }
+  if (pos(v)) { selErr = `Stav ${v} už existuje.`; renderSelBar(); return; }
+  s.id = v; M.trans.forEach(t => { if (t.from === id) t.from = v; if (t.to === id) t.to = v; });
+  M.accept = M.accept.map(x => x === id ? v : x); if (M.start === id) M.start = v;
+  selS = v; renaming = null; selErr = ''; changed();
 }
+function openRename(id) {
+  if (!pos(id)) return;
+  renaming = id; selErr = ''; renderSelBar();
+  const inp = $('renInput'); if (inp) { inp.focus(); inp.select(); }
+}
+
+function renderSelBar() {
+  const bar = $('selBar'); if (!bar) return;
+  if (renaming && !pos(renaming)) renaming = null;
+  if (selE !== null && !M.trans[selE]) selE = null;
+  if (selS && !pos(selS)) selS = null;
+  if (linkFrom && !pos(linkFrom)) linkFrom = null;
+
+  if (renaming) {
+    const s = pos(renaming);
+    bar.innerHTML = `<span class="selbar-title">Přejmenovat ${esc(S(s.id))}</span>` +
+      `<input type="text" id="renInput" class="selbar-rename" maxlength="8" value="${esc(s.id)}" autocomplete="off" aria-label="Nový název stavu">` +
+      `<button type="button" class="btn primary" id="renSave">Uložit</button>` +
+      `<button type="button" class="btn" id="renCancel">Zrušit</button>` +
+      (selErr ? `<span class="status bad">${esc(selErr)}</span>` : '');
+    bar.hidden = false; return;
+  }
+  if (linkFrom) {
+    bar.innerHTML = `<span class="selbar-title">Šipka z ${esc(S(linkFrom))} → klikni na cílový stav</span>` +
+      `<button type="button" class="btn" id="selCancelLink">Zrušit</button>`;
+    bar.hidden = false; return;
+  }
+  if (connectMode) {
+    bar.innerHTML = `<span class="selbar-title">Klikni na výchozí stav (nebo z něj táhni šipku)</span>` +
+      `<button type="button" class="btn" id="selCancelLink">Zrušit</button>`;
+    bar.hidden = false; return;
+  }
+  if (pendingEdge || (selE !== null && M.trans[selE])) {
+    const edge = pendingEdge || M.trans[selE], syms = pendingEdge ? [] : edge.symbols;
+    bar.innerHTML = `<span class="selbar-title">${esc(S(edge.from))} → ${esc(S(edge.to))}</span>` +
+      M.alphabet.map(a => `<button type="button" class="btn sym" data-sym="${esc(a)}" aria-pressed="${syms.includes(a)}">${esc(a)}</button>`).join('') +
+      (M.alphabet.length > 8 ? `<input type="text" id="edgeSymInput" class="selbar-rename" maxlength="32" value="${esc(syms.join(', '))}" autocomplete="off" aria-label="Znaky přechodu"><button type="button" class="btn" id="edgeSymApply">Použít</button>` : '') +
+      (pendingEdge ? `<button type="button" class="btn" id="edgeDiscard">Zrušit</button>` : `<button type="button" class="btn danger" id="edgeDel">Smazat šipku</button>`) +
+      (selErr ? `<span class="status bad">${esc(selErr)}</span>` : '');
+    bar.hidden = false; return;
+  }
+  if (selS) {
+    bar.innerHTML = `<span class="selbar-title">Stav ${esc(S(selS))}</span>` +
+      `<button type="button" class="btn" id="stStart" aria-pressed="${M.start === selS}">▸ Počáteční</button>` +
+      `<button type="button" class="btn" id="stAcc" aria-pressed="${M.accept.includes(selS)}">Přijímací ▸</button>` +
+      `<button type="button" class="btn" id="stLink">→ Šipka</button>` +
+      `<button type="button" class="btn" id="stRen">Přejmenovat</button>` +
+      `<button type="button" class="btn danger" id="stDel">Smazat</button>`;
+    bar.hidden = false; return;
+  }
+  bar.hidden = true; bar.innerHTML = '';
+}
+
+$('selBar').addEventListener('click', ev => {
+  const b = ev.target.closest('button'); if (!b) return;
+  if (b.dataset.sym !== undefined) return toggleEdgeSymbol(b.dataset.sym);
+  if (b.id === 'selCancelLink') { connectMode = false; linkFrom = null; render(); return; }
+  if (b.id === 'edgeDiscard') { pendingEdge = null; selErr = ''; render(); return; }
+  if (b.id === 'edgeDel' && selE !== null) return removeEdge(selE);
+  if (b.id === 'edgeSymApply') { const i = $('edgeSymInput'); if (i) applyEdgeText(i.value); return; }
+  if (b.id === 'renSave' && renaming) { const i = $('renInput'); if (i) applyRename(renaming, i.value); return; }
+  if (b.id === 'renCancel') { renaming = null; selErr = ''; renderSelBar(); return; }
+  if (!selS || !pos(selS)) return;
+  if (b.id === 'stStart') { M.start = M.start === selS ? null : selS; changed(); return; }
+  if (b.id === 'stAcc') { M.accept = M.accept.includes(selS) ? M.accept.filter(x => x !== selS) : [...M.accept, selS]; changed(); return; }
+  if (b.id === 'stLink') { linkFrom = selS; selS = null; render(); return; }
+  if (b.id === 'stRen') return openRename(selS);
+  if (b.id === 'stDel') return removeState(selS);
+});
+$('selBar').addEventListener('keydown', ev => {
+  if (ev.target.id === 'renInput' && renaming) {
+    if (ev.key === 'Enter') applyRename(renaming, ev.target.value);
+    else if (ev.key === 'Escape') { renaming = null; selErr = ''; renderSelBar(); }
+  } else if (ev.target.id === 'edgeSymInput' && ev.key === 'Enter') {
+    applyEdgeText(ev.target.value);
+  }
+});
 
 // ── ukazatel (myš, dotyk i pero) ─────────────────────────────────────────────
 svg.addEventListener('pointerdown', ev => {
-  const st = ev.target.closest('[data-s]'), ed = ev.target.closest('[data-e]'), p = toSvg(ev);
+  if (ev.button > 0) return;
+  const p = toSvg(ev);
+  const port = ev.target.closest('[data-port]'), st = ev.target.closest('[data-s]'), ed = ev.target.closest('[data-e]');
+  emptyDown = null; drag = null; linkDrag = null;
+  if (port) {
+    const from = port.dataset.port, s = pos(from); if (!s) return;
+    linkDrag = { from, x1: s.x, y1: s.y, x2: p.x, y2: p.y, sx: ev.clientX, sy: ev.clientY, moved: false };
+    activePointerId = ev.pointerId; svg.setPointerCapture(ev.pointerId); return;
+  }
   if (st) {
-    const id = st.dataset.s;
-    if (mode === 'erase') return removeState(id);
-    if (mode === 'start') { M.start = M.start === id ? null : id; return changed(); }
-    if (mode === 'acc') { M.accept = M.accept.includes(id) ? M.accept.filter(x => x !== id) : [...M.accept, id]; return changed(); }
-    if (mode === 'edge') { const s = pos(id); if (!s) return; rubber = { from: id, x1: s.x, y1: s.y, x2: p.x, y2: p.y }; svg.setPointerCapture(ev.pointerId); return; }
-    selS = id; selE = null;
-    const s = pos(id); if (!s) return;
-    drag = { id, dx: s.x - p.x, dy: s.y - p.y, moved: false };
-    svg.setPointerCapture(ev.pointerId); render(); return;
+    const id = st.dataset.s, s = pos(id); if (!s) return;
+    if (linkFrom) { linkDrag = { from: linkFrom, toFixed: id, sx: ev.clientX, sy: ev.clientY, moved: false }; return; }
+    if (connectMode || ev.shiftKey) {
+      linkDrag = { from: id, x1: s.x, y1: s.y, x2: p.x, y2: p.y, sx: ev.clientX, sy: ev.clientY, moved: false };
+      activePointerId = ev.pointerId; svg.setPointerCapture(ev.pointerId); return;
+    }
+    drag = { id, dx: s.x - p.x, dy: s.y - p.y, sx: ev.clientX, sy: ev.clientY, moved: false };
+    activePointerId = ev.pointerId; svg.setPointerCapture(ev.pointerId); return;
   }
-  if (ed) {
-    const i = +ed.dataset.e;
-    if (mode === 'erase') return removeEdge(i);
-    selE = i; selS = null; render(); return;
-  }
-  if (mode === 'state') return addState(p.x, p.y);
-  selS = null; selE = null; render();
+  if (ed) { emptyDown = { type: 'edge', index: +ed.dataset.e, sx: ev.clientX, sy: ev.clientY }; return; }
+  emptyDown = { type: 'canvas', p, sx: ev.clientX, sy: ev.clientY };
 });
 svg.addEventListener('pointermove', ev => {
   const p = toSvg(ev);
-  if (drag) { const s = pos(drag.id); if (!s) return; s.x = Math.min(VW - 30, Math.max(30, Math.round(p.x + drag.dx))); s.y = Math.min(490, Math.max(30, Math.round(p.y + drag.dy))); drag.moved = true; render(); }
-  else if (rubber) { rubber.x2 = p.x; rubber.y2 = p.y; render(); }
-});
-svg.addEventListener('pointerup', ev => {
-  if (drag) { if (drag.moved) save(); drag = null; return; }
-  if (rubber) {
-    const from = rubber.from, p = toSvg(ev), b = M.states.find(s => Math.hypot(s.x - p.x, s.y - p.y) <= R + 8);
-    rubber = null; render();
-    if (b) ask(b.x, b.y - R - 20, '', v => setSymbols(from, b.id, v));
+  if (drag) {
+    if (!drag.moved && Math.hypot(ev.clientX - drag.sx, ev.clientY - drag.sy) < 6) return;
+    drag.moved = true;
+    const s = pos(drag.id); if (!s) return;
+    s.x = Math.min(VW - 44, Math.max(44, Math.round(p.x + drag.dx)));
+    s.y = Math.min(480, Math.max(40, Math.round(p.y + drag.dy)));
+    render(); return;
+  }
+  if (linkDrag && !linkDrag.toFixed) {
+    if (!linkDrag.moved && Math.hypot(ev.clientX - linkDrag.sx, ev.clientY - linkDrag.sy) < 6) return;
+    linkDrag.moved = true; linkDrag.x2 = p.x; linkDrag.y2 = p.y; render();
   }
 });
+function endCanvasPointer(ev, canceled) {
+  if (activePointerId === ev.pointerId) {
+    try { svg.releasePointerCapture(ev.pointerId); } catch (e) { /* nic */ }
+    activePointerId = null;
+  }
+  if (canceled) { drag = null; linkDrag = null; emptyDown = null; render(); return; }
+  if (drag) {
+    const d = drag; drag = null;
+    renaming = null; selErr = ''; selS = d.id; selE = null; pendingEdge = null;
+    if (d.moved) save();
+    render(); return;
+  }
+  if (linkDrag) {
+    const ld = linkDrag; linkDrag = null;
+    if (ld.toFixed) { startConnection(ld.from, ld.toFixed); return; }
+    if (ld.moved) {
+      const p = toSvg(ev), target = M.states.find(s => Math.hypot(s.x - p.x, s.y - p.y) <= R + 14);
+      if (target) startConnection(ld.from, target.id);
+      else render();
+      return;
+    }
+    renaming = null; selErr = ''; linkFrom = ld.from; connectMode = false; selS = null; selE = null; pendingEdge = null;
+    render(); return;
+  }
+  if (emptyDown) {
+    const ed = emptyDown; emptyDown = null;
+    if (Math.hypot(ev.clientX - ed.sx, ev.clientY - ed.sy) > 8) return;
+    renaming = null; selErr = '';
+    if (ed.type === 'edge') { connectMode = false; linkFrom = null; pendingEdge = null; selS = null; selE = ed.index; render(); return; }
+    if (linkFrom || connectMode) { connectMode = false; linkFrom = null; render(); return; }
+    if (pendingEdge) { pendingEdge = null; render(); return; }
+    if (selS !== null || selE !== null) { selS = null; selE = null; render(); return; }
+    addState(ed.p.x, ed.p.y);
+  }
+}
+svg.addEventListener('pointerup', ev => endCanvasPointer(ev, false));
+svg.addEventListener('pointercancel', ev => endCanvasPointer(ev, true));
 svg.addEventListener('dblclick', ev => {
-  const at = document.elementFromPoint(ev.clientX, ev.clientY), st = at && at.closest('[data-s]'), ed = at && at.closest('[data-e]');
-  if (st) return renameState(st.dataset.s);
-  if (ed) { const i = +ed.dataset.e, t = M.trans[i]; if (!t) return; const g = edgeGeom(t); return ask(g.lx, g.ly, t.symbols.join(', '), v => setSymbols(t.from, t.to, v, i)); }
-  const p = toSvg(ev); addState(p.x, p.y);
+  const st = ev.target.closest('[data-s]');
+  if (st && Date.now() - lastAddedAt > 450) { selS = st.dataset.s; selE = null; pendingEdge = null; openRename(selS); }
 });
 document.addEventListener('keydown', ev => {
   if (['INPUT', 'SELECT', 'TEXTAREA'].includes(ev.target.tagName) || tab !== 'diagram') return;
-  if (ev.key === 'Delete' || ev.key === 'Backspace') { if (selS) removeState(selS); else if (selE !== null) removeEdge(selE); }
+  if (ev.key === 'Escape') { clearSel(); render(); return; }
+  if (ev.key === 'Delete' || ev.key === 'Backspace') {
+    if (selS) removeState(selS);
+    else if (selE !== null) removeEdge(selE);
+    else if (pendingEdge) { pendingEdge = null; render(); }
+    return;
+  }
+  if ((pendingEdge || (selE !== null && M.trans[selE])) && M.alphabet.includes(ev.key)) {
+    ev.preventDefault(); toggleEdgeSymbol(ev.key);
+  }
 });
 
 // ── ovládání plátna ──────────────────────────────────────────────────────────
-function setMode(m) {
-  mode = m; rubber = null;
-  document.querySelectorAll('#tools button[data-mode]').forEach(x => x.setAttribute('aria-pressed', x.dataset.mode === m));
-  svg.style.cursor = { move: 'default', state: 'copy', edge: 'crosshair', erase: 'not-allowed', start: 'pointer', acc: 'pointer' }[m];
-}
-$('tools').addEventListener('click', ev => { const b = ev.target.closest('button[data-mode]'); if (b) setMode(b.dataset.mode); });
-$('aAdd').onclick = () => {
-  if (!M.states.length) { alert('Nejdřív přidej stavy (+ Stav).'); return; }
-  if (!parseSymbols($('aSym').value).length) { alert('Napiš znak (nebo znaky) přechodu, např. 0 nebo 0, 1.'); return; }
-  setSymbols($('aFrom').value, $('aTo').value, $('aSym').value); $('aSym').value = '';
+$('btnAddState').onclick = () => { const pt = freeSpot(); addState(pt.x, pt.y); };
+$('btnConnect').onclick = () => {
+  if (connectMode || linkFrom) { connectMode = false; linkFrom = null; render(); return; }
+  renaming = null; selErr = ''; pendingEdge = null; selE = null;
+  if (selS && pos(selS)) { linkFrom = selS; selS = null; }
+  else { connectMode = true; selS = null; }
+  render();
 };
-$('aSym').onkeydown = ev => { if (ev.key === 'Enter') $('aAdd').click(); };
-$('clear').onclick = () => { if (!M.states.length || confirm('Smazat celý návrh?')) { M = fresh(M.alphabet); selS = selE = null; exTask = null; $('ex').value = ''; lsSet('tzi_automat_ex', ''); renderZad(); changed(); } };
+$('clear').onclick = () => { if (!M.states.length || confirm('Smazat celý návrh?')) { M = fresh(M.alphabet); clearSel(); exTask = null; $('ex').value = ''; lsSet('tzi_automat_ex', ''); renderZad(); changed(); } };
 $('alpha').onchange = () => {
   const a = parseSymbols($('alpha').value);
   if (!a.length) { $('alpha').value = M.alphabet.join(', '); return; }
   M.alphabet = a; M.trans = M.trans.map(t => ({ ...t, symbols: t.symbols.filter(x => a.includes(x)) })).filter(t => t.symbols.length);
-  $('alpha').value = a.join(', '); changed();
+  $('alpha').value = a.join(', '); clearSel(); changed();
 };
 function doGrade() {
   const g = Auto.grade(M, task), outs = [...document.querySelectorAll('.gradeOut')];
@@ -380,7 +570,7 @@ $('ex').onchange = () => {
   const t = allTasks().find(x => x.id === $('ex').value);
   if (!t) return;
   if (M.states.length && !confirm('Příklad přepíše tvůj návrh. Pokračovat?')) { $('ex').value = ''; return; }
-  M = exampleModel(t); selS = selE = null; changed(); $('alpha').value = M.alphabet.join(', ');
+  M = exampleModel(t); clearSel(); changed(); $('alpha').value = M.alphabet.join(', ');
   exTask = t; lsSet('tzi_automat_ex', t.id); renderZad();
 };
 
@@ -598,7 +788,7 @@ function setTask(id) {
   task = allTasks().find(t => t.id === id) || null; given = !!(task && task.steps);
   lsSet('tzi_automat_last', task ? task.id : ''); sel.value = task ? task.id : '';
   M = load(task ? task.alphabet.slice() : M.alphabet);
-  selS = selE = null; sim = { word: '', pos: 0 }; setMode('move');
+  clearSel(); sim = { word: '', pos: 0 };
   $('alpha').value = M.alphabet.join(', '); $('freeTools').hidden = !!task;
   exTask = task ? null : allTasks().find(t => t.id === lsGet('tzi_automat_ex')) || null; $('ex').value = exTask ? exTask.id : '';
   $('grade').hidden = !task; document.querySelectorAll('.gradeOut').forEach(o => { o.innerHTML = ''; }); $('delTask').hidden = !(task && task.custom);
