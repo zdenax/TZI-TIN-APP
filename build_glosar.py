@@ -5,6 +5,7 @@ Spuštění:  python3 build_glosar.py /cesta/k/Glosar.md
 Výstup: {"banks": {"<stem banky>": [{"term": ..., "body": ...}, ...], ...}}, pojmy podle balíčku otázek.
 LaTeX se převádí na text, který umí `fmt` v ui/novy.html (zlomky „a / b“, „(n nad k)“, indexy _x, mocniny ^x).
 Neznámý LaTeX příkaz skript zastaví, ať nic nezůstane nepřeloženo.
+Na konec balíčků se připojí hesla z glosar/doplnky.json (stejný tvar jako výstup); duplicitní název hesla se vypíše a přeskočí.
 """
 import json
 import re
@@ -12,6 +13,8 @@ import sys
 from pathlib import Path
 
 OUT = Path(__file__).parent / "glosar" / "glosar.json"
+# hesla, která v Glosar.md nejsou a ptají se na ně otázky; píšou se rovnou v textu pro `fmt` (žádný LaTeX)
+DOPLNKY = Path(__file__).parent / "glosar" / "doplnky.json"
 
 SYM = {
     "Rightarrow": "⇒", "Leftrightarrow": "⇔", "neg": "¬", "in": "∈", "wedge": "∧", "vee": "∨", "cdot": "·",
@@ -126,6 +129,21 @@ def banks_of(title, term):
     return next(b for k, b in SECTION_BANKS if title.startswith(k))
 
 
+def pridej_doplnky(out):
+    """Připojí hesla z glosar/doplnky.json (doplněná z Claude, ne z Glosar.md) na konec balíčků.
+    Heslo se stejným názvem, jaké už balíček má, se nepřidá a skript to vypíše."""
+    if not DOPLNKY.exists():
+        return
+    for b, entries in json.loads(DOPLNKY.read_text(encoding="utf-8"))["banks"].items():
+        mam = {e["term"] for e in out.get(b, [])}
+        for e in entries:
+            if e["term"] in mam:
+                print(f"DUPLICITA: heslo „{e['term']}“ už v balíčku {b} je, z doplnky.json se nepřidává")
+                continue
+            mam.add(e["term"])
+            out.setdefault(b, []).append({"term": e["term"], "body": e["body"]})
+
+
 def main(src):
     md = Path(src).read_text(encoding="utf-8")
     md = md.split("\n## Použité zdroje")[0]
@@ -146,6 +164,7 @@ def main(src):
                 continue
             for b in banks_of(title, term):
                 out.setdefault(b, []).append({"term": term, "body": clean(body.strip())})
+    pridej_doplnky(out)
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps({"banks": out}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print({k: len(v) for k, v in sorted(out.items())}, "->", OUT)
