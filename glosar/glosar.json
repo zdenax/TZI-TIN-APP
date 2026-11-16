@@ -323,7 +323,7 @@
    },
    {
     "term": "Σ^(+) a Σ^(∗)",
-    "body": "Σ^(+) je množina **všech konečných neprázdných** slov nad Σ, Σ^(∗) = Σ^(+) ∪ {ε} je množina všech konečných slov **včetně prázdného**. Rozdíl je jediný prvek: ε. Pro Σ = {0, 1} je Σ^(+) = {0, 1, 00, 01, 10, 11, 000, …}. Obě množiny jsou nekonečné spočetné.\nZapamatuj si: + = aspoň jeden znak, ∗ = klidně i žádný.\n*Zdroj: přednáška 5. 11. (důležité); definice a spočetnost **Doplněno z Claude** ([12, s. 21, def. 1.2.1], [9, s. 41]).*"
+    "body": "Σ^(+) je množina **všech konečných neprázdných** slov nad Σ. Σ^(∗) je množina **všech konečných slov včetně prázdného**, tedy Σ^(∗) = Σ^(+) ∪ {ε}. Liší se jen jedním prvkem, a to ε. Pro Σ = {0, 1} je Σ^(+) = {0, 1, 00, 01, 10, 11, 000, …}. Obě množiny jsou nekonečné spočetné.\nZapamatuj si: + = aspoň jeden znak, ∗ = klidně i žádný.\n*Zdroj: přednáška 5. 11. (důležité); definice a spočetnost **Doplněno z Claude** ([12, s. 21, def. 1.2.1], [9, s. 41]).*"
    },
    {
     "term": "Zřetězení a n-násobné zřetězení",
