@@ -306,6 +306,12 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .question-box .hint:empty { display: none; }
   sub, sup { font-size: .72em; line-height: 0; }
   .question-text.calc { font: 500 1.3rem/1.55 var(--mono); letter-spacing: 0; }
+  .zad-t { font-weight: 700; }
+  .zad-def { font: 400 1rem/1.5 var(--font); color: var(--muted); margin: 2px 0 12px; }
+  .zad-tab { border-collapse: collapse; margin: 0 0 14px; font: 500 1.05rem/1.2 var(--mono); max-width: 100%; }
+  .zad-tab th, .zad-tab td { padding: 6px 14px; text-align: center; border: 1px solid var(--line); }
+  .zad-tab th { background: var(--paper-2); font-weight: 700; white-space: nowrap; }
+  .zad-prav { font: 500 1.05rem/1.7 var(--mono); margin: 0 0 14px; }
   .options { display: flex; flex-direction: column; margin-bottom: 24px; }
   .opt {
     position: relative; display: grid; grid-template-columns: 2.25rem 1fr auto; align-items: baseline; gap: 12px;
@@ -957,7 +963,7 @@ function renderQ() {
   const lec = q.id.split('-')[0];
   $('q-src').textContent = isRecall(q) ? `Doplňovačka · ${q.category} · otázka ${q.number}`
     : `${lec}. přednáška · otázka ${q.number}` + (isReveal(q) ? ' · zadání na rozbor' : isInput(q) ? ' · příklad na výsledek' : ' · teorie');
-  const t = $('q-text'); t.innerHTML = fmt(q.text); t.className = 'question-text' + (q.type === 'input' ? ' calc' : '');
+  const t = $('q-text'); t.innerHTML = fmtZadani(q.text); t.className = 'question-text' + (q.type === 'input' ? ' calc' : '');
   $('q-hint').textContent = isRecall(q) ? `Očekáváno: ${wordsLabel(q.words)}` + (q.hint ? `. ${q.hint}` : '')
     : isInput(q) ? (q.hint || '') : (q.correct.length > 1 ? '(Vyberte více správných odpovědí)' : '');
   $('feedback').textContent = ''; $('feedback').className = 'feedback';
