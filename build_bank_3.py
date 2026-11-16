@@ -71,7 +71,7 @@ CHOICE = [
      ["všechny tři", "jen ℝ", "jen ℕ", "žádná"], [0],
      "ℕ, ℤ i ℝ jsou nekonečné (příklady z rukopisu)."),
     ("Kdy je množina spočetná?",
-     ["existuje vzájemně jednoznačné zobrazení (bijekce) mezi ní a množinou ℕ", "má konečný počet prvků",
+     ["její prvky jdou očíslovat přirozenými čísly a seřadit do posloupnosti a₁, a₂, a₃, …", "má konečný počet prvků",
       "neobsahuje žádný prvek", "je podmnožinou ℝ"], [0],
      "Spočetná: prvky jdou očíslovat přirozenými čísly, tedy seřadit do posloupnosti a₁, a₂, a₃, … "
      "(Pozor, někteří autoři zahrnují mezi spočetné i konečné množiny; ověřit u vyučujícího.)"),

@@ -217,7 +217,7 @@
    "options": {
     "A": "má konečný počet prvků",
     "B": "je podmnožinou ℝ",
-    "C": "existuje vzájemně jednoznačné zobrazení (bijekce) mezi ní a množinou ℕ",
+    "C": "její prvky jdou očíslovat přirozenými čísly a seřadit do posloupnosti a₁, a₂, a₃, …",
     "D": "neobsahuje žádný prvek"
    },
    "correct": [
