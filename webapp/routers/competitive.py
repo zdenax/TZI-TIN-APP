@@ -2,7 +2,7 @@
 import json
 from typing import Optional, Dict, Any, List
 import time
-from fastapi import APIRouter, Request, HTTPException, Depends
+from fastapi import APIRouter, Request, Response, HTTPException, Depends
 from itsdangerous import BadSignature, SignatureExpired
 import db
 import scoring
@@ -11,6 +11,7 @@ from .. import questions
 from ..questions import verify_answer
 from ..sessions import require_user
 from ..config import serializer
+from ..csrf import validate_csrf
 
 router = APIRouter()
 
@@ -83,7 +84,8 @@ def api_koth_leaderboard(user: Dict[str, Any] = Depends(require_user)):
 
 
 @router.post("/api/koth/start")
-async def api_koth_start(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_koth_start(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     import random
     count = scoring.KOTH_DEFAULT_QUESTIONS
     source = ""
@@ -115,7 +117,8 @@ async def api_koth_start(request: Request, user: Dict[str, Any] = Depends(requir
 
 
 @router.post("/api/koth/submit")
-async def api_koth_submit(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_koth_submit(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     user_id = user["user_id"]
     if user.get("role") == "trial" or user_id == 0:
         raise HTTPException(status_code=403, detail="Pro souboj o Krále kopce je nutné se přihlásit.")
@@ -125,10 +128,13 @@ async def api_koth_submit(request: Request, user: Dict[str, Any] = Depends(requi
     except Exception:
         raise HTTPException(status_code=400, detail="Neplatný JSON")
 
+    correct_count, total_q, time_ms, q_ids, eval_results = _parse_competitive_submission(payload)
+    token_to_consume = payload.get("match_token")
+    _verify_and_consume_match_token(token_to_consume, user_id, "koth", q_ids)
+
     user_db = db.get_user_by_id(user_id)
     username = user_db["username"] if user_db else user.get("username", "Student")
-
-    correct_count, total_q, time_ms, _, token_to_consume = _evaluate_competitive_submission(user_id, payload, mode="koth")
+    _record_competitive_answers(user_id, eval_results)
 
     res = scoring.submit_koth_challenge(
         user_id=user_id,
@@ -141,7 +147,7 @@ async def api_koth_submit(request: Request, user: Dict[str, Any] = Depends(requi
     return res
 
 
-def _evaluate_competitive_submission(user_id: int, payload: Dict[str, Any], mode: Optional[str] = None):
+def _parse_competitive_submission(payload: Dict[str, Any]):
     answers = payload.get("answers")
     if not isinstance(answers, list) or len(answers) == 0:
         raise HTTPException(status_code=400, detail="Pole answers je povinné.")
@@ -154,6 +160,7 @@ def _evaluate_competitive_submission(user_id: int, payload: Dict[str, Any], mode
 
     correct_count = 0
     question_ids = []
+    eval_results = []
     seen_qids = set()
 
     for item in answers:
@@ -166,25 +173,19 @@ def _evaluate_competitive_submission(user_id: int, payload: Dict[str, Any], mode
         question_ids.append(q_id)
         q = questions.ALL_QUESTIONS.get(q_id)
         u_ans = item.get("userKeys") if item.get("userKeys") is not None else item.get("user_answer")
-        if q and u_ans is not None:
-            is_ok = verify_answer(q, u_ans)
-        else:
-            is_ok = False
+        is_ok = verify_answer(q, u_ans) if (q and u_ans is not None) else False
         if is_ok:
             correct_count += 1
-        if q_id:
-            scoring.record_question_answer(user_id, q_id, is_ok)
-
-    # Ověření match_tokenu pokud je specifikován mode
-    token = payload.get("match_token")
-    consumed_token = None
-    if mode:
-        _verify_and_consume_match_token(token, user_id, mode, question_ids)
-        consumed_token = token
+        eval_results.append((q_id, is_ok))
 
     total_q = max(len(seen_qids), scoring.KOTH_DEFAULT_QUESTIONS)
+    return correct_count, total_q, time_ms, question_ids, eval_results
 
-    return correct_count, total_q, time_ms, question_ids, consumed_token
+
+def _record_competitive_answers(user_id: int, eval_results: List[tuple]) -> None:
+    for q_id, is_ok in eval_results:
+        if q_id:
+            scoring.record_question_answer(user_id, q_id, is_ok)
 
 
 @router.get("/api/competitive/overview")
@@ -223,7 +224,8 @@ def api_rooms_list(user: Dict[str, Any] = Depends(require_user)):
 
 
 @router.post("/api/rooms/create")
-async def api_rooms_create(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_rooms_create(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     import random
     uid = user.get("user_id") or 0
     if user.get("role") == "trial" or uid == 0:
@@ -275,12 +277,15 @@ def api_room_detail(room_id: int, user: Dict[str, Any] = Depends(require_user)):
     room = scoring.get_comp_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Místnost neexistuje.")
-    questions = _resolve_room_questions(room) if room.get("status") in ("in_progress", "completed") else []
-    return {"ok": True, "room": room, "questions": questions}
+    uid = user.get("user_id") or 0
+    is_member = any(p.get("user_id") == uid for p in (room.get("players") or []))
+    room_qs = _resolve_room_questions(room) if (is_member and room.get("status") in ("in_progress", "completed")) else []
+    return {"ok": True, "room": room, "questions": room_qs}
 
 
 @router.post("/api/rooms/{room_id}/join")
-async def api_room_join(room_id: int, request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_room_join(room_id: int, request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     uid = user.get("user_id") or 0
     if user.get("role") == "trial" or uid == 0:
         raise HTTPException(status_code=403, detail="Pro připojení do místnosti je nutné se přihlásit.")
@@ -304,7 +309,8 @@ async def api_room_join(room_id: int, request: Request, user: Dict[str, Any] = D
 
 
 @router.post("/api/rooms/{room_id}/start")
-def api_room_start(room_id: int, user: Dict[str, Any] = Depends(require_user)):
+async def api_room_start(room_id: int, request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     uid = user.get("user_id") or 0
     if user.get("role") == "trial" or uid == 0:
         raise HTTPException(status_code=403, detail="Nepřihlášený uživatel nemůže spustit místnost.")
@@ -312,18 +318,20 @@ def api_room_start(room_id: int, user: Dict[str, Any] = Depends(require_user)):
     if not res.get("ok"):
         raise HTTPException(status_code=403, detail=res.get("error", "Nelze spustit místnost."))
     room = res["room"]
-    questions = _resolve_room_questions(room)
-    return {"ok": True, "room": room, "questions": questions}
+    room_qs = _resolve_room_questions(room)
+    return {"ok": True, "room": room, "questions": room_qs}
 
 
 @router.post("/api/rooms/{room_id}/leave")
-def api_room_leave(room_id: int, user: Dict[str, Any] = Depends(require_user)):
+async def api_room_leave(room_id: int, request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     uid = user.get("user_id") or 0
     return scoring.leave_comp_room(room_id, uid)
 
 
 @router.post("/api/rooms/{room_id}/submit")
-async def api_room_submit(room_id: int, request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_room_submit(room_id: int, request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     uid = user.get("user_id") or 0
     if user.get("role") == "trial" or uid == 0:
         raise HTTPException(status_code=403, detail="Pro odeslání výsledku v místnosti je nutné se přihlásit.")
@@ -332,11 +340,9 @@ async def api_room_submit(room_id: int, request: Request, user: Dict[str, Any] =
     except Exception:
         raise HTTPException(status_code=400, detail="Neplatný JSON")
 
-    user_db = db.get_user_by_id(uid)
-    username = user_db["username"] if user_db else user.get("username", "Student")
-    correct_count, total_q, time_ms, submitted_qids, _ = _evaluate_competitive_submission(uid, payload)
+    # Validace odpovědí v paměti BEZ zápisu do DB, pak validace místnosti a členství
+    correct_count, total_q, time_ms, submitted_qids, eval_results = _parse_competitive_submission(payload)
 
-    # Validace místnosti a členství hráče
     room = scoring.get_comp_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Místnost neexistuje.")
@@ -349,7 +355,6 @@ async def api_room_submit(room_id: int, request: Request, user: Dict[str, Any] =
     if uid not in player_ids:
         raise HTTPException(status_code=403, detail="Nejste hráčem této místnosti.")
 
-    # Validace, že odevzdané otázky patří do dané místnosti
     room_qids = set(str(qid) for qid in (room.get("question_ids") or []))
     if room_qids:
         if not submitted_qids:
@@ -357,6 +362,10 @@ async def api_room_submit(room_id: int, request: Request, user: Dict[str, Any] =
         for sq in submitted_qids:
             if str(sq) not in room_qids:
                 raise HTTPException(status_code=400, detail=f"Otázka {sq} nepatří do této místnosti.")
+
+    user_db = db.get_user_by_id(uid)
+    username = user_db["username"] if user_db else user.get("username", "Student")
+    _record_competitive_answers(uid, eval_results)
 
     res = scoring.submit_comp_room_result(
         room_id=room_id,
@@ -377,7 +386,8 @@ def api_ffa_status(user: Dict[str, Any] = Depends(require_user)):
 
 
 @router.post("/api/ffa/start")
-async def api_ffa_start(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_ffa_start(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     import random
     count = scoring.KOTH_DEFAULT_QUESTIONS
     source = ""
@@ -400,7 +410,8 @@ async def api_ffa_start(request: Request, user: Dict[str, Any] = Depends(require
 
 
 @router.post("/api/ffa/submit")
-async def api_ffa_submit(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_ffa_submit(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     user_id = user["user_id"]
     if user.get("role") == "trial" or user_id == 0:
         raise HTTPException(status_code=403, detail="Pro účast ve Free For All aréně je nutné se přihlásit.")
@@ -409,12 +420,15 @@ async def api_ffa_submit(request: Request, user: Dict[str, Any] = Depends(requir
     except Exception:
         raise HTTPException(status_code=400, detail="Neplatný JSON")
 
-    user_db = db.get_user_by_id(user_id)
-    username = user_db["username"] if user_db else user.get("username", "Student")
-
-    correct_count, total_q, time_ms, _, token_to_consume = _evaluate_competitive_submission(user_id, payload, mode="ffa")
+    correct_count, total_q, time_ms, q_ids, eval_results = _parse_competitive_submission(payload)
     if time_ms < 5000:
         raise HTTPException(status_code=400, detail="Čas dokončení je příliš krátký (minimálně 5 sekund).")
+    token_to_consume = payload.get("match_token")
+    _verify_and_consume_match_token(token_to_consume, user_id, "ffa", q_ids)
+
+    user_db = db.get_user_by_id(user_id)
+    username = user_db["username"] if user_db else user.get("username", "Student")
+    _record_competitive_answers(user_id, eval_results)
 
     res = scoring.submit_ffa_run(
         user_id=user_id,
@@ -433,7 +447,8 @@ def api_duel_status(user: Dict[str, Any] = Depends(require_user)):
 
 
 @router.post("/api/duel/start")
-async def api_duel_start(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_duel_start(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     import random
     uid = user.get("user_id") or 0
     count = scoring.KOTH_DEFAULT_QUESTIONS
@@ -505,7 +520,8 @@ async def api_duel_start(request: Request, user: Dict[str, Any] = Depends(requir
 
 
 @router.post("/api/duel/submit")
-async def api_duel_submit(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_duel_submit(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     user_id = user["user_id"]
     if user.get("role") == "trial" or user_id == 0:
         raise HTTPException(status_code=403, detail="Pro 1v1 souboj je nutné se přihlásit.")
@@ -513,9 +529,7 @@ async def api_duel_submit(request: Request, user: Dict[str, Any] = Depends(requi
         payload = await request.json()
     except Exception:
         raise HTTPException(status_code=400, detail="Neplatný JSON")
-    user_db = db.get_user_by_id(user_id)
-    username = user_db["username"] if user_db else user.get("username", "Student")
-    correct_count, total_q, time_ms, q_ids, token_to_consume = _evaluate_competitive_submission(user_id, payload, mode="duel")
+
     duel_id = payload.get("duel_id")
     duel_id_val = None
     if duel_id is not None:
@@ -523,6 +537,15 @@ async def api_duel_submit(request: Request, user: Dict[str, Any] = Depends(requi
             duel_id_val = int(duel_id)
         except (ValueError, TypeError):
             raise HTTPException(status_code=400, detail="Neplatné duel_id.")
+
+    correct_count, total_q, time_ms, q_ids, eval_results = _parse_competitive_submission(payload)
+    token_to_consume = payload.get("match_token")
+    _verify_and_consume_match_token(token_to_consume, user_id, "duel", q_ids)
+
+    user_db = db.get_user_by_id(user_id)
+    username = user_db["username"] if user_db else user.get("username", "Student")
+    _record_competitive_answers(user_id, eval_results)
+
     res = scoring.submit_duel_match(
         user_id=user_id,
         username=username,

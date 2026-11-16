@@ -98,7 +98,7 @@
             border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
-        th { color: var(--text-dim); font-size: 0.85rem; text-transform: uppercase; }
+        th { color: var(--text-dim); font-size: 0.85rem; }
         tr:hover { background: rgba(255, 255, 255, 0.02); }
         .badge {
             display: inline-block;
@@ -158,11 +158,9 @@
             max-width: 500px;
             width: 92vw;
             margin: auto;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.6);
         }
         dialog#reset-modal::backdrop {
-            background: rgba(17, 17, 27, 0.75);
-            backdrop-filter: blur(4px);
+            background: rgba(17, 17, 27, 0.82);
         }
         .scope-option {
             display: flex;
@@ -173,7 +171,7 @@
             border-radius: 0.6rem;
             background: #11111b;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: border-color 150ms ease-out, background-color 150ms ease-out;
         }
         .scope-option:hover {
             border-color: var(--mauve);
@@ -198,7 +196,7 @@
 <body>
     <header>
         <div>
-            <h1>🛡️ TZI Admin Panel</h1>
+            <h1>TZI Admin Panel</h1>
             <p style="color:var(--text-dim); font-size:0.9rem;">Přehled studentů a systémových chyb</p>
         </div>
         <div class="header-actions">
@@ -210,11 +208,11 @@
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
             <div>
-                <h2>👥 Registrovaní studenti & Žebříček</h2>
+                <h2>Registrovaní studenti a žebříček</h2>
                 <p id="students-count-text" style="color:var(--text-dim); font-size:0.85rem;">Přehled studentů a jejich výsledků</p>
             </div>
             <div style="display:flex; align-items:center; gap:0.5rem;">
-                <input type="search" id="student-search" placeholder="🔍 Hledat studenta..." oninput="filterStudents()" style="padding:0.4rem 0.8rem; border-radius:0.5rem; background:#11111b; color:var(--text); border:1px solid var(--border); font-size:0.85rem; min-width:220px;">
+                <input type="search" id="student-search" placeholder="Hledat studenta" oninput="filterStudents()" style="padding:0.4rem 0.8rem; border-radius:0.5rem; background:#11111b; color:var(--text); border:1px solid var(--border); font-size:0.85rem; min-width:220px;">
             </div>
         </div>
         <div class="table-wrap">
@@ -238,10 +236,10 @@
         </div>
     </div>
 
-    <div class="card" style="border-color: rgba(203, 166, 247, 0.4);">
+    <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
             <div>
-                <h2>📜 Systémové logy a komunikace</h2>
+                <h2>Systémové logy a komunikace</h2>
                 <p style="color:var(--text-dim); font-size:0.95rem;">Záznamy komunikace, varování a chyb z klienta i backendu.</p>
             </div>
             <div style="display:flex; align-items:center; gap:0.5rem;">
@@ -259,7 +257,7 @@
         <!-- Filtrační lišta -->
         <div style="margin-top:1.2rem; padding:0.9rem; background:#11111b; border:1px solid var(--border); border-radius:0.6rem; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
             <div style="flex:2; min-width:200px;">
-                <input type="text" id="filter-search" placeholder="🔍 Hledat ve zprávě, stacktrace..." style="width:100%; padding:0.45rem 0.75rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;" oninput="applyErrorFilters()">
+                <input type="text" id="filter-search" placeholder="Hledat ve zprávě nebo stacktrace" style="width:100%; padding:0.45rem 0.75rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;" oninput="applyErrorFilters()">
             </div>
             <div style="flex:1; min-width:130px;">
                 <select id="filter-level" onchange="applyErrorFilters()" style="width:100%; padding:0.45rem 0.6rem; border-radius:0.4rem; background:#181825; color:var(--text); border:1px solid var(--border); font-size:0.85rem;">
@@ -425,7 +423,7 @@
             if (!modal) return;
             document.getElementById("modal-user-id").value = uid;
             document.getElementById("modal-student-name").textContent = username;
-            document.getElementById("modal-student-stats").textContent = `(${points} bodů, 🔥 ${streak})`;
+            document.getElementById("modal-student-stats").textContent = `(${points} bodů, streak ${streak})`;
             // Default check "all"
             const radAll = modal.querySelector('input[name="scope"][value="all"]');
             if (radAll) radAll.checked = true;
@@ -454,7 +452,7 @@
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border); padding-bottom:0.75rem;">
                 <h3 style="font-size:1.15rem; color:var(--yellow); display:flex; align-items:center; gap:0.5rem; margin:0;">
-                    <span>🔄</span> Vynulovat statistiky studenta
+                    Vynulovat statistiky studenta
                 </h3>
                 <button type="button" onclick="closeResetModal()" style="background:none; border:none; color:var(--text-dim); font-size:1.3rem; cursor:pointer; padding:0.2rem 0.5rem; line-height:1;">✕</button>
             </div>
@@ -470,21 +468,21 @@
                 <label class="scope-option">
                     <input type="radio" name="scope" value="all" checked>
                     <div>
-                        <div style="font-weight:600; color:var(--text);">⚡ Všechno (kompletní reset)</div>
+                        <div style="font-weight:600; color:var(--text);">Všechno (kompletní reset)</div>
                         <div style="font-size:0.8rem; color:var(--text-dim);">Vynuluje body, série i zápasy v aréně (FFA, Duely, KotH).</div>
                     </div>
                 </label>
                 <label class="scope-option">
                     <input type="radio" name="scope" value="points">
                     <div>
-                        <div style="font-weight:600; color:var(--text);">🎯 Pouze body (XP)</div>
+                        <div style="font-weight:600; color:var(--text);">Pouze body (XP)</div>
                         <div style="font-size:0.8rem; color:var(--text-dim);">Vynuluje celkové skóre na 0. Ponechá streaky i záznamy v aréně.</div>
                     </div>
                 </label>
                 <label class="scope-option">
                     <input type="radio" name="scope" value="streaks">
                     <div>
-                        <div style="font-weight:600; color:var(--text);">🔥 Pouze streaky</div>
+                        <div style="font-weight:600; color:var(--text);">Pouze streaky</div>
                         <div style="font-size:0.8rem; color:var(--text-dim);">Vynuluje aktuální, nejlepší i denní série odpovědí.</div>
                     </div>
                 </label>

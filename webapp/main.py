@@ -33,24 +33,40 @@ app = FastAPI(title="TZI Trenér", docs_url=None, redoc_url=None)
 async def add_security_headers(request, call_next):
     response = await call_next(request)
     response.headers["X-Frame-Options"] = "DENY"
-    csp = (
-        "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
-        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
-        "img-src 'self' data: blob:; "
-        "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; "
-        "connect-src 'self'; "
-        "frame-ancestors 'none'; "
-        "base-uri 'self'; "
-        "form-action 'self'; "
-        "object-src 'none'"
-    )
+    if request.url.path in ("/automat", "/teorie", "/glosar"):
+        csp = (
+            "default-src 'none'; "
+            "script-src 'self'; "
+            "style-src 'self' https://fonts.googleapis.com; "
+            "img-src 'self' data: blob:; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'; "
+            "object-src 'none'"
+        )
+    else:
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
+            "img-src 'self' data: blob:; "
+            "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'; "
+            "object-src 'none'"
+        )
     if request.url.scheme == "https":
         csp += "; upgrade-insecure-requests"
     response.headers["Content-Security-Policy"] = csp
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()"
     response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
     return response
 
 

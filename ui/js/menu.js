@@ -80,6 +80,11 @@ async function init() {
 
 async function selectSource(id) { currentSource = id; renderLectures(); await loadSource(id); }
 
+function updateTeorieLink() {
+  const gl = document.getElementById('teorie-link');
+  if (gl) gl.href = '/teorie?source=' + encodeURIComponent(currentSource || '_all');
+}
+
 // "3. přednáška (15. 10. 2026): Téma" → {n, date, title}; "Všechny dohromady" dostane Σ
 function parseSource(s) {
   const m = /^(\d+)\. přednáška \((.+?)\): (.*)$/.exec(s.label);
@@ -88,6 +93,7 @@ function parseSource(s) {
 const recallCats = () => [...new Set(RECALL.map(q => q.category))];
 function selectRecallCat(i) { recallCat = i < 0 ? '' : recallCats()[i]; renderLectures(); applyFilter(); }
 function renderLectures() {
+  updateTeorieLink();
   const rc = typeFilter === 'recall';
   $('h-lec').textContent = rc ? 'Kategorie' : 'Přednáška';
   if (rc) { // doplňovačka: místo přednášek kategorie

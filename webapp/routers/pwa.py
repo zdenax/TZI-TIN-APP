@@ -1,11 +1,12 @@
 """PWA a statika (WASM, manifest, service worker), webhook a hlavní stránka."""
 import secrets
-from fastapi import APIRouter, Request, HTTPException
+from typing import Dict, Any
+from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, PlainTextResponse, FileResponse
 import tzi_trener
 from ..config import WEBHOOK_SECRET
 from ..git_sync import git_pull
-from ..sessions import get_current_user
+from ..sessions import get_current_user, require_user
 from ..csrf import CSRF_COOKIE_NAME, generate_csrf_token, ensure_csrf_token
 
 router = APIRouter()
@@ -35,6 +36,52 @@ def get_icon():
 @router.get("/favicon.ico")
 def get_favicon():
     return FileResponse(tzi_trener.UI_DIR / "icon.svg", media_type="image/svg+xml")
+
+
+_NO_STORE_HEADERS = {"Cache-Control": "no-store, no-cache, must-revalidate", "Pragma": "no-cache"}
+
+
+def _auth_page(request: Request, filename: str):
+    if not get_current_user(request):
+        return RedirectResponse(url="/login")
+    path = tzi_trener.UI_DIR / filename
+    if not path.is_file():
+        return PlainTextResponse("Chybí soubor šablony UI.", status_code=500)
+    resp = FileResponse(path, media_type="text/html; charset=utf-8", headers=_NO_STORE_HEADERS)
+    ensure_csrf_token(request, resp)
+    return resp
+
+
+@router.get("/fmt.js")
+def get_fmt_js(user: Dict[str, Any] = Depends(require_user)):
+    return FileResponse(tzi_trener.UI_DIR / "fmt.js", media_type="text/javascript; charset=utf-8", headers=_NO_STORE_HEADERS)
+
+
+@router.get("/automat-core.js")
+def get_automat_core_js(user: Dict[str, Any] = Depends(require_user)):
+    return FileResponse(tzi_trener.UI_DIR / "automat-core.js", media_type="text/javascript; charset=utf-8", headers=_NO_STORE_HEADERS)
+
+
+@router.get("/automat-delta.jpg")
+def get_automat_delta_jpg(user: Dict[str, Any] = Depends(require_user)):
+    return FileResponse(tzi_trener.UI_DIR / "automat-delta.jpg", media_type="image/jpeg", headers=_NO_STORE_HEADERS)
+
+
+@router.get("/automat")
+def get_automat(request: Request):
+    return _auth_page(request, "automat.html")
+
+
+@router.get("/teorie")
+def get_teorie(request: Request):
+    return _auth_page(request, "glosar.html")
+
+
+@router.get("/glosar")
+def get_glosar(request: Request):
+    if not get_current_user(request):
+        return RedirectResponse(url="/login")
+    return RedirectResponse(url="/teorie", status_code=302)
 
 
 @router.post("/webhook")

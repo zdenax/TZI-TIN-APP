@@ -11,6 +11,24 @@ function getCsrfToken() {
   return '';
 }
 
+if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+  const _origFetch = window.fetch.bind(window);
+  window.fetch = (input, init) => {
+    const url = typeof input === 'string' ? input : (input && input.url) || '';
+    const method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+    const sameOrigin = url.startsWith('/') || url.startsWith(window.location.origin);
+    if (sameOrigin && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+      const nextInit = { ...(init || {}) };
+      const headers = new Headers(nextInit.headers || (typeof Request !== 'undefined' && input instanceof Request ? input.headers : undefined));
+      const tok = getCsrfToken();
+      if (tok && !headers.has('X-CSRF-Token')) headers.set('X-CSRF-Token', tok);
+      nextInit.headers = headers;
+      return _origFetch(input, nextInit);
+    }
+    return _origFetch(input, init);
+  };
+}
+
 function showToast(html) {
   const t = document.getElementById('score-toast');
   if (!t) return;

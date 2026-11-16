@@ -345,6 +345,150 @@ def test_r8_webhook_timing_safe_secret(monkeypatch):
     assert any(call[0] == test_secret and call[1] == test_secret for call in compare_digest_called)
 
 
+def test_glosar_and_automat_routes():
+    import re
+    import subprocess
+
+    client = TestClient(server.app, headers={"User-Agent": "TestBrowser/1.0"})
+
+    # 1. Zero-trust unauthenticated denial on pages, API, and exclusive assets
+    for page in ("/automat", "/teorie", "/glosar"):
+        r = client.get(page, follow_redirects=False)
+        assert r.status_code in (302, 307)
+        assert r.headers.get("location") == "/login"
+    for ep in ("/api/teorie?source=_all", "/api/glosar?source=_all", "/fmt.js", "/automat-core.js", "/automat-delta.jpg"):
+        assert client.get(ep).status_code == 401
+
+    # 2. Tampered session cookie rejected
+    bad_client = TestClient(server.app, headers={"User-Agent": "TestBrowser/1.0"})
+    bad_client.cookies.set("tzi_session", "forged.token.value")
+    assert bad_client.get("/api/teorie?source=_all").status_code == 401
+    assert bad_client.get("/automat", follow_redirects=False).status_code in (302, 307)
+
+    # 3. Trial login -> verify UA/IP session binding + strict headers + strict CSP
+    assert client.get("/trial", follow_redirects=False).status_code in (302, 303, 307)
+    cookie_val = client.cookies.get("tzi_session")
+    assert cookie_val
+
+    # Mismatched User-Agent with stolen cookie must fail (Zero-Trust fingerprint binding)
+    thief = TestClient(server.app, headers={"User-Agent": "EvilScraper/9.9"})
+    thief.cookies.set("tzi_session", cookie_val)
+    assert thief.get("/api/teorie?source=_all").status_code == 401
+    assert thief.get("/automat", follow_redirects=False).status_code in (302, 307)
+
+    # Legitimate authenticated requests pass with strict CSP & security headers
+    for page in ("/automat", "/teorie"):
+        resp = client.get(page)
+        assert resp.status_code == 200
+        csp = resp.headers.get("content-security-policy", "")
+        assert "default-src 'none'" in csp
+        assert "script-src 'self'" in csp
+        assert "'unsafe-inline'" not in csp
+        assert "'wasm-unsafe-eval'" not in csp
+        assert "frame-ancestors 'none'" in csp
+        assert "object-src 'none'" in csp
+        assert resp.headers.get("x-frame-options") == "DENY"
+        assert resp.headers.get("x-content-type-options") == "nosniff"
+        assert resp.headers.get("cross-origin-opener-policy") == "same-origin"
+        assert resp.headers.get("cross-origin-resource-policy") == "same-origin"
+        assert "no-store" in resp.headers.get("cache-control", "")
+        # Zero inline <script>, <style>, style=, or on*= event handlers in HTML
+        body = resp.text
+        assert not re.search(r"<script(?![^>]*\bsrc=)[^>]*>", body, re.I)
+        assert not re.search(r"<style\b", body, re.I)
+        assert not re.search(r"\bon\w+\s*=", body, re.I)
+        assert "style=" not in body
+
+    assert client.get("/fmt.js").status_code == 200
+    assert client.get("/automat-core.js").status_code == 200
+    assert client.get("/automat-delta.jpg").status_code == 200
+    assert client.get("/static/css/automat.css").status_code == 200
+    assert client.get("/static/js/automat.js").status_code == 200
+    assert client.get("/static/css/glosar.css").status_code == 200
+    assert client.get("/static/js/glosar.js").status_code == 200
+
+    # 4. API input validation & no error-detail leak
+    assert client.get("/api/glosar?source=../../etc/passwd").status_code == 400
+    assert client.get("/api/glosar?source=%3Cscript%3E").status_code == 400
+    r404 = client.get("/api/glosar?source=neexistujici_banka")
+    assert r404.status_code == 404
+    assert r404.json()["detail"] == "Zdroj nebyl nalezen"
+
+    gl = client.get("/api/glosar?source=_all").json()
+    assert len(gl["groups"]) >= 2
+    srcs = [s["id"] for s in client.get("/api/sources").json()["sources"]]
+    assert "06-2026-11-05" in srcs and "07-2026-11-12" in srcs
+
+    # 5. Node.js check for fmt.js XSS escaping & ReDoS + automat-core.js prototype safety
+    js_check = r"""
+    const fs = require('fs');
+    const vm = require('vm');
+    const Auto = require('./ui/automat-core.js');
+    const sp = Auto.parseSpec('Q = {__proto__, constructor, q0}\nΣ = {0}\npočáteční stav q0\nF = {}\nδ(q0, 0) = q0');
+    if (sp.states.some(s => s.id === '__proto__' || s.id === 'constructor')) throw new Error('Reserved id allowed');
+    const d = Auto.delta({ states: [{ id: 'q0' }], trans: [{ from: 'q0', to: 'q0', symbols: ['0'] }] });
+    if (Object.getPrototypeOf(d) !== null || d.toString !== undefined) throw new Error('Prototype not null');
+
+    const ctx = {};
+    vm.runInNewContext(fs.readFileSync('./ui/fmt.js', 'utf8'), ctx);
+    const xssOut = ctx.fmt('<img src=x onerror="alert(1)">\'test\'');
+    if (xssOut.includes('<img') || xssOut.includes('"') || xssOut.includes("'")) throw new Error('fmt XSS leak: ' + xssOut);
+    const t0 = Date.now();
+    ctx.fmtZadani('G: a, pravidla ' + '(1) x '.repeat(50) + 'beztecky');
+    if (Date.now() - t0 > 100) throw new Error('ReDoS detected');
+    """
+    res = subprocess.run(["node", "-e", js_check], cwd=str(BASE.parent), capture_output=True, text=True)
+    assert res.returncode == 0, res.stderr
+    for js_file in ("ui/js/automat.js", "ui/js/glosar.js", "ui/fmt.js", "ui/automat-core.js"):
+        chk = subprocess.run(["node", "--check", js_file], cwd=str(BASE.parent), capture_output=True, text=True)
+        assert chk.returncode == 0, f"{js_file}: {chk.stderr}"
+
+
+def test_pentest_regressions():
+    """Verify no premature XP grant, room detail IDOR, or browser-UA CSRF bypass."""
+    test_db = BASE / "test_temp_pentest_reg.db"
+    _cleanup_db(test_db)
+    from webapp import questions
+    db.DB_FILE = test_db
+    db.init_db()
+    questions.refresh_questions()
+
+    try:
+        c1 = TestClient(server.app, headers={"User-Agent": "Browser/1.0"})
+        csrf1 = c1.get("/register").cookies.get("csrf_token")
+        r1 = c1.post("/register", data={"username": "pt_u1", "password": "StrongPass123!", "password_confirm": "StrongPass123!", "csrf_token": csrf1}, follow_redirects=False)
+        assert r1.status_code == 303
+        csrf1 = c1.cookies.get("csrf_token")
+
+        c2 = TestClient(server.app, headers={"User-Agent": "Browser/2.0"})
+        csrf2 = c2.get("/register").cookies.get("csrf_token")
+        r2 = c2.post("/register", data={"username": "pt_u2", "password": "StrongPass123!", "password_confirm": "StrongPass123!", "csrf_token": csrf2}, follow_redirects=False)
+        assert r2.status_code == 303
+        csrf2 = c2.cookies.get("csrf_token")
+
+        qs = [q for q in c1.get("/api/questions?source=01-2026-10-01").json() if q.get("type") == "choice"]
+        q0, q1 = qs[0], qs[1]
+
+        # 1. Browser-UA POST /api/progress without X-CSRF-Token must fail 403
+        assert c1.post("/api/progress?source=01-2026-10-01", json={"seen": {}, "latest": {"id": q0["id"], "userKeys": q0["correct"]}}).status_code == 403
+
+        # 2. Forged match_token on /api/koth/submit must NOT award XP
+        pts_before = c1.get("/api/me").json()["points"]
+        assert c1.post("/api/koth/submit", json={"answers": [{"id": q0["id"], "userKeys": q0["correct"]}], "time_ms": 1, "match_token": "bad.token"}, headers={"X-CSRF-Token": csrf1}).status_code == 400
+        assert c1.get("/api/me").json()["points"] == pts_before
+
+        # 3. Room detail IDOR & non-member /api/rooms/{id}/submit must NOT leak questions or award XP
+        room = c1.post("/api/rooms/create", json={"mode": "ffa", "name": "R", "count": 3, "source": "01-2026-10-01"}, headers={"X-CSRF-Token": csrf1}).json()["room"]
+        assert c1.post(f"/api/rooms/{room['id']}/start", headers={"X-CSRF-Token": csrf1}).status_code == 200
+        detail2 = c2.get(f"/api/rooms/{room['id']}").json()
+        assert detail2["questions"] == []
+        pts2_before = c2.get("/api/me").json()["points"]
+        assert c2.post(f"/api/rooms/{room['id']}/submit", json={"answers": [{"id": q1["id"], "userKeys": q1["correct"]}], "time_ms": 1}, headers={"X-CSRF-Token": csrf2}).status_code == 403
+        assert c2.get("/api/me").json()["points"] == pts2_before
+    finally:
+        _cleanup_db(test_db)
+
+
 if __name__ == "__main__":
     import pytest
     test_full_pipeline()

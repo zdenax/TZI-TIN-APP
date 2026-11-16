@@ -32,7 +32,7 @@ def git_pull():
             return err
 
         checkout_res = subprocess.run(
-            ["git", "checkout", "upstream/main", "--", "banky"],
+            ["git", "checkout", "upstream/main", "--", ":(glob)banky/*.json", "glosar"],
             cwd=BASE, capture_output=True, text=True, timeout=30
         )
         out = (checkout_res.stdout + "\n" + checkout_res.stderr).strip()
@@ -40,15 +40,15 @@ def git_pull():
         # Okamžitě obnovit cache otázek v paměti běžícího serveru
         refresh_questions()
 
-        # Pokud se v banky/ něco změnilo, commitnout a pushnout do vlastního forku (origin)
+        # Pokud se v banky/ nebo glosar/ něco změnilo, commitnout a pushnout do vlastního forku (origin)
         status_res = subprocess.run(
-            ["git", "status", "--porcelain", "--", "banky"],
+            ["git", "status", "--porcelain", "--", ":(glob)banky/*.json", "glosar"],
             cwd=BASE, capture_output=True, text=True, timeout=15
         )
         if status_res.stdout.strip():
-            subprocess.run(["git", "add", "banky"], cwd=BASE, capture_output=True, text=True, timeout=15)
+            subprocess.run(["git", "add", "--", ":(glob)banky/*.json", "glosar"], cwd=BASE, capture_output=True, text=True, timeout=15)
             subprocess.run(
-                ["git", "commit", "-m", "chore(banky): auto-sync question banks from upstream/main"],
+                ["git", "commit", "--only", "-m", "chore(banky): auto-sync question banks from upstream/main", "--", ":(glob)banky/*.json", "glosar"],
                 cwd=BASE, capture_output=True, text=True, timeout=15
             )
             push_res = subprocess.run(

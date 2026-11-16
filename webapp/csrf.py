@@ -47,7 +47,12 @@ def get_csrf_token(resp: Response) -> str:
     return generate_csrf_token(resp)
 
 
-async def validate_csrf(request: Request, resp: Response, csrf_token: Optional[str] = None) -> bool:
+async def validate_csrf(
+    request: Request,
+    resp: Response,
+    csrf_token: Optional[str] = None,
+    rotate: bool = True,
+) -> bool:
     """Ověří CSRF token z cookie shodou s hodnotou z těla nebo hlavičky.
     Vrací True pokud je token validní, jinak vyvolá HTTPException 403.
     """
@@ -81,8 +86,9 @@ async def validate_csrf(request: Request, resp: Response, csrf_token: Optional[s
     if not secrets.compare_digest(token, cookie_token):
         raise HTTPException(status_code=403, detail="Neplatný CSRF token.")
 
-    # Rotace tokenu po každém úspěšném requestu
-    generate_csrf_token(resp)
+    # Rotace tokenu po každém úspěšném requestu (volitelná pro paralelní fetch)
+    if rotate:
+        generate_csrf_token(resp)
     return True
 
 

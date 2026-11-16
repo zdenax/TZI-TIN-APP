@@ -1,6 +1,6 @@
 // Sdílené formátování vzorců (zlomky, indexy, mocniny) pro novy.html a glosar.html.
 function fmt(s) {
-  s = String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\.\.\./g, '…');
+  s = String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/\.\.\./g, '…');
   return fracs(s)
     .replace(/\(([^()<>]+?) nad ([^()<>]+?)\)/g, '<span class="binom"><span><span>$1</span><span>$2</span></span></span>')
     .replace(/_\(([^)]+)\)/g, '<sub>$1</sub>').replace(/_([A-Za-z0-9]+)/g, '<sub>$1</sub>')
@@ -83,7 +83,7 @@ function zadaniAutomat(t) {
 }
 
 function zadaniGramatika(t) {
-  const m = t.match(/^([^:]{1,40}): (.*?), pravidla ((?:\(\d+\) [^,.]+(?:, )?)+)\.\s*([\s\S]*)$/);
+  const m = t.match(/^([^:]{1,40}): (.*?), pravidla (\(\d+\) [^.\n]+)\.\s*([\s\S]*)$/);
   if (!m) return null;
   const pravidla = m[3].split(/, (?=\(\d+\))/);
   if (pravidla.length < 3) return null;

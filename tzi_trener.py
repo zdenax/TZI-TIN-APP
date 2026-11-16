@@ -23,6 +23,7 @@ from urllib.parse import parse_qs, urlparse
 BASE = Path(__file__).resolve().parent
 BANKS = BASE / "banky"
 RECALL_DIR = BANKS / "doplnovacka"  # otázky typu recall; běžné režimy čtou jen banky/*.json, tyhle nevidí
+GLOSAR = BASE / "glosar" / "glosar.json"  # hesla podle přednášky
 PROGRESS_FILE = BASE / "progress.json"
 PORT = 5051
 ALL = "_all"
@@ -63,6 +64,24 @@ def load_recall():
     """Otázky pro režim Doplňovačka ze všech bank v banky/doplnovacka/."""
     return [q for p in sorted(RECALL_DIR.glob("*.json"))
             for q in json.loads(p.read_text(encoding="utf-8"))["questions"]]
+
+
+def load_glosar(source):
+    """Pojmy balíčku otázek; pro „všechny dohromady“ po balíčcích, pojem, který se opakuje, jen jednou (u prvního)."""
+    if not GLOSAR.is_file():
+        raise FileNotFoundError("glosar missing")
+    banks = load_banks()
+    if source != ALL and source not in banks:
+        raise KeyError("unknown source")
+    data = json.loads(GLOSAR.read_text(encoding="utf-8"))["banks"]
+    ids = list(banks) if source == ALL else [source]
+    seen, groups = set(), []
+    for b in ids:
+        entries = [e for e in data.get(b, []) if e["term"] not in seen]
+        seen.update(e["term"] for e in entries)
+        if entries:
+            groups.append({"label": source_label(banks[b]), "entries": entries})
+    return {"title": "Všechny přednášky dohromady" if source == ALL else source_label(banks[source]), "groups": groups}
 
 
 def load_progress():

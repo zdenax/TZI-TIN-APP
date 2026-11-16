@@ -1,17 +1,17 @@
-const CACHE_NAME = 'tzi-pwa-v14';
+const CACHE_NAME = 'tzi-pwa-v15';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icon.svg',
   '/static/css/style.css?v=14',
   '/static/js/core.js?v=14',
   '/static/js/format.js?v=14',
-  '/static/js/shell.js?v=14',
+  '/static/js/shell.js?v=15',
   '/static/js/arena.js?v=14',
   '/static/js/account.js?v=14',
   '/static/js/offline.js?v=14',
   '/static/js/gamification.js?v=14',
   '/static/js/rooms.js?v=14',
-  '/static/js/menu.js?v=14',
+  '/static/js/menu.js?v=15',
   '/static/js/chunks.js?v=14',
   '/static/js/modes.js?v=14',
   '/static/js/comp_modes.js?v=14',
@@ -38,7 +38,7 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
-  if (['/login', '/register', '/logout', '/trial', '/admin', '/quiz.wasm'].some(p => url.pathname.startsWith(p))) return;
+  if (['/login', '/register', '/logout', '/trial', '/admin', '/quiz.wasm', '/automat', '/teorie', '/api/teorie', '/glosar', '/api/glosar', '/automat-delta.jpg', '/fmt.js', '/automat-core.js'].some(p => url.pathname.startsWith(p))) return;
 
     if (url.pathname.startsWith('/static/')) {
     event.respondWith(

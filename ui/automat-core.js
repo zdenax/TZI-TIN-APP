@@ -4,9 +4,13 @@
   const Auto = {};
 
   // stav -> znak -> [cíle]
+  const RESERVED_PROPS = new Set(['__proto__', 'constructor', 'prototype']);
   Auto.delta = function (m) {
-    const d = {};
-    for (const s of m.states) d[s.id] = {};
+    const d = Object.create(null);
+    for (const s of m.states) {
+      if (!s || RESERVED_PROPS.has(s.id)) continue;
+      d[s.id] = Object.create(null);
+    }
     for (const t of m.trans) {
       if (!d[t.from]) continue;
       for (const a of t.symbols) {
@@ -83,7 +87,8 @@
     const key = (p, q) => p + '\u0000' + q;
     const seen = new Set([key(m1.start, m2.start)]);
     const queue = [{ p: m1.start, q: m2.start, word: '' }];
-    while (queue.length) {
+    let visited = 0;
+    while (queue.length && visited++ < 100000) {
       const { p, q, word } = queue.shift();
       const a1 = m1.accept.includes(p), a2 = m2.accept.includes(q);
       if (a1 !== a2) return { equal: false, word, mine: a1, expected: a2 };
@@ -164,8 +169,10 @@
     const src = String(text).replace(/[₀-₉]/g, c => String(c.charCodeAt(0) - 0x2080));
     const id = "[A-Za-z_][A-Za-z0-9_′']*", problems = [], trans = [], low = s => s.toLowerCase();
     const list = s => s.split(/[,\s;]+/).filter(Boolean);
-    const ids = s => list(s).filter(x => new RegExp('^' + id + '$').test(x)).map(low);
-    const add = (f, a, t) => trans.push({ from: low(f), to: low(t), symbols: [a] });
+    const ids = s => list(s).filter(x => new RegExp('^' + id + '$').test(x) && !RESERVED_PROPS.has(low(x))).map(low);
+    const add = (f, a, t) => {
+      if (!RESERVED_PROPS.has(low(f)) && !RESERVED_PROPS.has(low(t))) trans.push({ from: low(f), to: low(t), symbols: [a] });
+    };
     let m;
     const re = new RegExp(`(?:δ|delta)?\\s*\\(\\s*(${id})\\s*[,;]\\s*([^\\s,;()])\\s*\\)\\s*(?:=|->|→)\\s*(${id})`, 'gi');
     while ((m = re.exec(src))) add(m[1], m[2], m[3]);
@@ -184,7 +191,7 @@
     const start = sm ? low(sm[1]) : (trans[0] && trans[0].from) || null;
     if (!sm && trans.length) problems.push(`Počáteční stav jsem nenašel, beru ${start}. Napiš např. „počáteční stav q0“.`);
     const stateIds = [...new Set([...(qset ? ids(qset) : []), ...trans.flatMap(t => [t.from, t.to]), ...(start ? [start] : []), ...accept])];
-    const d = {};
+    const d = Object.create(null);
     for (const t of trans) {
       const a = t.symbols[0];
       if (!alphabet.includes(a)) { problems.push(`Znak ${a} není v abecedě {${alphabet.join(', ')}}.`); continue; }

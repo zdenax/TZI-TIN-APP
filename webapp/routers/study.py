@@ -1,5 +1,6 @@
 """Studijní API: profil, otázky, postup a synchronizace offline fronty."""
 import json
+import re
 import time
 from collections import defaultdict
 from typing import Dict, Any, List
@@ -10,7 +11,7 @@ import tzi_trener
 from .. import questions
 from ..questions import verify_answer
 from ..sessions import require_user
-from ..csrf import ensure_csrf_token
+from ..csrf import ensure_csrf_token, validate_csrf
 
 router = APIRouter()
 
@@ -99,6 +100,19 @@ def api_recall(user: Dict[str, Any] = Depends(require_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/api/teorie")
+@router.get("/api/glosar")
+def api_glosar(response: Response, source: str = "", user: Dict[str, Any] = Depends(require_user)):
+    if not source or len(source) > 64 or not re.fullmatch(r"[A-Za-z0-9_-]+", source):
+        raise HTTPException(status_code=400, detail="Neplatný parametr source")
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    try:
+        return tzi_trener.load_glosar(source)
+    except (KeyError, OSError, ValueError):
+        raise HTTPException(status_code=404, detail="Zdroj nebyl nalezen")
+
+
 @router.get("/api/progress")
 def api_get_progress(source: str = "", user: Dict[str, Any] = Depends(require_user)):
     user_id = user["user_id"]
@@ -158,7 +172,8 @@ def reset_progress_rate_limits():
 
 
 @router.post("/api/progress")
-async def api_post_progress(request: Request, source: str = "", user: Dict[str, Any] = Depends(require_user)):
+async def api_post_progress(request: Request, response: Response, source: str = "", user: Dict[str, Any] = Depends(require_user)):
+    await validate_csrf(request, response, rotate=False)
     user_id = user["user_id"]
     ip = request.client.host if request.client else "unknown"
     rate_key = f"u_{user_id}" if user_id else f"ip_{ip}"
@@ -245,8 +260,9 @@ def reset_sync_rate_limits():
 
 
 @router.post("/api/sync")
-async def api_sync(request: Request, user: Dict[str, Any] = Depends(require_user)):
+async def api_sync(request: Request, response: Response, user: Dict[str, Any] = Depends(require_user)):
     """Offline synchronizace: dávkové bezpečné zpracování odpovědí vyřešených offline s anti-spoofing kontrolou."""
+    await validate_csrf(request, response, rotate=False)
     user_id = user["user_id"]
     ip = request.client.host if request.client else "unknown"
     rate_key = f"u:{user_id}_ip:{ip}"
