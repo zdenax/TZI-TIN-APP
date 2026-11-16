@@ -584,6 +584,11 @@ def main():
     verify()
     groups = [("choice", choice()), ("input", inputs()), ("reveal", reveal())]
     qs, longest = build(groups, random.Random(112), "7")
+    # značení slov u, z se musí vysvětlit dřív než přímý přepis u ⇒ z, který je používá
+    check(qs[40]["text"].startswith("Jak se v přepisovacím systému značí slova u, z"), "7-41 už není otázka na značení slov")
+    qs.insert(1, qs.pop(40))
+    for i, q in enumerate(qs, 1):
+        q["number"], q["id"] = i, f"7-{i}"
     other = {q["id"] for p in (HERE / "banky").glob("*.json") if p.name != "07-2026-11-12.json"
              for q in json.loads(p.read_text(encoding="utf-8"))["questions"]}
     check(not {q["id"] for q in qs} & other, "id otázek musí být unikátní napříč přednáškami")

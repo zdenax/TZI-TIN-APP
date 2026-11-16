@@ -279,6 +279,9 @@ def main():
                    "correct": ["ABCD"[i] for i in correct], "explanation": expl})
     qs += set_questions(random.Random(11))
     qs += relation_questions()
+    # uspořádaná dvojice se musí vysvětlit dřív než kartézský součin, který z ní vychází
+    assert qs[27]["text"].startswith("Co je kartézský součin") and qs[28]["text"].startswith("Co je uspořádaná dvojice")
+    qs[27], qs[28] = qs[28], qs[27]
     for i, q in enumerate(qs, 1):
         q["number"] = i
         q["id"] = f"3-{i}"
