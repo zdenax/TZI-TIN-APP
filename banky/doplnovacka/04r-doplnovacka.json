@@ -12,9 +12,7 @@
     "přirozená",
     "množina přirozených čísel",
     "obor přirozených čísel",
-    "natural numbers",
-    "natural",
-    "přirozená čísla s nulou"
+    "natural numbers"
    ],
    "words": 2,
    "explanation": "ℕ jsou přirozená čísla (na přednášce 0, 1, 2, 3, …). Platí ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ. Přednáška 1. 10.",
@@ -30,8 +28,7 @@
     "celá",
     "množina celých čísel",
     "obor celých čísel",
-    "integers",
-    "integer"
+    "integers"
    ],
    "words": 2,
    "explanation": "ℤ jsou celá čísla (…, −2, −1, 0, 1, 2, …). Přednáška 1. 10.",
@@ -48,8 +45,7 @@
     "množina racionálních čísel",
     "obor racionálních čísel",
     "zlomky",
-    "rational numbers",
-    "rational"
+    "rational numbers"
    ],
    "words": 2,
    "explanation": "ℚ jsou racionální čísla (ve výpiscích „zlomky“, např. 1/2, −3/4, 5). Přednáška 1. 10.",
@@ -65,8 +61,7 @@
     "reálná",
     "množina reálných čísel",
     "obor reálných čísel",
-    "real numbers",
-    "real"
+    "real numbers"
    ],
    "words": 2,
    "explanation": "ℝ jsou reálná čísla, všechna čísla na ose, i √2 a π. Přednáška 1. 10.",
@@ -82,12 +77,7 @@
     "komplexní",
     "množina komplexních čísel",
     "obor komplexních čísel",
-    "complex numbers",
-    "complexní",
-    "complexní čísla",
-    "množina complexních čísel",
-    "obor complexních čísel",
-    "complex"
+    "complex numbers"
    ],
    "words": 2,
    "explanation": "ℂ jsou komplexní čísla tvaru a + ib. Přednáška 1. 10.",
@@ -115,9 +105,7 @@
    "text": "Kolik je 0! (nula faktoriál)?",
    "accept": [
     "1",
-    "jedna",
-    "jedno",
-    "jednička"
+    "jedna"
    ],
    "words": 1,
    "explanation": "0! = 1. Přednáška 1. 10.",
@@ -132,10 +120,7 @@
     "součet",
     "suma",
     "sumace",
-    "sum",
-    "sčítání",
-    "sumační symbol",
-    "summation"
+    "sum"
    ],
    "words": 1,
    "explanation": "Σ_(i=1)^n a_i = a_1 + a_2 + … + a_n je součet. Přednáška 1. 10.",
@@ -149,9 +134,7 @@
    "accept": [
     "součin",
     "produkt",
-    "product",
-    "násobení",
-    "produkování"
+    "product"
    ],
    "words": 1,
    "explanation": "Π_(i=1)^n a_i = a_1 · a_2 · … · a_n je součin. Přednáška 1. 10.",
@@ -165,8 +148,7 @@
    "accept": [
     "absolutní hodnota",
     "absolutní hodnota x",
-    "absolute value",
-    "absolutní"
+    "absolute value"
    ],
    "words": 2,
    "explanation": "|5| = 5 a |−5| = 5: absolutní hodnota. Přednáška 1. 10.",
@@ -180,10 +162,7 @@
    "accept": [
     "nepoziční",
     "nepoziční soustava",
-    "nepoziční číselná soustava",
-    "aditivní",
-    "aditivní soustava",
-    "ne-poziční"
+    "nepoziční číselná soustava"
    ],
    "words": 1,
    "explanation": "Soustavy jsou poziční (mají základ Z > 1) a nepoziční (základ nemají), např. římská. Přednáška 1. 10.",
@@ -199,10 +178,7 @@
     "římská soustava",
     "římská číselná soustava",
     "římské číslice",
-    "římská čísla",
-    "římské",
-    "egyptská",
-    "egyptská soustava"
+    "římská čísla"
    ],
    "words": 1,
    "explanation": "Římská soustava (I, II, III, IV, V, VI, …) je nepoziční. Přednáška 1. 10.",
@@ -219,8 +195,7 @@
     "základ číselné soustavy",
     "báze",
     "radix",
-    "base",
-    "báze soustavy"
+    "base"
    ],
    "words": 1,
    "explanation": "Základ Z udává maximální počet číslic, které jsou v soustavě k dispozici. Přednáška 1. 10.",
@@ -237,9 +212,7 @@
     "cifra",
     "číslice soustavy",
     "digits",
-    "digit",
-    "znaky",
-    "symboly"
+    "digit"
    ],
    "words": 1,
    "explanation": "Čísla se tvoří z uspořádaných souborů znaků, které se nazývají číslice (cifry). Přednáška 1. 10.",
@@ -255,9 +228,7 @@
     "oktalová soustava",
     "oktální",
     "oktální soustava",
-    "octal",
-    "octalová",
-    "osmičková"
+    "octal"
    ],
    "words": 1,
    "explanation": "Z = 8, číslice 0 až 7: osmičková (oktalová). Přednáška 1. 10.",
@@ -273,8 +244,7 @@
     "dekadická soustava",
     "decimální",
     "decimální soustava",
-    "decimal",
-    "desítková"
+    "decimal"
    ],
    "words": 1,
    "explanation": "Z = 10, číslice 0 až 9: desítková (dekadická). Přednáška 1. 10.",
@@ -290,9 +260,7 @@
     "hexadecimální soustava",
     "hexa",
     "hex",
-    "hexadecimal",
-    "šestnáctková",
-    "hexadecimální číselná soustava"
+    "hexadecimal"
    ],
    "words": 1,
    "explanation": "Z = 16, číslice 0 až 9 a A až F: šestnáctková (hexadecimální). Přednáška 1. 10.",
@@ -320,10 +288,7 @@
     "4",
     "čtyři",
     "4 bity",
-    "čtyři bity",
-    "tetráda",
-    "půlbajt",
-    "nibble"
+    "čtyři bity"
    ],
    "words": 1,
    "explanation": "16 = 2^4, proto se při převodu 2 ↔ 16 dělí po čtveřicích bitů (váhy 8 4 2 1). Přednáška 1. 10.",
@@ -343,15 +308,7 @@
     "od spodu nahoru",
     "v opačném pořadí",
     "pozpátku",
-    "od posledního k prvnímu",
-    "odspodu",
-    "zespodu",
-    "odspoda",
-    "zespoda",
-    "zdola",
-    "od konce",
-    "obráceně",
-    "zrcadlově"
+    "od posledního k prvnímu"
    ],
    "words": 2,
    "explanation": "Dělím celočíselně základem a zbytky čtu zdola nahoru, např. (26)_10 = (11010)_2. Přednáška 1. 10.",
@@ -372,9 +329,7 @@
     "binární",
     "přes binární",
     "binární soustava",
-    "přes binární soustavu",
-    "binár",
-    "dvojkovou soustavu"
+    "přes binární soustavu"
    ],
    "words": "1-2",
    "explanation": "8 ↔ 16 oklikou přes dvojkovou: osmičkové číslice na trojice bitů, pak po čtveřicích zprava. Přednáška 1. 10.",
@@ -386,10 +341,7 @@
    "category": "Číselné soustavy",
    "text": "Kolik je 1 + 1 ve dvojkové soustavě (výsledek zapiš dvojkově)?",
    "accept": [
-    "10",
-    "10_2",
-    "0010",
-    "deset"
+    "10"
    ],
    "words": 1,
    "explanation": "1 + 1 = (10)_2: zapíšu 0 a 1 přenesu do vyššího řádu. Přednáška 1. 10.",
@@ -402,12 +354,7 @@
    "text": "Jak se nazývá jednička, kterou při sčítání 1 + 1 ve dvojkové soustavě posunu do vyššího řádu?",
    "accept": [
     "přenos",
-    "carry",
-    "přenosová jednička",
-    "přenos do vyššího řádu",
-    "přenos do dalšího řádu",
-    "přenosový bit",
-    "carry bit"
+    "carry"
    ],
    "words": 1,
    "explanation": "V tabulce sčítání je u 1 + 1 výsledek 0 a přenos 1. Přednáška 1. 10.",
@@ -442,9 +389,7 @@
     "a zároveň",
     "logické a",
     "logický součin",
-    "logická konjunkce",
-    "součin",
-    "logické a zároveň"
+    "logická konjunkce"
    ],
    "words": "1-2",
    "explanation": "x ∧ y je konjunkce, čteme „x a zároveň y“; pravdivá, když jsou pravdivé oba výroky. Přednáška 8. 10.",
@@ -461,8 +406,7 @@
     "ne",
     "není pravda, že",
     "logická negace",
-    "non",
-    "negování"
+    "non"
    ],
    "words": 1,
    "explanation": "¬x je negace, čteme „není pravda, že x“; obrací pravdivostní hodnotu. Přednáška 8. 10.",
@@ -481,9 +425,7 @@
     "když … pak",
     "plyne",
     "z toho plyne",
-    "implies",
-    "vyplývá",
-    "z toho vyplývá"
+    "implies"
    ],
    "words": 1,
    "explanation": "x ⇒ y je implikace, čteme „jestliže x, pak y“; nepravdivá jen pro x = 1, y = 0. Přednáška 8. 10.",
@@ -501,9 +443,7 @@
     "právě když",
     "tehdy a jen tehdy, když",
     "tehdy a jen tehdy",
-    "iff",
-    "oboustranná implikace",
-    "rovnocennost"
+    "iff"
    ],
    "words": 1,
    "explanation": "x ⇔ y je ekvivalence, čteme „x právě tehdy, když y“; pravdivá, když mají x a y stejnou hodnotu. Přednáška 8. 10.",
@@ -521,10 +461,7 @@
     "pro všechny",
     "velký kvantifikátor",
     "univerzální kvantifikátor",
-    "for all",
-    "kvantifikátor pro každé",
-    "všeobecný kvantifikátor",
-    "univerzální"
+    "for all"
    ],
    "words": 2,
    "explanation": "∀ je obecný (velký) kvantifikátor, čteme „pro každé / pro všechna“, např. ∀x ∈ ℝ; x² ≥ 0. Přednáška 8. 10.",
@@ -544,8 +481,7 @@
     "existuje alespoň jeden",
     "malý kvantifikátor",
     "exists",
-    "there exists",
-    "existenční"
+    "there exists"
    ],
    "words": "1-2",
    "explanation": "∃ je existenční kvantifikátor, čteme „existuje (aspoň jedno)“, např. ∃x ∈ ℝ; x > 5. Přednáška 8. 10.",
@@ -564,14 +500,7 @@
     "existuje jediný",
     "existuje jediná",
     "kvantifikátor jednoznačné existence",
-    "jednoznačná existence",
-    "právě jeden",
-    "právě jedno",
-    "právě jedna",
-    "jediné",
-    "jediný",
-    "jediná",
-    "jednoznačně existuje"
+    "jednoznačná existence"
    ],
    "words": 3,
    "explanation": "∃! čteme „existuje právě jedno“, např. ∃! x ∈ ℝ; x = 5. Přednáška 8. 10.",
@@ -586,10 +515,7 @@
     "obměna",
     "obměna implikace",
     "kontrapozice",
-    "kontrapozice implikace",
-    "obměněná implikace",
-    "kontrapozitivní implikace",
-    "obměněná"
+    "kontrapozice implikace"
    ],
    "words": 1,
    "explanation": "¬y ⇒ ¬x je obměna implikace x ⇒ y; obě mají vždy stejnou pravdivostní hodnotu. Přednáška 8. 10.",
@@ -604,9 +530,7 @@
     "obrácení",
     "obrácení implikace",
     "obrácená implikace",
-    "obrácená",
-    "obrácená věta",
-    "inverzní implikace"
+    "obrácená"
    ],
    "words": "1-2",
    "explanation": "y ⇒ x je obrácení (obrácená implikace); na rozdíl od obměny nemusí mít stejnou hodnotu jako x ⇒ y. Přednáška 8. 10.",
@@ -618,10 +542,7 @@
    "category": "Symboly a logika",
    "text": "Jak se nazývá výroková formule, která je po dosazení výroků jakýchkoli pravdivostních hodnot vždy pravdivá?",
    "accept": [
-    "tautologie",
-    "tautology",
-    "vždy pravdivá",
-    "vždy pravdivá formule"
+    "tautologie"
    ],
    "words": 1,
    "explanation": "Tautologie, např. x ∨ ¬x nebo (x ⇒ y) ≡ (¬y ⇒ ¬x). Přednáška 8. 10.",
@@ -634,9 +555,7 @@
    "text": "Jak se nazývá zápis z písmen, logických spojek a závorek, ze kterého se po dosazení výroků za písmena stane výrok?",
    "accept": [
     "výroková formule",
-    "formule",
-    "logická formule",
-    "formule výrokové logiky"
+    "formule"
    ],
    "words": 2,
    "explanation": "Výroková formule, např. (x ∧ ¬y) ⇒ z. Neplést s výrokovou formou (věta s proměnnou). Přednáška 8. 10.",
@@ -649,10 +568,7 @@
    "text": "Jak se nazývá věta s proměnnou, např. V(x): x > 0, která se stane výrokem až po dosazení?",
    "accept": [
     "výroková forma",
-    "forma",
-    "predikát",
-    "výroková funkce",
-    "otevřená formule"
+    "forma"
    ],
    "words": 2,
    "explanation": "Výroková forma obsahuje proměnnou, značí se V(x), V(x, y). Neplést s výrokovou formulí. Přednáška 8. 10.",
@@ -664,10 +580,7 @@
    "category": "Symboly a logika",
    "text": "Jak se nazývá podmnožina definičního oboru výrokové formy V(x), pro jejíž prvky c je V(c) pravdivý výrok?",
    "accept": [
-    "obor pravdivosti",
-    "obor pravdivosti formy",
-    "množina pravdivosti",
-    "pravdivostní obor"
+    "obor pravdivosti"
    ],
    "words": 2,
    "explanation": "Obor pravdivosti (pro √x = 5 je to {25}). V definičním oboru stačí, aby V(c) byl výrok. Výpisky 8. 10.",
@@ -683,10 +596,7 @@
     "De Morganův zákon",
     "De Morganova pravidla",
     "De Morganovo pravidlo",
-    "De Morgan",
-    "demorganovy zákony",
-    "de morganovy formule",
-    "de morgan pravidla"
+    "De Morgan"
    ],
    "words": 3,
    "explanation": "De Morganovy zákony: negace „a“ je „nebo“ z negací a naopak. První zákon byl úkol z přednášky 8. 10. (důkaz tabulkou).",
@@ -718,9 +628,7 @@
     "důkaz obměnou",
     "obměnou",
     "důkaz kontrapozicí",
-    "kontrapozicí",
-    "obměna implikace",
-    "obměnou implikace"
+    "kontrapozicí"
    ],
    "words": 2,
    "explanation": "Nepřímý důkaz dokazuje obměnu ¬y ⇒ ¬x, která má stejnou pravdivostní hodnotu jako x ⇒ y. Přednáška 8. 10.",
@@ -766,11 +674,7 @@
    "accept": [
     "základní krok",
     "základ",
-    "základ indukce",
-    "báze indukce",
-    "báze",
-    "počáteční krok",
-    "první krok"
+    "základ indukce"
    ],
    "words": 2,
    "explanation": "Základní krok φ(n₀), potom indukční krok φ(k) ⇒ φ(k+1). Přednáška 15. 10.",
@@ -782,10 +686,7 @@
    "category": "Důkazy a výstavba matematiky",
    "text": "Jak se v matematické indukci nazývá krok, ve kterém dokazujeme φ(k) ⇒ φ(k+1)?",
    "accept": [
-    "indukční krok",
-    "krok indukce",
-    "indukční krok důkazu",
-    "druhý krok"
+    "indukční krok"
    ],
    "words": 2,
    "explanation": "Indukční krok: z platnosti φ(k) se dokáže φ(k+1). Přednáška 15. 10.",
@@ -797,9 +698,7 @@
    "category": "Důkazy a výstavba matematiky",
    "text": "Jak se v matematické indukci nazývá předpoklad, že φ(k) platí pro nějaké pevné k?",
    "accept": [
-    "indukční předpoklad",
-    "předpoklad indukce",
-    "indukční hypotéza"
+    "indukční předpoklad"
    ],
    "words": 2,
    "explanation": "Indukční předpoklad: φ(k) platí, z něj se v indukčním kroku dokáže φ(k+1). Výpisky 8. 10. (podle učebního textu Přibyl, Tichá).",
@@ -815,10 +714,7 @@
     "dvě implikace",
     "obě implikace x ⇒ y a y ⇒ x",
     "implikaci tam i zpět",
-    "oba směry",
-    "obousměrnou implikaci",
-    "tam i zpět",
-    "oba směry implikace"
+    "oba směry"
    ],
    "words": 2,
    "explanation": "(x ⇔ y) ⇔ (x ⇒ y) ∧ (y ⇒ x): dokazují se obě implikace. Přednáška 8. 10.",
@@ -830,9 +726,7 @@
    "category": "Důkazy a výstavba matematiky",
    "text": "Jak se nazývá tvrzení, jehož platnost předpokládáme a nedokazujeme?",
    "accept": [
-    "axiom",
-    "axiomy",
-    "postulát"
+    "axiom"
    ],
    "words": 1,
    "explanation": "Na počátku logické výstavby matematiky jsou axiomy; předpokládáme, že platí. Přednáška 8. 10.",
@@ -846,9 +740,7 @@
    "accept": [
     "primitivní pojem",
     "primitivní pojmy",
-    "primitivní",
-    "základní pojem",
-    "nedefinovaný pojem"
+    "primitivní"
    ],
    "words": 2,
    "explanation": "Primitivní pojmy se nedefinují, jsou výchozí. Přednáška 8. 10.",
@@ -875,9 +767,7 @@
    "text": "Jak se nazývá věta, která se dokazuje, ale slouží spíš jako pomocná pro důkaz dalších vět?",
    "accept": [
     "lemma",
-    "pomocná věta",
-    "pomocné tvrzení",
-    "lema"
+    "pomocná věta"
    ],
    "words": 1,
    "explanation": "Lemma; rozdíl proti větě je často nevýrazný. Přednáška 8. 10.",
@@ -940,9 +830,7 @@
     "vlastní podmnožina Y",
     "X je vlastní podmnožinou Y",
     "je vlastní podmnožinou",
-    "proper subset",
-    "ostrá podmnožina",
-    "striktní podmnožina"
+    "proper subset"
    ],
    "words": 2,
    "explanation": "Vlastní podmnožina rovnost nepřipouští (na přednášce X ⊂ Y; jinde se značí X ⊊ Y, proto se ptám definicí). Přednáška 15. 10.",
@@ -1009,9 +897,7 @@
     "doplněk množiny A",
     "doplněk A",
     "komplement",
-    "complement",
-    "komplement množiny",
-    "doplněk do univerza"
+    "complement"
    ],
    "words": 1,
    "explanation": "x ∈ A′ ⇔ x ∈ U ∧ x ∉ A. Přednáška 15. 10.",
@@ -1025,9 +911,7 @@
    "accept": [
     "univerzum",
     "universum",
-    "univerzální množina",
-    "základní prostor",
-    "univerzální prostor"
+    "univerzální množina"
    ],
    "words": 1,
    "explanation": "Univerzum U, A ⊆ U. Přednáška 15. 10.",
@@ -1042,8 +926,7 @@
     "disjunktní",
     "disjunktní množiny",
     "navzájem disjunktní",
-    "disjoint",
-    "disjunktní množina"
+    "disjoint"
    ],
    "words": 1,
    "explanation": "Disjunktní množiny nemají žádný společný prvek. Přednáška 15. 10.",
@@ -1058,9 +941,7 @@
     "potenční množina",
     "potenční",
     "potenční množina A",
-    "power set",
-    "množina všech podmnožin",
-    "potenční množina množiny A"
+    "power set"
    ],
    "words": 2,
    "explanation": "Potenční množina, |Pot(A)| = 2^n. Přednáška 15. 10.",
@@ -1073,8 +954,7 @@
    "text": "Kolik prvků má potenční množina množiny {a, b, c}?",
    "accept": [
     "8",
-    "osm",
-    "2^3"
+    "osm"
    ],
    "words": 1,
    "explanation": "|Pot(A)| = 2^n, pro n = 3 je to 8 (od ∅ po {a, b, c}). Přednáška 15. 10.",
@@ -1107,8 +987,7 @@
     "spočetná množina",
     "spočetně nekonečná",
     "spočetně nekonečná množina",
-    "nekonečně spočetná",
-    "ekvivalentní s přirozenými čísly"
+    "nekonečně spočetná"
    ],
    "words": 1,
    "explanation": "Spočetná: prvky jde očíslovat přirozenými čísly. Někteří autoři řadí mezi spočetné i konečné množiny a tuto nazývají spočetně nekonečná, proto se uznává obojí. Přednáška 15. 10.",
@@ -1124,8 +1003,7 @@
     "R",
     "reálná čísla",
     "množina reálných čísel",
-    "reálná",
-    "reálná čísla R"
+    "reálná"
    ],
    "words": 1,
    "explanation": "ℝ je nekonečná, ale nespočetná (nejde očíslovat); ℕ a ℤ jsou spočetné. Výpisky 15. 10.",
@@ -1233,9 +1111,7 @@
     "uspořádání",
     "relace uspořádání",
     "částečné uspořádání",
-    "neostré",
-    "částečné uspořádání množiny",
-    "neostré částečné uspořádání"
+    "neostré"
    ],
    "words": 2,
    "explanation": "Neostré uspořádání (učebnice, s. 107). Tištěná poznámka z přednášky uvádí u uspořádání jen „tranzitivní a antisymetrická“. Výpisky 15. 10.",
@@ -1248,9 +1124,7 @@
    "text": "Jak se podle učebnice (Přibyl, Tichá) nazývá relace antireflexivní, antisymetrická a tranzitivní, např. <?",
    "accept": [
     "ostré uspořádání",
-    "ostré",
-    "ostré částečné uspořádání",
-    "relace ostrého uspořádání"
+    "ostré"
    ],
    "words": 2,
    "explanation": "Ostré uspořádání (učebnice, s. 107). Výpisky 15. 10.",
@@ -1265,10 +1139,7 @@
     "antireflexivní",
     "antireflexivita",
     "ireflexivní",
-    "irreflexive",
-    "ireflexivita",
-    "antireflexní",
-    "ireflexní"
+    "irreflexive"
    ],
    "words": 1,
    "explanation": "Antireflexivní: ∀x; (x, x) ∉ R, např. <. Učebnice Přibyl, Tichá (výpisky 15. 10.).",
@@ -1285,8 +1156,7 @@
     "rozklad množiny",
     "rozklad množiny A",
     "disjunktní rozklad množiny A",
-    "partition",
-    "rozklad na třídy"
+    "partition"
    ],
    "words": "1-2",
    "explanation": "Disjunktní rozklad: a) sjednocením je A, b) každé dvě různé části jsou disjunktní. Přednáška 22. 10.",
@@ -1301,9 +1171,7 @@
     "třída ekvivalence",
     "třída",
     "ekvivalenční třída",
-    "třída rozkladu",
-    "třídy ekvivalence",
-    "ekvivalenční třídy"
+    "třída rozkladu"
    ],
    "words": 2,
    "explanation": "Třída ekvivalence; třídy ekvivalence tvoří rozklad množiny. Přednáška 22. 10.",
@@ -1320,10 +1188,7 @@
     "kvocientní množina",
     "podílová",
     "faktorová",
-    "quotient set",
-    "faktorová množina A",
-    "faktorový prostor",
-    "kvocient"
+    "quotient set"
    ],
    "words": 2,
    "explanation": "Na přednášce podílová množina, v učebnici Přibyl, Tichá faktorová množina (M/E); uznává se obojí. Přednáška 22. 10.",
@@ -1338,8 +1203,7 @@
     "reprezentant",
     "reprezentant třídy",
     "zástupce",
-    "zástupce třídy",
-    "reprezentant třídy ekvivalence"
+    "zástupce třídy"
    ],
    "words": 1,
    "explanation": "Každý prvek třídy je její reprezentant; třída se nezmění, když vezmeš jiný. Učebnice Přibyl, Tichá (výpisky 22. 10.).",
@@ -1368,9 +1232,7 @@
     "zobrazení M do P",
     "zobrazení z M do P",
     "funkce",
-    "mapping",
-    "mapování",
-    "function"
+    "mapping"
    ],
    "words": 1,
    "explanation": "Zobrazení množiny M do P, f: M → P. Pro zobrazení se často používá i pojem funkce (učebnice, s. 113). Přednáška 22. 10.",
@@ -1384,11 +1246,7 @@
    "accept": [
     "vzor",
     "vzor prvku y",
-    "vzor y",
-    "argument",
-    "vstup",
-    "vzor prvku",
-    "nezávisle proměnná"
+    "vzor y"
    ],
    "words": 1,
    "explanation": "x je vzor prvku y, y je obraz prvku x. Přednáška 22. 10.",
@@ -1402,12 +1260,7 @@
    "accept": [
     "obraz",
     "obraz prvku x",
-    "obraz x",
-    "hodnota",
-    "funkční hodnota",
-    "výstup",
-    "obraz prvku",
-    "závisle proměnná"
+    "obraz x"
    ],
    "words": 1,
    "explanation": "y je obraz prvku x, x je vzor prvku y. Přednáška 22. 10.",
@@ -1452,8 +1305,7 @@
     "do",
     "zobrazení do P",
     "zobrazení do množiny P",
-    "zobrazení do množiny",
-    "do množiny"
+    "zobrazení do množiny"
    ],
    "words": 2,
    "explanation": "Zobrazení do množiny P: H_f ⊆ P. Je-li H_f = P, je to zobrazení na. Přednáška 22. 10.",
@@ -1472,8 +1324,7 @@
     "surjektivní",
     "surjekce",
     "surjektivní zobrazení",
-    "surjective",
-    "na množinu"
+    "surjective"
    ],
    "words": "1-2",
    "explanation": "Zobrazení na množinu P (surjektivní): H_f = P. Přednáška 22. 10.",
@@ -1490,8 +1341,7 @@
     "injektivní",
     "injekce",
     "injektivní zobrazení",
-    "injective",
-    "prostá"
+    "injective"
    ],
    "words": 1,
    "explanation": "Prosté (injektivní): různé prvky mají různé obrazy. Přednáška 22. 10.",
@@ -1508,10 +1358,7 @@
     "bijektivní zobrazení",
     "vzájemně jednoznačné",
     "vzájemně jednoznačné zobrazení",
-    "bijection",
-    "prosté a na",
-    "vzájemně jednoznačné přiřazení",
-    "prosté a zároveň na"
+    "bijection"
    ],
    "words": "1-2",
    "explanation": "Vzájemně jednoznačné (bijektivní) zobrazení: každé y má právě jeden vzor. Přednáška 22. 10.",
@@ -1526,10 +1373,7 @@
     "inverzní zobrazení",
     "inverzní",
     "inverze",
-    "inverzní funkce",
-    "inverze zobrazení",
-    "inverse",
-    "inverse mapping"
+    "inverzní funkce"
    ],
    "words": 2,
    "explanation": "Inverzní zobrazení f⁻¹ (čteme „f na mínus prvou“), D_(f⁻¹) = H_f a H_(f⁻¹) = D_f. Přednáška 22. 10.",
@@ -1549,9 +1393,7 @@
     "prosté a na",
     "prosté a zároveň na",
     "f je bijekce",
-    "musí být bijekce",
-    "injektivní a surjektivní",
-    "injektivní i surjektivní"
+    "musí být bijekce"
    ],
    "words": "1-2",
    "explanation": "f musí být vzájemně jednoznačné (bijekce), tedy prosté a zároveň na. Přednáška 22. 10.",
@@ -1568,9 +1410,7 @@
     "složení zobrazení",
     "složená funkce",
     "kompozice",
-    "kompozice zobrazení",
-    "skládání zobrazení",
-    "kompozice funkcí"
+    "kompozice zobrazení"
    ],
    "words": 2,
    "explanation": "Složené zobrazení (značka ∘, „kolečko“). Pozor, učebnice Přibyl, Tichá zapisuje pořadí opačně (F ∘ G = nejdřív F), na přednášce f ∘ g = f(g(x)). Přednáška 22. 10.",
@@ -1583,9 +1423,7 @@
    "text": "Jak se nazývá skupina prvků vybraných ze základní množiny M, u níž nezáleží na pořadí?",
    "accept": [
     "kombinace",
-    "combination",
-    "kombinace bez opakování",
-    "k-kombinace"
+    "combination"
    ],
    "words": 1,
    "explanation": "Kombinace: (a, b) a (b, a) zastupuje tutéž skupinu. Přednáška 22. 10.",
@@ -1598,11 +1436,7 @@
    "text": "Jak se nazývá skupina prvků ze základní množiny, ve které záleží na pořadí, tedy (a, b) a (b, a) jsou dvě různé skupiny?",
    "accept": [
     "uspořádaná skupina",
-    "variace",
-    "variace bez opakování",
-    "uspořádaná k-tice",
-    "uspořádaná skupina prvků",
-    "variation"
+    "variace"
    ],
    "words": "1-2",
    "explanation": "V rukopisu uspořádaná skupina (z kontextu variace, název je v exportu oříznutý). Přednáška 22. 10.",
@@ -1619,9 +1453,7 @@
     "k-té třídy",
     "kté třídy",
     "k-tá třída",
-    "ktá třída",
-    "k-kombinace",
-    "kombinace řádu k"
+    "ktá třída"
    ],
    "words": 3,
    "explanation": "Kombinace k-té třídy má k prvků. Přednáška 22. 10.",
@@ -1635,10 +1467,7 @@
    "accept": [
     "bez opakování",
     "výběr bez opakování",
-    "skupina bez opakování",
-    "výběr bez vracení",
-    "bez vracení",
-    "neopakující se"
+    "skupina bez opakování"
    ],
    "words": 2,
    "explanation": "Bez opakování. Přednáška 22. 10.",
@@ -1667,9 +1496,7 @@
    "accept": [
     "kombinační číslo",
     "binomický koeficient",
-    "n nad k",
-    "binomické číslo",
-    "kombinační"
+    "n nad k"
    ],
    "words": 2,
    "explanation": "Kombinační číslo (n nad k) = n! / ((n − k)! · k!), n, k ∈ ℕ, 0 ≤ k ≤ n. Přednáška 22. 10.",
@@ -1682,9 +1509,7 @@
    "text": "Čemu se rovná kombinační číslo (n nad 0)?",
    "accept": [
     "1",
-    "jedna",
-    "jedno",
-    "jednička"
+    "jedna"
    ],
    "words": 1,
    "explanation": "(n nad 0) = n! / (n! · 0!) = 1, stejně (n nad n) = 1. Přednáška 22. 10.",
@@ -1696,8 +1521,7 @@
    "category": "Kombinatorika",
    "text": "Čemu se rovná kombinační číslo (n nad 1)?",
    "accept": [
-    "n",
-    "en"
+    "n"
    ],
    "words": 1,
    "explanation": "(n nad 1) = n! / ((n − 1)! · 1!) = n. Přednáška 22. 10.",
@@ -1724,9 +1548,7 @@
    "accept": [
     "Pascalovo pravidlo",
     "Pascalova identita",
-    "Pascal's rule",
-    "Pascalův vzorec",
-    "Pascal"
+    "Pascal's rule"
    ],
    "words": 2,
    "explanation": "Pascalovo pravidlo (k < n). Rukopis má jen vztah, název je doplněný ve výpiscích 22. 10.",
@@ -1768,9 +1590,7 @@
     "variace",
     "variace k-té třídy bez opakování",
     "variace k-té třídy",
-    "variation",
-    "k-variace",
-    "k-variace bez opakování"
+    "variation"
    ],
    "words": "1-3",
    "explanation": "Variace k-té třídy z n prvků bez opakování, V_k(n) = n! / (n − k)!, 0 ≤ k ≤ n (cs.wikipedia). Přednáška 29. 10.",
@@ -1784,8 +1604,7 @@
    "accept": [
     "variace s opakováním",
     "variace k-té třídy s opakováním",
-    "variation with repetition",
-    "k-variace s opakováním"
+    "variation with repetition"
    ],
    "words": 3,
    "explanation": "Variace s opakováním, V′_k(n) = n^k; k může být i větší než n (cs.wikipedia). Přednáška 29. 10.",
@@ -1800,9 +1619,7 @@
     "permutace",
     "permutace bez opakování",
     "permutace množiny M",
-    "permutation",
-    "pořadí",
-    "přerovnání"
+    "permutation"
    ],
    "words": "1-3",
    "explanation": "Permutace, P(n) = n! = V_n(n); proto 0! = 1 (cs.wikipedia). Přednáška 29. 10.",
@@ -1815,8 +1632,7 @@
    "text": "Jak se nazývá uspořádaná k-tice, ve které je každý prvek a_i základní množiny M = {a_1, …, a_n} přesně k_i-krát (k = k_1 + … + k_n)?",
    "accept": [
     "permutace s opakováním",
-    "permutation with repetition",
-    "počet permutací s opakováním"
+    "permutation with repetition"
    ],
    "words": 3,
    "explanation": "Permutace s opakováním, P′_(k_1,…,k_n)(k) = k! / (k_1! · k_2! · … · k_n!) (cs.wikipedia). Přednáška 29. 10.",
@@ -1830,8 +1646,7 @@
    "accept": [
     "kombinace s opakováním",
     "kombinace k-té třídy s opakováním",
-    "combination with repetition",
-    "k-kombinace s opakováním"
+    "combination with repetition"
    ],
    "words": 3,
    "explanation": "Kombinace s opakováním, C′_k(n) = (n+k−1 nad k); k může být i větší než n (cs.wikipedia). Přednáška 29. 10.",
@@ -1847,9 +1662,7 @@
     "opakování",
     "výběr s opakováním",
     "prvky se opakují",
-    "prvky se mohou opakovat",
-    "opakující se prvky",
-    "opakování prvků"
+    "prvky se mohou opakovat"
    ],
    "words": 2,
    "explanation": "V′, P′, C′ jsou variace, permutace a kombinace s opakováním. Přednáška 29. 10.",
@@ -1865,9 +1678,7 @@
     "počet variací bez opakování",
     "počet variací",
     "variace",
-    "počet variací k-té třídy z n prvků",
-    "variace k-té třídy",
-    "počet variací k-té třídy"
+    "počet variací k-té třídy z n prvků"
    ],
    "words": "3-4",
    "explanation": "Počet variací k-té třídy z n prvků bez opakování, V_k(n) = n · (n − 1) · … · (n − k + 1). Příklad z přednášky V_2(3) = 6. Přednáška 29. 10.",
@@ -1881,8 +1692,7 @@
    "accept": [
     "variace s opakováním",
     "počet variací s opakováním",
-    "počet variací s opakováním k-té třídy",
-    "počet variací k-té třídy s opakováním"
+    "počet variací s opakováním k-té třídy"
    ],
    "words": "3-4",
    "explanation": "Počet variací s opakováním, V′_k(n) = n^k (prvky kartézského součinu M^k). Příklad z přednášky V′_2(3) = 9. Přednáška 29. 10.",
@@ -1896,8 +1706,7 @@
    "accept": [
     "kombinace s opakováním",
     "počet kombinací s opakováním",
-    "počet kombinací s opakováním k-té třídy",
-    "počet kombinací k-té třídy s opakováním"
+    "počet kombinací s opakováním k-té třídy"
    ],
    "words": "3-4",
    "explanation": "Počet kombinací s opakováním C′_k(n). Příklad z přednášky C′_2(3) = (4 nad 2) = 6. Přednáška 29. 10.",
@@ -1910,8 +1719,7 @@
    "text": "Co udává k! / (k_1! · k_2! · … · k_n!), kde k = k_1 + … + k_n?",
    "accept": [
     "permutace s opakováním",
-    "počet permutací s opakováním",
-    "počet různých pořadí s opakováním"
+    "počet permutací s opakováním"
    ],
    "words": "3-4",
    "explanation": "Počet permutací s opakováním P′_(k_1,…,k_n)(k): prohození stejných prvků nedá nové pořadí. Přednáška 29. 10.",
@@ -1942,9 +1750,7 @@
     "automat",
     "DKA",
     "DFA",
-    "finite automaton",
-    "deterministický automat",
-    "stavový automat"
+    "finite automaton"
    ],
    "words": 2,
    "explanation": "Konečný automat (deterministický): Q stavy, Σ abeceda, δ přechodová funkce, q₀ počáteční stav, F přijímací stavy (Mareš, Úvod do automatů, kap. 1.2). Přednáška 29. 10.",
@@ -1961,9 +1767,7 @@
     "konečná množina stavů",
     "konečná neprázdná množina stavů",
     "states",
-    "set of states",
-    "stavy automatu",
-    "vnitřní stavy"
+    "set of states"
    ],
    "words": 2,
    "explanation": "Q je konečná neprázdná množina stavů (Mareš, kap. 1.2). Přednáška 29. 10.",
@@ -1981,10 +1785,14 @@
     "množina vstupních symbolů",
     "vstupní symboly",
     "alphabet",
-    "abeceda automatu",
-    "vstupní znaky"
+    "konečná abeceda",
+    "konečná množina znaků",
+    "konečná množina symbolů",
+    "množina symbolů",
+    "konečná neprázdná množina znaků",
+    "konečná neprázdná množina symbolů"
    ],
-   "words": "1-2",
+   "words": "1-4",
    "explanation": "Σ je konečná neprázdná množina znaků, (vstupní) abeceda, např. Σ = {0, 1} (Mareš, kap. 1.2). Přednáška 29. 10.",
    "number": 121,
    "id": "r-121"
@@ -1997,9 +1805,7 @@
     "přechodová funkce",
     "přechodová funkce automatu",
     "funkce přechodů",
-    "transition function",
-    "přechodová relace",
-    "přechody"
+    "transition function"
    ],
    "words": 2,
    "explanation": "Přechodová funkce: pro každý stav a znak ze vstupu určí, do jakého stavu automat přejde (Mareš, kap. 1.2). Přednáška 29. 10.",
@@ -2015,10 +1821,7 @@
     "startovní stav",
     "počáteční",
     "initial state",
-    "start state",
-    "startovací stav",
-    "výchozí stav",
-    "počáteční stav automatu"
+    "start state"
    ],
    "words": 2,
    "explanation": "q₀ ∈ Q je počáteční stav (Mareš, kap. 1.2). Přednáška 29. 10.",
@@ -2035,9 +1838,7 @@
     "množina koncových stavů",
     "koncové stavy",
     "accepting states",
-    "final states",
-    "přijímající stavy",
-    "koncové a přijímací stavy"
+    "final states"
    ],
    "words": 3,
    "explanation": "F je množina přijímacích (koncových) stavů (Mareš, kap. 1.2). Přednáška 29. 10.",
@@ -2050,8 +1851,7 @@
    "text": "Jak se čte symbol Σ v zápisu konečného automatu?",
    "accept": [
     "velká sigma",
-    "sigma",
-    "řecké písmeno sigma"
+    "sigma"
    ],
    "words": 2,
    "explanation": "Σ = velká sigma, označuje abecedu. Přednáška 29. 10.",
@@ -2064,8 +1864,7 @@
    "text": "Jak se čte symbol δ u přechodové funkce?",
    "accept": [
     "malá delta",
-    "delta",
-    "řecké písmeno delta"
+    "delta"
    ],
    "words": 2,
    "explanation": "δ = malá delta, δ : Q × Σ → Q. Přednáška 29. 10.",
@@ -2080,8 +1879,7 @@
     "kartézský součin",
     "kartézský součin Q a Σ",
     "kartézský součin množin Q a Σ",
-    "cartesian product",
-    "kartézský součin stavů a abecedy"
+    "cartesian product"
    ],
    "words": 2,
    "explanation": "Kartézský součin (přednáška 15. 10.), např. dvojice (q₀, 1). Přednáška 29. 10.",
@@ -2099,9 +1897,7 @@
     "následující stav",
     "stav z Q",
     "stav automatu",
-    "state",
-    "přechod do stavu",
-    "cílový stav"
+    "state"
    ],
    "words": 1,
    "explanation": "δ(q, a) = q′, q′ ∈ Q: ve stavu q přečte znak a a přejde do stavu q′ (zápis z tabule). Přednáška 29. 10.",
@@ -2118,8 +1914,7 @@
     "deterministický konečný automat",
     "DKA",
     "DFA",
-    "deterministic",
-    "deterministický stavový automat"
+    "deterministic"
    ],
    "words": 1,
    "explanation": "Deterministický: z každého vrcholu stavového diagramu vede pro každý znak právě jedna hrana (Mareš, kap. 1.2). Automat z přednášky má 4 · 2 = 8 přechodů. Přednáška 29. 10.",
@@ -2138,10 +1933,7 @@
     "rozpoznané slovo",
     "slovo je přijato",
     "přijato",
-    "accepted",
-    "akceptované slovo",
-    "akceptované",
-    "akceptováno"
+    "accepted"
    ],
    "words": 2,
    "explanation": "Slovo je přijato, když výpočet skončí v přijímacím stavu (Mareš, kap. 1.2). Rozhoduje stav po přečtení celého slova. Přednáška 29. 10.",
@@ -2157,9 +1949,7 @@
     "tabulka",
     "přechodová tabulka",
     "tabulka přechodové funkce",
-    "transition table",
-    "stavová tabulka",
-    "matice přechodů"
+    "transition table"
    ],
    "words": 2,
    "explanation": "Tabulka (přechodů): počáteční stav se označí →, přijímací ←, má |Q| · |Σ| políček. Přednáška 29. 10.",
@@ -2176,9 +1966,7 @@
     "diagram",
     "stavový graf",
     "přechodový graf",
-    "state diagram",
-    "graf přechodů",
-    "diagram přechodů"
+    "state diagram"
    ],
    "words": 2,
    "explanation": "Stavový (přechodový) diagram, „tabulka jako orientovaný graf“. Podle přednášky se automat navrhuje nejdřív stavovým diagramem. Přednáška 29. 10.",
@@ -2193,9 +1981,7 @@
     "stavový strom",
     "strom stavový",
     "strom",
-    "strom stavů",
-    "výpočtový strom",
-    "strom výpočtu"
+    "strom stavů"
    ],
    "words": 2,
    "explanation": "Stavový strom (v rukopisu „STROM STAVOVÝ“). Definice: Vais, kap. 1.3, s. 11 (strom shora dolů od počátečního stavu, pro každý znak jedna hrana, rozvíjí se, dokud v listech nejsou jen už rozvinuté stavy). Přednáška 29. 10.",
@@ -2207,10 +1993,7 @@
    "category": "Konečné automaty",
    "text": "Jak se na náčrtu konečného automatu z přednášky nazývá část Ř. J., ke které patří množina stavů Q?",
    "accept": [
-    "řídicí jednotka",
-    "RJ",
-    "Ř. J.",
-    "control unit"
+    "řídicí jednotka"
    ],
    "words": 2,
    "explanation": "Řídicí jednotka (Ř. J.), Q = {q₀, …, qₙ}; od ní vede čára k hlavě nad páskou a₁ | a₂ | … | aₘ. Přednáška 29. 10.",
