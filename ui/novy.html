@@ -152,7 +152,8 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
 .legend .ok i { color: var(--ok); } .legend .bad i { color: var(--bad); } .legend .new i { color: var(--new); }
 
 /* ---------- režimy ---------- */
-.filter { display: inline-flex; background: var(--paper-2); border-radius: 10px; padding: 3px; margin-bottom: 24px; max-width: 100%; }
+.layout > * { min-width: 0; } /* jinak seznam přednášek roztáhne sloupec přes šířku telefonu a stránka se posune */
+.filter { display: inline-flex; flex-wrap: wrap; background: var(--paper-2); border-radius: 10px; padding: 3px; margin-bottom: 24px; max-width: 100%; }
 .filter button { background: none; border: 0; padding: 8px 14px; border-radius: 8px; font-weight: 500; font-size: .9375rem; white-space: nowrap; }
 .filter button[aria-pressed="true"] { background: var(--paper); box-shadow: 0 1px 2px rgba(19,32,58,.25); font-weight: 700; }
 
@@ -210,7 +211,7 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .lec { grid-template-columns: 1.8rem minmax(0, 1fr); }
   .lec .d { grid-column: 2; }
   .filter { display: flex; }
-  .filter button { flex: 1; padding: 8px 6px; font-size: .875rem; }
+  .filter button { flex: 1; padding: 8px 10px; font-size: .875rem; }
 }
 
 .lnk { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; padding: 4px 0; background: none; border: 0; font: inherit; }
