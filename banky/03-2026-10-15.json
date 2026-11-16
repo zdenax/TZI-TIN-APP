@@ -437,22 +437,6 @@
   },
   {
    "type": "choice",
-   "text": "Co je kartézský součin A × B?",
-   "options": {
-    "A": "množina všech uspořádaných dvojic (x, y), kde x ∈ A a y ∈ B",
-    "B": "množina prvků společných A a B",
-    "C": "množina všech podmnožin A a B",
-    "D": "A ∪ B"
-   },
-   "correct": [
-    "A"
-   ],
-   "explanation": "A × B = {(x, y) ; x ∈ A ∧ y ∈ B}.",
-   "number": 28,
-   "id": "3-28"
-  },
-  {
-   "type": "choice",
    "text": "Co je uspořádaná dvojice (x, y)?",
    "options": {
     "A": "množina {x, y}",
@@ -464,6 +448,22 @@
     "D"
    ],
    "explanation": "x je první složka, y druhá. Množina {x, y} = {y, x}, ale (x, y) ≠ (y, x) pro x ≠ y.",
+   "number": 28,
+   "id": "3-28"
+  },
+  {
+   "type": "choice",
+   "text": "Co je kartézský součin A × B?",
+   "options": {
+    "A": "množina všech uspořádaných dvojic (x, y), kde x ∈ A a y ∈ B",
+    "B": "množina prvků společných A a B",
+    "C": "množina všech podmnožin A a B",
+    "D": "A ∪ B"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "A × B = {(x, y) ; x ∈ A ∧ y ∈ B}.",
    "number": 29,
    "id": "3-29"
   },
