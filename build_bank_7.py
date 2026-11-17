@@ -384,7 +384,7 @@ def choice():
              "Turingův stroj"]
     zdroj = ["Chytil, Věty 3.3.1 a 3.3.5, s. 130–132", "Chytil, čl. 4.5, s. 172",
              "Vais, kap. 2.8, s. 56 (z rukopisu nevyplývá, jestli to na přednášce zaznělo)",
-             "Chytil, Důsledek 6.1.10, s. 267"]
+             "Chytil, Důsledek 6.1.10, s. 267 (doplněk z literatury, z rukopisu nevyplývá)"]
     for t, nazev in ((3, "regulární"), (2, "bezkontextové"), (1, "kontextové"), (0, "typu 0")):
         k = 3 - t
         add(f"Co rozpoznává jazyky typu {t} ({nazev}) v Chomského hierarchii?",
@@ -458,9 +458,12 @@ def inputs():
     out.append((f"{RS_TXT} Odvození 00110 ⇒ 00101 ⇒ 00011: napiš čísla použitých pravidel.", RULES_HINT,
                 "".join(str(i) for i, _, _ in d[0]),
                 f"V obou krocích se přepisuje dvojice 10 na 01, tedy pravidlo 2 dvakrát. {P}"))
-    out.append((f"{RS_TXT} Jakou délku má odvození 00110 ⇒ 00101 ⇒ 00011 v Chytilově počítání?", "číslo",
-                str(len(d[0]) + 1),
-                "Chytil bere u = u₁ ⇒ u₂ ⇒ … ⇒ uₙ = z, odvození délky n má n slov a n − 1 kroků. Tady 3 slova, 2 kroky. "
+    out.append((f"{RS_TXT} Jakou délku má odvození 00110 ⇒ 00101 ⇒ 00011 (podle přednášky: u ⇒ u₁ ⇒ … ⇒ uₙ = z, "
+                "odvození délky n je posloupnost u₁ až uₙ)?", "číslo",
+                str(len(d[0])),
+                "Podle rukopisu je u = 00110 a u₁ = 00101, u₂ = 00011 = z, takže n = 2, tedy tolik, kolik je kroků. "
+                "Chytil počítá i první slovo jako u₁, odvození délky n má pak n slov a n − 1 kroků, tady 3 slova a "
+                "2 kroky. Počet kroků je v obou případech 2, liší se jen to, co se nazývá délkou. "
                 f"Doplněno z Claude, Chytil, Def. 3.1.2 bod 2, s. 118. {P}"))
     one = sorted("".join(z) for _, _, z in steps(T("00110"), RS))
     out.append((f"{RS_TXT} Na kolik různých slov se 00110 přímo přepíše (jedním krokem)?", "číslo", str(len(one)),
@@ -584,6 +587,11 @@ def main():
     verify()
     groups = [("choice", choice()), ("input", inputs()), ("reveal", reveal())]
     qs, longest = build(groups, random.Random(112), "7")
+    # značení slov u, z se musí vysvětlit dřív než přímý přepis u ⇒ z, který je používá
+    check(qs[40]["text"].startswith("Jak se v přepisovacím systému značí slova u, z"), "7-41 už není otázka na značení slov")
+    qs.insert(1, qs.pop(40))
+    for i, q in enumerate(qs, 1):
+        q["number"], q["id"] = i, f"7-{i}"
     other = {q["id"] for p in (HERE / "banky").glob("*.json") if p.name != "07-2026-11-12.json"
              for q in json.loads(p.read_text(encoding="utf-8"))["questions"]}
     check(not {q["id"] for q in qs} & other, "id otázek musí být unikátní napříč přednáškami")

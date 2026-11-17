@@ -71,7 +71,7 @@ CHOICE = [
      ["všechny tři", "jen ℝ", "jen ℕ", "žádná"], [0],
      "ℕ, ℤ i ℝ jsou nekonečné (příklady z rukopisu)."),
     ("Kdy je množina spočetná?",
-     ["existuje vzájemně jednoznačné zobrazení (bijekce) mezi ní a množinou ℕ", "má konečný počet prvků",
+     ["její prvky jdou očíslovat přirozenými čísly a seřadit do posloupnosti a₁, a₂, a₃, …", "má konečný počet prvků",
       "neobsahuje žádný prvek", "je podmnožinou ℝ"], [0],
      "Spočetná: prvky jdou očíslovat přirozenými čísly, tedy seřadit do posloupnosti a₁, a₂, a₃, … "
      "(Pozor, někteří autoři zahrnují mezi spočetné i konečné množiny; ověřit u vyučujícího.)"),
@@ -279,6 +279,9 @@ def main():
                    "correct": ["ABCD"[i] for i in correct], "explanation": expl})
     qs += set_questions(random.Random(11))
     qs += relation_questions()
+    # uspořádaná dvojice se musí vysvětlit dřív než kartézský součin, který z ní vychází
+    assert qs[27]["text"].startswith("Co je kartézský součin") and qs[28]["text"].startswith("Co je uspořádaná dvojice")
+    qs[27], qs[28] = qs[28], qs[27]
     for i, q in enumerate(qs, 1):
         q["number"] = i
         q["id"] = f"3-{i}"

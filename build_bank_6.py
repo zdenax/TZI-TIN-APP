@@ -234,7 +234,7 @@ def choice():
          "u¹ = u, uⁱ⁺¹ = uⁱuⁱ, u⁰ = ε",
          "u¹ = u, uⁱ⁺¹ = uⁱ, u⁰ = ε",
          "uⁿ je n-tý znak slova u."],
-        "Na tabuli u¹ = u, u² = uu, uⁱ⁺¹ = uⁱu (Chytil); u⁰ = ε doplňuje Vais. uⁿ je tedy n kopií u za sebou, "
+        "Na tabuli u¹ = u, u² = uu, uⁱ⁺¹ = uⁱu (Chytil) a u⁰ = ε (v rukopisu e). uⁿ je tedy n kopií u za sebou, "
         "např. pro u = ab je u³ = ababab. Délka je |uⁿ| = n · |u|.")
     add("Jak se čte zápis „∃ q₁, …, qₙ₊₁ : qₙ₊₁ ∈ F, q₁ = q₀, qᵢ₊₁ = δ(qᵢ, xᵢ)“ u slova w = x₁x₂…xₙ?",
         ["Existuje výpočet z q₀ po znacích slova w, který skončí ve F.",
@@ -441,13 +441,13 @@ def extra_choice():
     # 5. slovo nad jinou abecedou
     sig = set("abc")
     check(not set("ccka") <= sig)
-    add("Σ′ = {a, b, c}. Patří slovo ccka do Σ′⁺?",
-        ["Ne, znak k není v abecedě Σ′.",
+    add("Σ′ = {a, b, c}. Patří slovo cbax do Σ′⁺?",
+        ["Ne, znak x není v abecedě Σ′.",
          "Ano, je to neprázdné konečné slovo.",
          "Ano, Σ′⁺ obsahuje každé slovo z písmen.",
          "Ne, slovo je delší než abeceda."],
-        "Slovo nad Σ′ smí obsahovat jen znaky z Σ′. Ve výpiscích je příklad Σ′ = {a, b, c, …} a ccka ∈ Σ′⁺; "
-        "to platí jen tehdy, když k ∈ Σ′.")
+        "Slovo nad Σ′ smí obsahovat jen znaky z Σ′, a x tu mezi nimi není. Čárka u Σ′ je jen jméno další abecedy. "
+        "V rukopisu je Σ′ = {a, b, c, …} a ccka ∈ Σ′⁺, protože tam „…“ zahrnuje i k; tady má Σ′ jen tři písmena.")
     # 7. přirozený jazyk
     add("Přednáška: „my jako Češi rozumíme češtině, rozpoznáváme to“. Jak to zapadá do teorie jazyků?",
         ["Čeština je jazyk nad konečnou abecedou, jeho slova jsou správné věty.",
@@ -554,12 +554,47 @@ def build(groups, rnd, prefix):
     return qs, longest
 
 
+# Výuková posloupnost: každý pojem přijde dřív, než se použije. Čísla jsou pořadí otázek ve skriptu
+# (než se přečíslují). Nová otázka se musí zařadit sem na správné místo, jinak skript skončí chybou.
+PORADI = [
+    # abeceda, slovo, prázdné slovo, Σ⁺, Σ*
+    9, 10, 11, 58, 59, 12, 13, 14, 54, 55, 15, 56, 57, 70, 72, 66,
+    # jazyk nad abecedou
+    16, 17, 71,
+    # zřetězení
+    23, 24, 25, 62, 26, 60, 61, 73,
+    # automat jako model
+    29, 30,
+    # δ a δ*
+    4, 7, 5, 6, 8, 37, 38, 39, 40, 41, 74, 64,
+    # rozpoznání slova a jazyk automatu
+    1, 2, 20, 21, 22, 68, 27, 28, 18, 19, 42, 43, 44, 45, 46, 47, 48, 49, 65, 67,
+    # zadání automatu
+    69, 31,
+    # příklad 2 (dveře)
+    32, 33, 35, 36, 50, 51, 52, 53, 63,
+]
+
+
+def seradit(qs):
+    """Přeřadí otázky podle PORADI a přečísluje je 1…N bez mezer (číslo = id)."""
+    check(len(PORADI) == len(set(PORADI)), "PORADI: číslo je tam dvakrát")
+    stare = {q["number"]: q for q in qs}
+    check(set(stare) == set(PORADI),
+          f"PORADI nesedí: chybí {sorted(set(stare) - set(PORADI))}, navíc {sorted(set(PORADI) - set(stare))}")
+    out = [stare[o] for o in PORADI]
+    for i, q in enumerate(out, 1):
+        q["number"], q["id"] = i, f"6-{i}"
+    return out
+
+
 def main():
     verify()
     groups = [("choice", choice()), ("input", inputs()), ("reveal", reveal()),
               ("choice", extra_choice()), ("input", extra_inputs()), ("reveal", extra_reveal())]
     check(sum(len(g) for _, g in groups[:3]) == 66, "6-1…6-66 musí zůstat na místě (smazané jsou None)")
     qs, longest = build(groups, random.Random(105), "6")
+    qs = seradit(qs)
     other = {q["id"] for p in (HERE / "banky").glob("*.json") if p.name != "06-2026-11-05.json"
              for q in json.loads(p.read_text(encoding="utf-8"))["questions"]}
     check(not {q["id"] for q in qs} & other, "id otázek musí být unikátní napříč přednáškami")
