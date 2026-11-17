@@ -699,7 +699,10 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .koth-matches li { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; }
   #room-lobby { display: none; max-width: 620px; margin: 0 auto; }
   .rl-card { background: var(--paper-2); border: 1px solid var(--line); padding: 22px; }
-  .rl-badge { display: inline-block; font-family: var(--mono); font-size: .75rem; padding: 3px 8px; border: 1px solid var(--line); margin-bottom: 8px; color: var(--muted); }
+  .rl-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .rl-badge { display: inline-block; font-family: var(--mono); font-size: .75rem; padding: 3px 8px; border: 1px solid var(--line); color: var(--muted); }
+  .rl-timer { font-family: var(--mono); font-size: .78rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .rl-timer.warn { color: var(--bad); font-weight: 700; }
   .rl-status { margin: 12px 0 16px; padding: 10px 12px; background: var(--paper); border-left: 3px solid var(--blue); font-size: .88rem; }
   .rl-players { list-style: none; padding: 0; margin: 0 0 18px; border: 1px solid var(--line); background: var(--paper); }
   .rl-players li { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }

@@ -1,7 +1,8 @@
 """Kompetitivní lobby: místnosti pro FFA, duel a KotH."""
+from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
 from db import get_db
-from .constants import KOTH_DEFAULT_QUESTIONS
+from .constants import KOTH_DEFAULT_QUESTIONS, ROOM_LOBBY_TIMEOUT_SECONDS
 from .duel import submit_duel_match
 from .ffa import submit_ffa_run
 from .koth import submit_koth_challenge
@@ -10,6 +11,37 @@ from .koth import submit_koth_challenge
 # ==============================================================================
 # KOMPETITIVNÍ LOBBY & ROOMS (FFA, 1v1 Duel, King of the Hill)
 # ==============================================================================
+
+def _waiting_expiry_seconds(created_at: Any, status: str) -> Optional[int]:
+    if status != "waiting" or not created_at:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        elapsed = (datetime.now(timezone.utc) - dt).total_seconds()
+        return max(0, min(ROOM_LOBBY_TIMEOUT_SECONDS, int(round(ROOM_LOBBY_TIMEOUT_SECONDS - elapsed))))
+    except Exception:
+        return None
+
+
+def _cleanup_expired_waiting_rooms(conn, ttl_seconds: int = ROOM_LOBBY_TIMEOUT_SECONDS) -> int:
+    """Smaže neodstartované ('waiting') místnosti po vypršení TTL i prázdné opuštěné místnosti."""
+    cutoff = f"-{int(ttl_seconds)} seconds"
+    with conn:
+        cur = conn.execute(
+            """
+            DELETE FROM comp_rooms
+            WHERE (status = 'waiting' AND datetime(created_at) <= datetime('now', ?))
+               OR (
+                   status IN ('waiting', 'in_progress')
+                   AND NOT EXISTS (SELECT 1 FROM comp_room_players p WHERE p.room_id = comp_rooms.id)
+               )
+            """,
+            (cutoff,),
+        )
+    return cur.rowcount or 0
+
 
 def _format_room(conn, room_row) -> Dict[str, Any]:
     import json
@@ -49,12 +81,15 @@ def _format_room(conn, room_row) -> Dict[str, Any]:
         "created_at": r.get("created_at"),
         "started_at": r.get("started_at"),
         "completed_at": r.get("completed_at"),
+        "expires_in_seconds": _waiting_expiry_seconds(r.get("created_at"), r["status"]),
+        "lobby_timeout_seconds": ROOM_LOBBY_TIMEOUT_SECONDS,
     }
 
 
 def list_comp_rooms(user_id: Optional[int] = None) -> Dict[str, Any]:
     """Vrátí seznam čekajících, probíhajících a nedávno dokončených místností v lobby."""
     conn = get_db()
+    _cleanup_expired_waiting_rooms(conn)
     active_rows = conn.execute(
         """
         SELECT * FROM comp_rooms
@@ -88,6 +123,7 @@ def get_comp_room(room_id: int) -> Optional[Dict[str, Any]]:
     if not _valid_id(room_id):
         return None
     conn = get_db()
+    _cleanup_expired_waiting_rooms(conn)
     row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()
     if not row:
         return None
@@ -107,6 +143,7 @@ def create_comp_room(
     """Vytvoří novou kompetitivní místnost v lobby a nastaví zakladatele jako 👑 hostitele."""
     import json
     conn = get_db()
+    _cleanup_expired_waiting_rooms(conn)
     mode_clean = mode if mode in ("ffa", "duel", "koth") else "ffa"
     mode_labels = {"ffa": "Free For All", "duel": "1v1 Duel", "koth": "King of the Hill"}
     room_name = (name or "").strip()[:60] or f"{mode_labels[mode_clean]} – {username}"
@@ -139,10 +176,11 @@ def join_comp_room(room_id: int, user_id: int, username: str, auto_start_duel: b
     if not _valid_id(room_id):
         return {"ok": False, "error": "Místnost neexistuje."}
     conn = get_db()
+    _cleanup_expired_waiting_rooms(conn)
     with conn:
         row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()
         if not row:
-            return {"ok": False, "error": "Místnost neexistuje."}
+            return {"ok": False, "error": "Místnost již vypršela (limit 5 minut bez spuštění) nebo neexistuje."}
 
         existing = conn.execute(
             "SELECT * FROM comp_room_players WHERE room_id = ? AND user_id = ?",
@@ -192,10 +230,11 @@ def start_comp_room(room_id: int, user_id: int) -> Dict[str, Any]:
     if not _valid_id(room_id):
         return {"ok": False, "error": "Místnost neexistuje."}
     conn = get_db()
+    _cleanup_expired_waiting_rooms(conn)
     with conn:
         row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()
         if not row:
-            return {"ok": False, "error": "Místnost neexistuje."}
+            return {"ok": False, "error": "Místnost již vypršela (limit 5 minut bez spuštění) nebo neexistuje."}
         if row["host_id"] != user_id:
             return {"ok": False, "error": "Pouze zakladatel místnosti (👑) může hru spustit."}
         if row["status"] == "waiting":
@@ -215,6 +254,7 @@ def leave_comp_room(room_id: int, user_id: int) -> Dict[str, Any]:
     if not _valid_id(room_id):
         return {"ok": True, "deleted": True}
     conn = get_db()
+    _cleanup_expired_waiting_rooms(conn)
     with conn:
         row = conn.execute("SELECT * FROM comp_rooms WHERE id = ?", (int(room_id),)).fetchone()
         if not row:
