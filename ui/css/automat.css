@@ -103,18 +103,46 @@ header select { flex: 1 1 240px; max-width: 420px; min-width: 0; }
 @media (forced-colors: active) {
   [aria-pressed="true"], .tab[aria-selected="true"] { background: Highlight; color: HighlightText; outline: 2px solid ButtonText; outline-offset: -2px; }
 }
-#p-diagram:not([hidden]) { display: flex; flex-direction: column; }
-#boardWrap { flex: none; height: clamp(320px, 56dvh, 520px); min-height: 280px; position: relative; margin-bottom: 8px; }
-svg#board { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; touch-action: none; user-select: none; }
-svg#board.mode-connect { cursor: crosshair; }
+#p-diagram:not([hidden]) { display: flex; flex-direction: column; flex: 1; height: 100%; min-height: 0; }
+#boardWrap { flex: 1 1 380px; min-height: 360px; position: relative; margin-bottom: 10px; }
+svg#board { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; touch-action: none; -webkit-user-select: none; user-select: none; cursor: default; }
+svg#board.mode-move { cursor: grab; }
+svg#board.mode-move.panning, svg#board.panning { cursor: grabbing; }
+svg#board.mode-state, svg#board.mode-edge, svg#board.mode-connect { cursor: crosshair; }
+svg#board.mode-erase .st, svg#board.mode-erase .ed { cursor: not-allowed; }
+svg rect.marquee { fill: color-mix(in srgb, var(--blue) 14%, transparent); stroke: var(--blue); stroke-width: 1.5; stroke-dasharray: 5 3; pointer-events: none; }
+.canvas-hud { position: absolute; left: 10px; right: 10px; display: flex; gap: 8px; pointer-events: none; z-index: 4; }
+.canvas-hud-top { top: 10px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
+.canvas-hud-bottom { bottom: 10px; flex-direction: column; align-items: center; gap: 6px; }
+.hud-pill {
+  pointer-events: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  padding: 4px; border-radius: 10px; max-width: 100%;
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0, 0, 0, .28);
+}
+.hud-pill > :not(button, input, select, textarea, a, [role="button"], label, span) { min-inline-size: 0; }
+.hud-sep { width: 1px; height: 22px; background: var(--line); margin: 0 2px; flex: none; }
+.diagram-foot { align-items: center; gap: 10px; }
 .ico { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.btn, .tools button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--card); padding: 8px 12px; border-radius: 8px; min-height: 36px; font-weight: 500; }
-.tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; align-items: center; }
-.tools button[aria-pressed="true"], .selbar button[aria-pressed="true"] { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); font-weight: 600; }
-.selbar { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; margin-bottom: 8px; background: var(--card); border: 1px solid var(--line); box-shadow: inset 3px 0 0 var(--blue); border-radius: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--card); padding: 8px 12px; border-radius: 8px; min-height: 36px; font-weight: 500; }
+.hud-pill .btn { min-height: 32px; padding: 5px 9px; border-radius: 7px; border-color: transparent; background: transparent; font-size: .86rem; gap: 6px; white-space: nowrap; }
+.hud-pill .icon-btn { min-width: 32px; padding: 5px 7px; justify-content: center; }
+.hud-pill .zoom-pct { min-width: 52px; justify-content: center; font-family: var(--mono); font-size: .82rem; font-variant-numeric: tabular-nums; }
+.hud-pill .btn:disabled { opacity: .38; cursor: not-allowed; }
+.hud-pill .btn[aria-pressed="true"] { background: var(--blue); color: var(--blue-ink); border-color: var(--blue); font-weight: 600; }
+@media (hover: hover) {
+  .hud-pill .btn:not(:disabled):not([aria-pressed="true"]):hover { background: color-mix(in srgb, var(--line) 55%, transparent); }
+}
+.dock { justify-content: center; }
+.selbar { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; padding: 5px 8px; background: color-mix(in srgb, var(--card) 95%, transparent); border: 1px solid color-mix(in srgb, var(--blue) 45%, var(--line)); box-shadow: 0 8px 24px rgba(0, 0, 0, .34); border-radius: 10px; }
 .selbar[hidden] { display: none; }
+#freeTools { padding: 4px 8px; gap: 6px; }
+#freeTools label { font-family: var(--mono); font-weight: 600; font-size: .84rem; color: var(--muted); }
+#freeTools input, #freeTools select { padding: 4px 8px; font-size: .84rem; min-height: 30px; max-width: 170px; }
 #freeTools[hidden] { display: none; }
 .selbar-title { font-weight: 500; font-family: var(--mono); color: var(--ink); margin-right: 4px; white-space: nowrap; }
+.selbar-hint { font-size: .82rem; color: var(--muted); padding: 0 4px; white-space: nowrap; }
 .btn.sym { min-width: 40px; justify-content: center; font-family: var(--mono); font-weight: 500; }
 .btn.danger { color: var(--bad); border-color: rgba(243, 139, 168, .35); }
 .selbar-rename { width: 112px; padding: 4px 8px; font-family: var(--mono); }
@@ -200,19 +228,31 @@ dialog label { display: block; font-weight: 700; margin: 10px 0 4px; }
 @media (max-width: 900px) {
   html, body { height: auto; min-height: 100dvh; overflow-y: auto; }
   #app { display: flex; flex-direction: column; flex: 1; }
-  #zad { border-right: 0; border-bottom: 1px solid var(--line); max-height: 22dvh; }
+  #zad { border-right: 0; border-bottom: 1px solid var(--line); max-height: 18dvh; padding: 10px 12px; }
   #work { overflow: visible; }
-  #pane { overflow-y: visible; padding: 14px 14px max(28px, env(safe-area-inset-bottom, 0px)); }
+  #pane { overflow-y: visible; padding: 10px 10px max(20px, env(safe-area-inset-bottom, 0px)); }
   #p-diagram:not([hidden]) { height: auto; min-height: 0; }
-  #boardWrap { flex: none; height: clamp(210px, 34dvh, 320px); min-height: 210px; }
+  #boardWrap { flex: none; height: clamp(340px, 52dvh, 460px); min-height: 320px; }
 }
 
 @media (max-width: 640px) {
-  header { padding: 10px 12px; gap: 8px; }
+  header { padding: 8px 10px; gap: 6px; }
   header select { flex: 1 1 100%; max-width: 100%; order: 3; }
-  #tabs { padding: 8px 12px; gap: 6px; }
-  .tab { padding: 8px 12px 10px; font-size: .9rem; min-block-size: max(40px, var(--target-size)); }
-  .btn, .tools button, .selbar button { min-block-size: max(40px, var(--target-size)); padding: 8px 11px; font-size: .9rem; }
+  #tabs { padding: 6px 10px; gap: 6px; }
+  .tab { padding: 7px 11px 9px; font-size: .88rem; min-block-size: max(38px, var(--target-size)); }
+  .btn { min-block-size: max(38px, var(--target-size)); padding: 7px 10px; font-size: .88rem; }
+  .canvas-hud { left: 6px; right: 6px; gap: 5px; }
+  .canvas-hud-top { top: 6px; }
+  .canvas-hud-bottom { bottom: 6px; gap: 4px; }
+  .hud-sep { display: none; }
+  .hud-pill { padding: 3px; gap: 2px; }
+  .hud-pill .btn { min-block-size: max(32px, var(--target-size)); min-inline-size: max(32px, var(--target-size)); padding: 4px 6px; font-size: .78rem; gap: 4px; }
+  .hud-pill .zoom-pct { min-inline-size: 42px; font-size: .75rem; }
+  .dock { width: 100%; flex-wrap: nowrap; justify-content: space-between; }
+  .dock .tool-btn { flex: 1 1 0; flex-direction: column; gap: 2px; min-inline-size: 38px; min-block-size: max(42px, var(--target-size)); padding: 4px 2px; font-size: .68rem; line-height: 1.05; }
+  #freeTools { width: 100%; justify-content: space-between; }
+  #freeTools input { max-width: 82px; }
+  #freeTools select { max-width: none; flex: 1; min-width: 0; }
   .dgrid { grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)) !important; gap: 10px 12px; width: 100%; }
   .dgrid label { justify-content: space-between; }
   .panel input[type=text].cell { width: 58px; padding: 8px 5px; font-size: .95rem; }
