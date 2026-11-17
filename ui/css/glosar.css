@@ -38,6 +38,11 @@ h2 { font-size: 1.125rem; font-weight: 500; margin: 32px 0 4px; padding-top: 16p
 .entry th { background: var(--paper-2); font-weight: 500; }
 .entry .src { color: var(--muted); font-size: .875rem; }
 .entry code { font-family: var(--mono); font-size: .9em; background: var(--paper-2); padding: 1px 5px; border-radius: 4px; }
+.katex { font-size: 1.06em; }
+@media (max-width: 640px) { .katex { font-size: .88em; } }
+math { font-family: math, "Latin Modern Math", "Cambria Math", "STIX Two Math", serif; }
+math mtext.math-bb { font-family: var(--font), "DejaVu Sans", sans-serif; font-style: normal; font-weight: 500; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 sub, sup { font-size: .72em; line-height: 0; }
 .frac, .binom > span { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .85em; line-height: 1.3; }
 .frac { margin: 0 .1em; }

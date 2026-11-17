@@ -1238,9 +1238,10 @@ $('ex').onchange = () => {
 };
 
 // ── zadání vlevo, kroky nahoře ───────────────────────────────────────────────
+const formatZadBody = t => (t.steps && t.text.includes('\n') ? `<pre>${esc(t.text)}</pre>` : `<p>${typeof fmt === 'function' ? fmt(t.text) : esc(t.text)}</p>`);
 const zadOf = t => {
   const img = safeImgSrc(t.image);
-  return (img ? `<img src="${esc(img)}" alt="Zadání úlohy">` : '') + (t.steps ? `<pre>${esc(t.text)}</pre>` : `<p>${esc(t.text)}</p>`);
+  return (img ? `<img src="${esc(img)}" alt="Zadání úlohy">` : '') + formatZadBody(t);
 };
 function renderZad() {
   let h;
@@ -1251,7 +1252,7 @@ function renderZad() {
     h = `<h2>${esc(task.title)}</h2>`;
     const img = safeImgSrc(task.image);
     if (img) h += `<img src="${esc(img)}" alt="Zadání úlohy">`;
-    h += task.steps ? `<pre>${esc(task.text)}</pre>` : `<p>${esc(task.text)}</p>`;
+    h += formatZadBody(task);
   }
   $('zadBody').innerHTML = h;
 }

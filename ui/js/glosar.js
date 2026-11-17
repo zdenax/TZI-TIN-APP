@@ -6,7 +6,26 @@ try {
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[c]));
-const gInline = t => fmt(String(t ?? '')).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>').replace(/`(.+?)`/g, '<code>$1</code>');
+function gInlineSeg(str) {
+  const out = [];
+  let pos = 0;
+  const re = /(?:^|(?<=[\s(>„"']))\*(?!\*)((?:[^*\n]|\*\*[^*\n]+?\*\*)+?)(?<!\*)\*(?=$|[\s.,:;!?)"“'<])|\*\*(.+?)\*\*/g;
+  for (const m of str.matchAll(re)) {
+    if (m.index > pos) out.push(fmt(str.slice(pos, m.index)));
+    if (m[1] !== undefined) out.push(`<i>${gInlineSeg(m[1])}</i>`);
+    else out.push(`<b>${gInlineSeg(m[2])}</b>`);
+    pos = m.index + m[0].length;
+  }
+  if (pos < str.length) out.push(fmt(str.slice(pos)));
+  return out.join('');
+}
+function gInline(raw) {
+  return String(raw ?? '').split(/(`[^`\n]+`)/g).map(part =>
+    part.startsWith('`') && part.endsWith('`') && part.length >= 2
+      ? `<code>${esc(part.slice(1, -1))}</code>`
+      : gInlineSeg(part)
+  ).join('');
+}
 
 // pojmy jsou jednoduchý markdown: odstavce, odrážky, tabulky; citace (> ...) ztratí předponu, popisek „[!warning] Název“ je tučně
 function gBody(body) {
@@ -17,7 +36,13 @@ function gBody(body) {
       const rows = [];
       for (; i < L.length && /^\|/.test(L[i]); i++) if (!/^\|[\s|:-]+$/.test(L[i])) rows.push(L[i].replace(/^\||\|$/g, '').split('|'));
       i--;
-      out.push('<table>' + rows.map((r, k) => '<tr>' + r.map(c => `<${k ? 'td' : 'th'}>${gInline(c.trim())}</${k ? 'td' : 'th'}>`).join('') + '</tr>').join('') + '</table>');
+      out.push('<table>' + rows.map((r, k) => '<tr>' + r.map(c => {
+        const raw = c.trim();
+        if (k) return `<td>${gInline(raw)}</td>`;
+        const h = gInline(raw);
+        if (!raw) return `<th scope="col"><span class="sr-only">Sloupec</span></th>`;
+        return h.includes('<math') ? `<th scope="col"><span class="sr-only">${esc(raw)}</span><span aria-hidden="true">${h}</span></th>` : `<th scope="col">${h}</th>`;
+      }).join('') + '</tr>').join('') + '</table>');
     } else if (/^- /.test(l)) {
       const items = [];
       for (; i < L.length && /^- /.test(L[i]); i++) items.push(L[i].slice(2));
