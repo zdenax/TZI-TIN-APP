@@ -8,13 +8,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/glosar.css?v=20">
+<link rel="stylesheet" href="/static/css/glosar.css?v=21">
 </head>
 <body>
 <header class="top-bar">
   <div class="top-inner">
     <div class="top-title">
-      <a class="back" href="/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Kvíz</a>
+      <a class="back" href="/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg><span>Kvíz</span></a>
       <h1>Teorie</h1>
       <span class="meta-count" id="countMeta"></span>
     </div>
@@ -25,22 +25,55 @@
         <button type="button" id="qClear" class="icon-clear" aria-label="Vymazat hledání" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <select id="lecSelect" aria-label="Vybrat přednášku"></select>
-      <button type="button" id="themeBtn" class="btn-ghost" title="Přepnout barevný motiv">Motiv: Mocha</button>
     </div>
+    <button type="button" id="menuBtn" class="btn-ghost menu-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="overviewDrawer">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      <span>Přehled</span>
+    </button>
   </div>
 </header>
 
+<dialog class="drawer" id="overviewDrawer" aria-labelledby="drawerTitle">
+  <div class="drawer-sheet" id="drawerSheet">
+    <div class="drawer-head">
+      <h2 id="drawerTitle">Přehled teorie</h2>
+      <button type="button" id="drawerClose" class="icon-btn" aria-label="Zavřít přehled" autofocus>
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="ov-stats" id="ovStats"></div>
+
+    <div class="ov-section">
+      <div class="ov-label" id="ovLecLabel">Přednášky podle data</div>
+      <nav class="ov-list" id="ovLectures" aria-labelledby="ovLecLabel"></nav>
+    </div>
+
+    <div class="ov-section">
+      <div class="ov-label">Zobrazení</div>
+      <div class="ov-controls">
+        <button type="button" id="drawerSrcToggle" class="ov-toggle" aria-pressed="false">Zobrazit zdroje u pojmů</button>
+        <button type="button" id="themeBtn" class="ov-toggle">Motiv: Mocha</button>
+      </div>
+    </div>
+
+    <nav class="ov-links" aria-label="Další stránky aplikace">
+      <a class="ov-nav-link" href="/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Zpět na kvíz</a>
+      <a class="ov-nav-link" href="/automat"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Návrhář automatů</a>
+    </nav>
+  </div>
+</dialog>
+
 <div class="shell">
-  <aside class="toc-aside" id="tocAside" aria-label="Kapitoly přednášek">
-    <div class="toc-label" id="tocLabel">Kapitoly</div>
+  <aside class="toc-aside" id="tocAside" aria-label="Přednášky">
+    <div class="toc-label" id="tocLabel">Přednášky</div>
     <nav id="tocNav" class="toc-nav" aria-labelledby="tocLabel"></nav>
   </aside>
 
   <main class="content-col">
-    <div class="toolbar-sub">
+    <div class="toolbar-sub" id="toolbarSub">
       <p class="sub" id="sub">Načítám teorii…</p>
       <div class="sub-actions">
-        <button type="button" id="toggleSrcBtn" class="btn-quiet" aria-pressed="false" hidden>Rozbalit zdroje</button>
         <button type="button" id="resetFilterBtn" class="btn-quiet" hidden>Zrušit filtr</button>
       </div>
     </div>
@@ -57,6 +90,6 @@
 
 <script src="/static/vendor/katex/katex.min.js"></script>
 <script src="/static/js/format.js?v=16"></script>
-<script src="/static/js/glosar.js?v=18"></script>
+<script src="/static/js/glosar.js?v=19"></script>
 </body>
 </html>
