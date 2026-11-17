@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/automat.css?v=18">
+<link rel="stylesheet" href="/static/css/automat.css?v=19">
 </head>
 <body>
 <header>
@@ -25,16 +25,41 @@
       <div class="panel" id="p-delta" role="tabpanel" aria-labelledby="tab-delta" hidden></div>
       <div class="panel" id="p-table" role="tabpanel" aria-labelledby="tab-table" hidden></div>
       <div class="panel" id="p-diagram" role="tabpanel" aria-labelledby="tab-diagram" hidden>
-        <div class="tools" id="tools" role="toolbar" focusgroup="toolbar wrap" aria-label="Nástroje diagramu" aria-controls="board">
-          <button type="button" class="btn" id="btnAddState"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg>Stav</button>
-          <button type="button" class="btn" id="btnConnect" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>Připojit</button>
-          <button type="button" id="clear" class="btn"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>Vyčistit</button>
-          <span class="row" id="freeTools"><label for="alpha">Σ</label><input type="text" id="alpha" size="8" maxlength="64" value="0, 1">
-            <label for="ex">Hotový příklad</label><select id="ex"></select></span>
+        <div id="boardWrap">
+          <svg id="board" viewBox="0 0 800 520" aria-label="Plátno automatu"></svg>
+          <div class="canvas-hud canvas-hud-top">
+            <div class="hud-pill" role="toolbar" focusgroup="toolbar wrap" aria-label="Historie a akce plátna" aria-controls="board">
+              <button type="button" class="btn icon-btn" id="undoBtn" aria-label="Zpět (Ctrl+Z)" title="Zpět (Ctrl+Z)" disabled><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></button>
+              <button type="button" class="btn icon-btn" id="redoBtn" aria-label="Znovu (Ctrl+Y)" title="Znovu (Ctrl+Y)" disabled><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg></button>
+              <span class="hud-sep" aria-hidden="true"></span>
+              <button type="button" class="btn" id="clear" title="Smazat celý návrh"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg><span>Vyčistit</span></button>
+            </div>
+            <div class="hud-pill" id="freeTools">
+              <label for="alpha">Σ</label><input type="text" id="alpha" size="7" maxlength="64" value="0, 1">
+              <select id="ex" aria-label="Hotový příklad"></select>
+            </div>
+            <div class="hud-pill" id="zoomBar" role="group" aria-label="Přiblížení plátna">
+              <button type="button" class="btn icon-btn" id="zoomOut" aria-label="Oddálit" title="Oddálit (-)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+              <button type="button" class="btn zoom-pct" id="zoomReset" title="Obnovit přiblížení na 100 %">100%</button>
+              <button type="button" class="btn icon-btn" id="zoomIn" aria-label="Přiblížit" title="Přiblížit (+)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+              <button type="button" class="btn" id="zoomFit" title="Přizpůsobit diagram do okna (0)">Celý</button>
+            </div>
+          </div>
+          <div class="canvas-hud canvas-hud-bottom">
+            <div id="selBar" class="selbar hud-pill" role="toolbar" focusgroup="toolbar wrap" aria-label="Kontextové nástroje" aria-controls="board" hidden></div>
+            <div id="dock" class="dock hud-pill" role="toolbar" focusgroup="toolbar wrap" aria-label="Nástroje plátna" aria-controls="board">
+              <button type="button" class="btn tool-btn" data-tool="move" aria-pressed="false" title="Posun celého plátna (M / Mezerník)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.5 0-4.5-1-6.2-2.7L3 16.5a2 2 0 0 1 2.8-2.8L6 14"/></svg><span>Move</span></button>
+              <button type="button" class="btn tool-btn" data-tool="select" aria-pressed="true" title="Výběr a posun prvků (1 / V)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l7 16 2.5-6.5L20 11 4 4z"/></svg><span>Select</span></button>
+              <button type="button" class="btn tool-btn" data-tool="state" aria-pressed="false" title="Přidat stav (2 / S)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="9" y1="12" x2="15" y2="12"/></svg><span>Stav</span></button>
+              <span class="hud-sep" aria-hidden="true"></span>
+              <button type="button" class="btn tool-btn" data-tool="start" aria-pressed="false" title="Počáteční stav – vstup (3)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="13" y2="12"/><polyline points="9 8 13 12 9 16"/><circle cx="17.5" cy="12" r="3.5"/></svg><span>Vstup</span></button>
+              <button type="button" class="btn tool-btn" data-tool="acc" aria-pressed="false" title="Přijímací stav – výstup (4)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="5"/></svg><span>Výstup</span></button>
+              <button type="button" class="btn tool-btn" data-tool="edge" aria-pressed="false" title="Přidat přechod – šipka (5 / A)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg><span>Šipka</span></button>
+              <button type="button" class="btn tool-btn" data-tool="erase" aria-pressed="false" title="Smazat vybraný prvek nebo klepnutím (6 / X)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg><span>Delete</span></button>
+            </div>
+          </div>
         </div>
-        <div id="boardWrap"><svg id="board" viewBox="0 0 800 520" aria-label="Plátno automatu"></svg></div>
-        <div id="selBar" class="selbar" role="toolbar" focusgroup="toolbar wrap" aria-label="Úpravy vybraného prvku" aria-controls="board" hidden></div>
-        <div class="row"><button type="button" id="grade" class="btn primary" hidden>Zkontrolovat diagram</button><span id="dStatus" class="status" role="status"></span></div>
+        <div class="row diagram-foot"><button type="button" id="grade" class="btn primary" hidden>Zkontrolovat diagram</button><span id="dStatus" class="status" role="status"></span></div>
         <div id="gradeOut" class="gradeOut"></div>
       </div>
       <div class="panel" id="p-tree" role="tabpanel" aria-labelledby="tab-tree" hidden></div>
@@ -53,6 +78,6 @@
   <div class="row mt-lg"><button type="button" class="btn primary" id="nSave" disabled>Uložit úlohu</button><button type="button" class="btn" id="nCancel">Zrušit</button></div>
 </dialog>
 <script src="/automat-core.js?v=16"></script>
-<script src="/static/js/automat.js?v=18"></script>
+<script src="/static/js/automat.js?v=19"></script>
 </body>
 </html>
