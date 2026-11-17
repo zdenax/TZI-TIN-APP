@@ -52,10 +52,10 @@ function toLatexMathStr(raw) {
   t = t.replace(/⊆/g, ' \\subseteq ').replace(/⊂/g, ' \\subset ').replace(/⊇/g, ' \\supseteq ').replace(/⊃/g, ' \\supset ');
   t = t.replace(/∩/g, ' \\cap ').replace(/∪/g, ' \\cup ').replace(/∈/g, ' \\in ').replace(/∉/g, ' \\notin ').replace(/∅/g, ' \\emptyset ').replace(/∖/g, ' \\setminus ');
   t = t.replace(/∧/g, ' \\land ').replace(/∨/g, ' \\lor ').replace(/¬/g, ' \\neg ').replace(/⇒\*/g, ' \\Rightarrow^{*} ').replace(/⇒/g, ' \\Rightarrow ').replace(/⇔/g, ' \\Leftrightarrow ');
-  t = t.replace(/→/g, ' \\to ').replace(/←/g, ' \\leftarrow ').replace(/↔/g, ' \\leftrightarrow ').replace(/∼/g, ' \\sim ');
-  t = t.replace(/∀/g, ' \\forall ').replace(/∃/g, ' \\exists ');
-  t = t.replace(/ℕ/g, ' \\mathbb{N} ').replace(/ℤ/g, ' \\mathbb{Z} ').replace(/ℚ/g, ' \\mathbb{Q} ').replace(/ℝ/g, ' \\mathbb{R} ').replace(/ℂ/g, ' \\mathbb{C} ');
-  t = t.replace(/∑/g, ' \\sum ').replace(/∏/g, ' \\prod ').replace(/Σ/g, ' \\Sigma ').replace(/Π/g, ' \\Pi ').replace(/δ/g, ' \\delta ').replace(/ε/g, ' \\varepsilon ').replace(/λ/g, ' \\lambda ').replace(/π/g, ' \\pi ');
+  t = t.replace(/→/g, ' \\to ').replace(/←/g, ' \\leftarrow ').replace(/↔/g, ' \\leftrightarrow ').replace(/↦/g, ' \\mapsto ').replace(/∼/g, ' \\sim ');
+  t = t.replace(/∀/g, ' \\forall ').replace(/∃!/g, ' \\exists! ').replace(/∃/g, ' \\exists ');
+  t = t.replace(/ℕ/g, ' \\mathbb{N} ').replace(/ℤ/g, ' \\mathbb{Z} ').replace(/ℚ/g, ' \\mathbb{Q} ').replace(/ℝ/g, ' \\mathbb{R} ').replace(/ℂ/g, ' \\mathbb{C} ').replace(/𝓛/g, ' \\mathcal{L} ');
+  t = t.replace(/∑/g, ' \\sum ').replace(/∏/g, ' \\prod ').replace(/Σ/g, ' \\Sigma ').replace(/Π/g, ' \\Pi ').replace(/δ/g, ' \\delta ').replace(/ε/g, ' \\varepsilon ').replace(/λ/g, ' \\lambda ').replace(/π/g, ' \\pi ').replace(/α/g, ' \\alpha ').replace(/β/g, ' \\beta ').replace(/γ/g, ' \\gamma ').replace(/φ/g, ' \\varphi ');
   t = t.replace(/ᵢ/g, '_i').replace(/ⱼ/g, '_j').replace(/ₖ/g, '_k').replace(/ₙ/g, '_n').replace(/′/g, "'");
   t = t.replace(/[₀-₉]+/g, m => '_{' + [...m].map(c => '₀₁₂₃₄₅₆₇₈₉'.indexOf(c)).join('') + '}');
   t = t.replace(/[⁻⁺⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, m => '^{' + [...m].map(c => ({ '⁻': '-', '⁺': '+', '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' }[c])).join('') + '}');
@@ -88,8 +88,18 @@ function fmt(s) {
   };
   const unwrapDen = d => {
     d = d.trim();
-    if (d.startsWith('((') && d.endsWith('))')) return d.slice(1, -1);
-    if (d.startsWith('(') && d.endsWith(')') && !d.slice(1, -1).includes('(')) return d.slice(1, -1);
+    while (d.startsWith('(') && d.endsWith(')')) {
+      let depth = 0, coversAll = true;
+      for (let i = 0; i < d.length - 1; i++) {
+        if (d[i] === '(') depth++;
+        else if (d[i] === ')') {
+          depth--;
+          if (depth === 0) { coversAll = false; break; }
+        }
+      }
+      if (!coversAll || depth !== 1) break;
+      d = d.slice(1, -1).trim();
+    }
     return d;
   };
   const hasProseWord = t => /[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/.test(t) || /\b(?!nad\b)[A-Za-z]{2,}\b/.test(t.replace(/_[A-Za-z0-9]+/g, ''));
@@ -108,12 +118,12 @@ function fmt(s) {
     // 1. Čistý zlomek (např. "n! / ((n-k)! · k!)", "n! / (n-k)!")
     const fracMatch = trimmed.match(/^([0-9A-Za-z()−\-+·…!\s_]+)\s*\/\s*([0-9A-Za-z()−\-+·…!\s_]+)$/);
     if (fracMatch && !hasProseWord(trimmed) && (trimmed.includes('!') || trimmed.includes('−') || trimmed.includes('·') || /^\d+\s*\/\s*\d+$/.test(trimmed))) {
-      return renderLatexExpr(`\\frac{${toLatexMathStr(fracMatch[1])}}{${toLatexMathStr(unwrapDen(fracMatch[2]))}}`, false);
+      return renderLatexExpr(`\\frac{${toLatexMathStr(unwrapDen(fracMatch[1]))}}{${toLatexMathStr(unwrapDen(fracMatch[2]))}}`, false);
     }
     // 2. Čistá rovnice / výraz (např. "V_k(n) = n! / (n−k)!", "a = a_n·Z^n + ...", "(n+k−1 nad k)", "n^k")
     const eqFrac = trimmed.match(/^([A-Za-z0-9_()′'!]+)\s*=\s*([0-9A-Za-z()−\-+·…!\s_]+)\s*\/\s*([0-9A-Za-z()−\-+·…!\s_]+)$/);
     if (eqFrac && !hasProseWord(eqFrac[2] + ' ' + eqFrac[3])) {
-      return renderLatexExpr(`${toLatexMathStr(eqFrac[1])} = \\frac{${toLatexMathStr(eqFrac[2])}}{${toLatexMathStr(unwrapDen(eqFrac[3]))}}`, false);
+      return renderLatexExpr(`${toLatexMathStr(eqFrac[1])} = \\frac{${toLatexMathStr(unwrapDen(eqFrac[2]))}}{${toLatexMathStr(unwrapDen(eqFrac[3]))}}`, false);
     }
     if (/^(?:[A-Za-z0-9_()′'!]+|[Σ∑Π∏]_\([^)]+\)\^[A-Za-z0-9]+|\|\{-?\d+\}\|)\s*=\s*[0-9A-Za-z()_\^−\-+·….\s!{}\[\]]+$/.test(trimmed) && !hasProseWord(trimmed)) {
       return renderLatexExpr(toLatexMathStr(trimmed), false);
@@ -126,7 +136,7 @@ function fmt(s) {
     subMath(/(?:C\([A-Za-z0-9+\-−,\s]+\)\s*=\s*)?\([A-Za-z0-9+\-−\s]+?\s+nad\s+[A-Za-z0-9+\-−\s?]+?\)/g);
     subMath(/[Σ∑Π∏]_\([^)]+\)\^(?:\([^)]+\)|[A-Za-z0-9]+)(?:\s*[a-zA-Z]_[A-Za-z0-9ᵢⱼₖₙ]+)?/g);
     subMath(/√\([^)]+\)|√[0-9]+/g);
-    subMath(/(\([0-9A-Za-z+\-−·…]+!\)|[0-9A-Za-z()−\-+·…]+!)\s*\/\s*(\(\([0-9A-Za-z()−\-+·!\s]+\)\)|\(\([0-9A-Za-z−\-+·\s]+\)!\)|\([0-9A-Za-z−\-+·!\s]+\)!?|[0-9A-Za-z]+!)/g, expr => {
+    subMath(/(?:\([0-9A-Za-z()+\-−·…_!]+\)|[0-9A-Za-z()−\-+·…_]+!)\s*\/\s*(?:\(\([0-9A-Za-z()−\-+·…!_\sᵢⱼₖₙ,]+\)\)!?|\([0-9A-Za-z()−\-+·…!_\sᵢⱼₖₙ,]+\)!?|[0-9A-Za-z_]+!)/g, expr => {
       const m = expr.match(/^([\s\S]+?)\s*\/\s*([\s\S]+)$/);
       return m ? `\\frac{${toLatexMathStr(unwrapDen(m[1]))}}{${toLatexMathStr(unwrapDen(m[2]))}}` : toLatexMathStr(expr);
     });
@@ -137,21 +147,25 @@ function fmt(s) {
     });
 
     // 4. Faktoriály a kombinační volání C(...), V_k(n), C_k(n), P(n)
-    subMath(/(?:\([A-Za-z0-9+\-−]+\)!|[0-9A-Za-z]+!)\s*=\s*[A-Za-z0-9()+\-−·…!\s]+?(?=[.,;:]|\s+[áčďéěíňóřšťúůýžA-Za-z]{2,}|$)/g);
-    subMath(/\b[CVP][′']?(?:_[A-Za-z0-9]+)?\([^)]+\)(?:\s*[+=]\s*[CVP][′']?(?:_[A-Za-z0-9]+)?\([^)]+\))*/g);
+    subMath(/(?:\([A-Za-z0-9+\-−]+\)!|[0-9A-Za-z]+!)\s*=\s*[A-Za-z0-9()+\-−·…!\s]+?(?=[.,;:]|\s+\([A-Za-z0-9+\-−\s]*[≤≥<>][A-Za-z0-9+\-−\s]*\)|\s+[áčďéěíňóřšťúůýžA-Za-z]{2,}|$)/g);
+    subMath(/\b[CVP][′']?(?:_\([^)]+\)|_[A-Za-z0-9]+)?\([^)]+\)(?:\s*[+=]\s*[CVP][′']?(?:_\([^)]+\)|_[A-Za-z0-9]+)?\([^)]+\))*/g);
     subMath(/\([A-Za-z][−\-][A-Za-z](?:[−\-]1)?\)!|\([A-Za-z]\+1\)!|\b[0-9nkv]!/g);
 
-    // 5. Množinové definice tvaru Q = {q0, q1, …}, F = {q1, q2}, Σ = {0, 1}, Pot({a, b}) = {...}, A/∼
-    subMath(/\b(?:Pot\([^)]+\)|[A-ZΣδ](?:_[A-Za-z0-9]+)?)\s*=\s*\{(?:[^{}\n]|\{[^{}\n]*\}){1,96}\}/g);
-    subMath(/\b[A-Z]\/∼/g);
+    // 5. Množinové definice tvaru Q = {...}, L(G) = {...}, Π = {...}, Pot({a, b}) = {...}, A/{∼}, |{-5}| = 5
+    subMath(/\|\{-?\d+\}\|\s*=\s*\d+/g);
+    subMath(/(?:Pot\([^)]+\)|[LP]\([A-Za-z0-9]+\)|[A-Z]\/(?:\{∼\}|∼)|[A-ZΣΠδ](?:_[A-Za-z0-9]+)?)\s*=\s*\{(?:[^{}\n]|\{[^{}\n]*\}){1,96}\}/g);
+    subMath(/\b[A-Z]\/(?:\{∼\}|∼)/g);
+    subMath(/\bn\([A-Za-z0-9+\-−]+\)…\([A-Za-z0-9+\-−]+\)/g);
 
     // 6. Řetězce a vztahy (nerovnosti, množinové a logické operátory, přepisy u ⇒* z) — závorky a složené závorky vcelku
-    const atom = String.raw`(?:[A-Za-z0-9ᵢⱼₖₙ₀-₉⁻⁺⁰-⁹′'ℕℤℚℝℂ∅¬ΣδV^*+−\-_…]|\([0-9A-Za-z,ᵢⱼₖₙ₀-₉⁻⁺⁰-⁹′'∗*+\-−\s]+\)|\{(?:[^{}\n]|\{[^{}\n]*\}){1,64}\})+`;
-    subMath(new RegExp(`${atom}(?:\\s*[≤≥≠≈≡∩∪⊆⊂⊇⊃∈∉∧∨⇒⇔→←↔∼=](?:\\^\\([∗*]\\)|\\*?)\\s*${atom})+`, 'g'));
-    subMath(/¬\s*[A-Za-z]\s*⇒\s*¬\s*[A-Za-z]|∀[A-Za-z]\s*∈\s*[A-Za-z](?:\s*;\s*[A-Za-z0-9]+)?/g);
+    const atom = String.raw`(?:[A-Za-z0-9ᵢⱼₖₙ₀-₉⁻⁺⁰-⁹′'ℕℤℚℝℂ∅¬∀∃!ΣΠδγλφαβV^*+−\-_…|]+|𝓛|\([0-9A-Za-z,ᵢⱼₖₙ₀-₉⁻⁺⁰-⁹′'∗*+\-−\s∪∩;ΠΣ]+\)(?:\^\([^)]+\))?|\{(?:[^{}\n]|\{[^{}\n]*\}){1,64}\})+`;
+    subMath(new RegExp(`${atom}(?:\\s*(?:∃!|[≤≥≠≈≡∩∪⊆⊂⊇⊃∈∉∧∨⇒⇔→←↔↦∼=])(?:\\^\\([∗*+]\\)|\\*?)(?:\\s*¬)?\\s*${atom})+`, 'g'));
+    subMath(/(?:¬\s*)+[A-Za-z]\s*⇒\s*(?:¬\s*)+[A-Za-z]|∀\s*[A-Za-z]\s*∈\s*[A-Za-zℝℕℤ](?:\s*;\s*[^,.;\n]+)?|∃!?\s*[A-Za-z]\s*∈\s*[A-Za-zℝℕℤ](?:\s*;\s*[^,.;\n]+)?/g);
 
-    // 7. Samostatné symboly, sady čísel a indexované identifikátory
-    subMath(/[A-Za-zΣΠ]_\([^)]+\)(?:\^\([^)]+\))?|[A-Za-zΣΠ]_[A-Za-z0-9]+|[A-Za-zΣΠ]\^\([^)]+\)|[A-Za-z]\^[A-Za-z0-9]+|\b[Vqpu][₀-₉]+\b|\bV\*(?!\w)|[ℕℤℚℝℂ∅∑∏]|(?<![A-Za-z])[Σδε](?![A-Za-z])/g);
+    // 7. Samostatné množiny {1, 2, 3}, negace ¬ x, operátorové zápisy (Π ∪ Σ)^(+), Σ′^(+), identifikátory s indexy/exponenty a symboly
+    subMath(/\{(?:[^{}\n]*?(?:[,;→∈⊆⊂∼…]|-?\d)[^{}\n]*?|[A-Za-zε∅∼]|aa)\}/g);
+    subMath(/\([A-Za-zΣΠ∪∩,\s]+\)\^\([^)]+\)|Σ′\^\([∗*+]\)|Σ′/g);
+    subMath(/¬\s*[A-Za-z]\b|(?:\([^)\n]+\)|[A-Za-zΣΠφ]|𝓛)_\([^)]+\)(?:\^\([^)]+\))?|(?:[A-Za-zΣΠ]|𝓛)_[A-Za-z0-9]+|[A-Za-zΣΠ]\^\([^)]+\)|[A-Za-z]\^[A-Za-z0-9]+|\b[Vqpu][₀-₉]+\b|\bV\*(?!\w)|[ℕℤℚℝℂ∅∑∏∀∃¬∧∨⇒⇔→←↔↦]|(?<![A-Za-z])[ΣΠδεγλφ](?![A-Za-z])/g);
   }
 
   s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

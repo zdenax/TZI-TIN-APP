@@ -75,10 +75,12 @@ def test_r1_latex_katex_rendering():
       const rFmt = vm.runInContext('fmt', mCtx);
       for (const expr of [
         'V_k(n) = n! / (n−k)!',
+        'V_k(n) = (n!) / ((n-k)!) = n(n-1)…(n-k+1)',
+        'n! = n · (n-1) … (n-k+1) · (n-k)! (k ≤ n)',
         '(n+k−1 nad k)',
         'Σ_(i=1)^n a_i',
         'Platí ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ.',
-        'Q = {zavřeno, otevřeno}, u ⇒^(∗) z, D_(f⁻¹) = H_f'
+        'Q = {zavřeno, otevřeno}, u ⇒^(∗) z, D_(f⁻¹) = H_f, 𝓛_3 ⊆ 𝓛_2'
       ]) {
         const rendered = rFmt(expr);
         assert(rendered.includes('class="katex"'), 'Chybí KaTeX pro: ' + expr);
@@ -86,6 +88,29 @@ def test_r1_latex_katex_rendering():
         if (mode === 'mathml') {
           assert(!rendered.includes('style='), 'Zakázaný inline style= v mathml režimu: ' + expr);
         }
+      }
+      assert(!rFmt('V_k(n) = (n!) / ((n-k)!)').includes('((n-k)!)'), 'Neodstraněné zdvojené závorky jmenovatele');
+      if (mode === 'mathml') {
+        vm.runInContext(fs.readFileSync('ui/js/glosar.js', 'utf8').replace(/\(\s*async\s*\(\)\s*=>[\s\S]*$/, ''), mCtx);
+        const gBody = vm.runInContext('gBody', mCtx);
+        const sample = [
+          '1. První krok',
+          '2. Druhý krok',
+          '| δ | 0 |',
+          '|---|---|',
+          '| q_0 | q_1 |',
+          '> [!warning] Poznámka',
+          '> Text v calloutu.',
+          '*Příklad:* V_2(3) = 6.',
+          '*Časté omyly:*',
+          '- ❌ „Špatně“ Vysvětlení. ✅ Správně.',
+          '*Zdroj: přednáška 12. 11.; **Doplněno z Claude** ([12, s. 130]).*'
+        ].join('\n');
+        const gHtml = gBody(sample, 'Ukázka');
+        for (const cls of ['<ol class="g-ol">', '<thead>', '<tbody>', '<aside class="callout">', 'class="block-ex"', 'class="mistakes"', 'class="entry-src"']) {
+          assert(gHtml.includes(cls), 'Chybí sémantický blok v glosáři: ' + cls);
+        }
+        assert(!gHtml.includes('style='), 'Zakázaný inline style= v gBody()');
       }
     }
     """
