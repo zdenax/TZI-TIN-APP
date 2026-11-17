@@ -153,6 +153,57 @@ function gBody(body, termLabel) {
   return (out.length ? `<div class="entry-body">${out.join('')}</div>` : '') + gSourceFooter(srcLines);
 }
 
+function parseLectureMeta(label) {
+  const m = String(label || '').match(/^(\d+)\.\s*přednáška\s*\(([^)]+)\):\s*(.+)$/);
+  if (!m) return { key: String(label || ''), num: '', date: '', heading: String(label || ''), topic: '' };
+  return {
+    key: `${m[1]}|${m[2].trim()}`,
+    num: m[1],
+    date: m[2].trim(),
+    heading: `${m[1]}. přednáška · ${m[2].trim()}`,
+    topic: m[3].trim()
+  };
+}
+
+function mergeGroupsByDate(groups) {
+  const map = new Map();
+  const order = [];
+  for (const g of groups || []) {
+    const meta = parseLectureMeta(g && g.label);
+    let bucket = map.get(meta.key);
+    if (!bucket) {
+      bucket = {
+        key: meta.key,
+        num: meta.num,
+        date: meta.date,
+        heading: meta.heading,
+        topics: meta.topic ? [meta.topic] : [],
+        entries: []
+      };
+      map.set(meta.key, bucket);
+      order.push(bucket);
+    } else if (meta.topic && !bucket.topics.includes(meta.topic)) {
+      bucket.topics.push(meta.topic);
+    }
+    const seen = new Set(bucket.entries.map(e => e && e.term));
+    for (const e of (g && g.entries) || []) {
+      if (e && !seen.has(e.term)) {
+        bucket.entries.push(e);
+        seen.add(e.term);
+      }
+    }
+  }
+  return order.map(b => ({
+    key: b.key,
+    num: b.num,
+    date: b.date,
+    heading: b.heading,
+    topicsText: b.topics.join(' · '),
+    label: b.topics.length ? `${b.heading}: ${b.topics.join(' · ')}` : b.heading,
+    entries: b.entries
+  }));
+}
+
 (async () => {
   const THEME_ORDER = ['catppuccin', 'dark', 'light'];
   const THEME_NAMES = { catppuccin: 'Mocha', dark: 'Dark', light: 'Světlý' };
@@ -191,8 +242,15 @@ function gBody(body, termLabel) {
   const emptyResetBtn = document.getElementById('emptyResetBtn');
   const emptySearch = document.getElementById('emptySearch');
   const emptyMsg = document.getElementById('emptyMsg');
-  const toggleSrcBtn = document.getElementById('toggleSrcBtn');
   const toTopBtn = document.getElementById('toTop');
+
+  const menuBtn = document.getElementById('menuBtn');
+  const drawer = document.getElementById('overviewDrawer');
+  const drawerSheet = document.getElementById('drawerSheet');
+  const drawerClose = document.getElementById('drawerClose');
+  const ovStats = document.getElementById('ovStats');
+  const ovLectures = document.getElementById('ovLectures');
+  const drawerSrcToggle = document.getElementById('drawerSrcToggle');
 
   const tocTermHtml = t => esc(t)
     .replace(/\^\(([^)]+)\)/g, '<sup>$1</sup>')
@@ -201,12 +259,50 @@ function gBody(body, termLabel) {
     .replace(/_([A-Za-z0-9]+)/g, '<sub>$1</sub>');
 
   const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const shortGrpTitle = label => {
-    const m = String(label || '').match(/^(\d+)\.\s*přednáška\s*\(([^)]+)\):\s*(.+)$/);
-    return m ? `${m[1]}. ${m[3]}` : String(label || '');
+  const bodyWithoutSources = b => String(b || '').split('\n').filter(l => !/^\*Zdroj\s*:/i.test(l.trim())).join('\n');
+
+  let state = {
+    source: '_all',
+    activeDateKey: '',
+    rawTitle: '',
+    allMerged: [],
+    groups: [],
+    entryIndex: [],
+    groupEls: [],
+    tocEls: [],
+    showSources: false
   };
 
-  let state = { title: '', source: '_all', groups: [], entryIndex: [], groupEls: [], tocEls: [] };
+  function openDrawer() {
+    if (!drawer || drawer.open) return;
+    drawer.showModal();
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeDrawer() {
+    if (drawer && drawer.open) drawer.close();
+  }
+  if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+  if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+  if (drawer) {
+    drawer.addEventListener('click', e => {
+      if (drawerSheet && !drawerSheet.contains(e.target)) closeDrawer();
+    });
+    drawer.addEventListener('cancel', () => {
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    });
+    drawer.addEventListener('close', () => {
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  if (drawerSrcToggle) {
+    drawerSrcToggle.addEventListener('click', () => {
+      state.showSources = !state.showSources;
+      outEl.classList.toggle('show-sources', state.showSources);
+      drawerSrcToggle.setAttribute('aria-pressed', state.showSources ? 'true' : 'false');
+      drawerSrcToggle.textContent = state.showSources ? 'Skrýt zdroje u pojmů' : 'Zobrazit zdroje u pojmů';
+    });
+  }
 
   const showEmpty = msg => {
     outEl.textContent = '';
@@ -214,10 +310,40 @@ function gBody(body, termLabel) {
     p.className = 'empty';
     p.textContent = msg;
     outEl.appendChild(p);
-    if (toggleSrcBtn) toggleSrcBtn.hidden = true;
     if (tocAside) tocAside.hidden = true;
     if (emptySearch) emptySearch.hidden = true;
   };
+
+  function updateOverview() {
+    const overviewGroups = state.allMerged.length ? state.allMerged : state.groups;
+    const totalEntries = overviewGroups.reduce((sum, g) => sum + g.entries.length, 0);
+    const totalTables = overviewGroups.reduce((s, g) => s + g.entries.reduce((a, e) => a + (String(e.body || '').match(/^[>\s]*\|[\s|:-]+\|\s*$/gm) || []).length, 0), 0);
+    const totalMistakes = overviewGroups.reduce((s, g) => s + g.entries.reduce((a, e) => a + (String(e.body || '').match(/^- ❌/gm) || []).length, 0), 0);
+    if (ovStats) {
+      ovStats.innerHTML =
+        `<div class="ov-stat"><span class="ov-stat-val">${overviewGroups.length}</span><span class="ov-stat-lbl">Přednášek</span></div>` +
+        `<div class="ov-stat"><span class="ov-stat-val">${totalEntries}</span><span class="ov-stat-lbl">Pojmů</span></div>` +
+        `<div class="ov-stat"><span class="ov-stat-val">${totalTables}/${totalMistakes}</span><span class="ov-stat-lbl">Tabulek/Omylů</span></div>`;
+    }
+    if (ovLectures) {
+      const isAll = state.source === '_all' && !state.activeDateKey;
+      const items = [
+        `<button type="button" class="ov-lec-btn${isAll ? ' active' : ''}" data-pick="_all">` +
+          `<span class="ov-lec-title">Všechny přednášky podle data</span><span class="ov-lec-cnt">${totalEntries}</span></button>`
+      ];
+      for (const g of overviewGroups) {
+        const active = (state.source === '_all' && state.activeDateKey === g.key) || (state.groups.length === 1 && state.groups[0].key === g.key && !isAll);
+        items.push(
+          `<button type="button" class="ov-lec-btn${active ? ' active' : ''}" data-pick="${esc('date:' + g.key)}">` +
+            `<span class="ov-lec-title">${esc(g.heading)}</span>` +
+            `<span class="ov-lec-cnt">${g.entries.length}</span>` +
+            (g.topicsText ? `<span class="ov-lec-topics">${esc(g.topicsText)}</span>` : '') +
+          `</button>`
+        );
+      }
+      ovLectures.innerHTML = items.join('');
+    }
+  }
 
   function applyFilter() {
     const raw = (qInput && qInput.value || '').trim();
@@ -257,34 +383,35 @@ function gBody(body, termLabel) {
       if (emptyMsg && raw) emptyMsg.textContent = `Dotazu „${raw}“ neodpovídá žádný pojem.`;
     }
     if (subEl) {
-      subEl.textContent = q
-        ? `${state.title} · nalezeno ${visibleTotal} z ${total}`
-        : (state.groups.length > 1 ? state.title : 'Přehled pojmů, vzorců a častých omylů');
+      if (q) subEl.textContent = `Nalezeno ${visibleTotal} z ${total} pojmů`;
+      else if (state.groups.length > 1) subEl.textContent = `${state.groups.length} přednášek seřazených podle data`;
+      else subEl.textContent = state.groups[0] ? `${state.groups[0].entries.length} pojmů v přednášce` : state.rawTitle;
     }
     if (countMeta) {
       countMeta.textContent = q ? `${visibleTotal}/${total}` : `${total} pojmů`;
     }
   }
 
-  function renderData(d) {
-    state.title = d.title || 'Teorie';
-    state.groups = Array.isArray(d.groups) ? d.groups : [];
-    document.title = `Teorie: ${state.title} · TZI Trenér`;
+  function renderGroups(groups, title) {
+    state.groups = groups;
+    document.title = `Teorie: ${title} · TZI Trenér`;
 
-    if (!state.groups.length) {
-      if (subEl) subEl.textContent = state.title;
+    if (!groups.length) {
+      if (subEl) subEl.textContent = title;
       if (countMeta) countMeta.textContent = '0 pojmů';
       showEmpty('K téhle přednášce zatím není v teorii žádný obsah.');
+      updateOverview();
       return;
     }
 
-    const multi = state.groups.length > 1;
-    outEl.innerHTML = state.groups.map((g, gi) => {
-      const entries = Array.isArray(g && g.entries) ? g.entries : [];
+    const multi = groups.length > 1;
+    outEl.innerHTML = groups.map((g, gi) => {
+      const entries = g.entries || [];
       const cards = entries.map((e, ei) => `<article class="entry" id="e-${gi}-${ei}"><h3>${gInline(e && e.term)}</h3>${gBody(e && e.body, e && e.term)}</article>`).join('');
       return `<section class="lec-group" id="grp-${gi}" aria-labelledby="gh-${gi}">` +
-        `<div class="grp-head"><h2 id="gh-${gi}">${esc(g && g.label)}</h2><span class="grp-count">${entries.length} pojmů</span></div>` +
-        `<div class="entries-list">${cards}</div></section>`;
+        `<div class="grp-head"><h2 id="gh-${gi}">${esc(g.heading)}</h2><span class="grp-count">${entries.length} pojmů</span>` +
+        (g.topicsText ? `<div class="grp-topics">${esc(g.topicsText)}</div>` : '') +
+        `</div><div class="entries-list">${cards}</div></section>`;
     }).join('');
 
     state.groupEls = [...outEl.querySelectorAll('.lec-group')];
@@ -294,15 +421,17 @@ function gBody(body, termLabel) {
     if (tocNav && tocAside) {
       tocAside.hidden = false;
       if (multi) {
-        if (tocLabel) tocLabel.textContent = 'Kapitoly';
-        tocNav.innerHTML = state.groups.map((g, gi) => {
-          const cnt = Array.isArray(g.entries) ? g.entries.length : 0;
-          return `<a class="toc-link${gi === 0 ? ' active' : ''}" href="#grp-${gi}" title="${esc(g.label)}"><span>${esc(shortGrpTitle(g.label))}</span><span class="toc-cnt">${cnt}</span></a>`;
-        }).join('');
+        if (tocLabel) tocLabel.textContent = 'Přednášky';
+        tocNav.innerHTML = groups.map((g, gi) =>
+          `<a class="toc-link${gi === 0 ? ' active' : ''}" href="#grp-${gi}" title="${esc(g.label)}">` +
+            `<span>${esc(g.heading)}</span><span class="toc-cnt">${g.entries.length}</span>` +
+            (g.topicsText ? `<span class="toc-sub">${esc(g.topicsText)}</span>` : '') +
+          `</a>`
+        ).join('');
         state.tocEls = [...tocNav.querySelectorAll('.toc-link')];
       } else {
         if (tocLabel) tocLabel.textContent = 'Pojmy v přednášce';
-        const entries = state.groups[0].entries || [];
+        const entries = groups[0].entries || [];
         tocNav.innerHTML = entries.map((e, ei) =>
           `<a class="toc-link${ei === 0 ? ' active' : ''}" href="#e-0-${ei}"><span>${tocTermHtml(e.term)}</span></a>`
         ).join('');
@@ -311,7 +440,7 @@ function gBody(body, termLabel) {
 
     let flatIdx = 0;
     const entryTocLinks = !multi && tocNav ? [...tocNav.querySelectorAll('.toc-link')] : [];
-    state.groups.forEach((g, gi) => {
+    groups.forEach((g, gi) => {
       const els = state.groupEls[gi] ? [...state.groupEls[gi].querySelectorAll('.entry')] : [];
       (g.entries || []).forEach((e, ei) => {
         const el = els[ei];
@@ -321,44 +450,75 @@ function gBody(body, termLabel) {
           el,
           grpIdx: gi,
           tocEl,
-          searchText: norm(`${g.label || ''} ${e.term || ''} ${e.body || ''}`)
+          searchText: norm(`${g.label || ''} ${e.term || ''} ${bodyWithoutSources(e.body)}`)
         });
       });
     });
 
-    if (toggleSrcBtn) {
-      const hasDetails = outEl.querySelector('details.entry-src') !== null;
-      toggleSrcBtn.hidden = !hasDetails;
-      toggleSrcBtn.setAttribute('aria-pressed', 'false');
-      toggleSrcBtn.textContent = 'Rozbalit zdroje';
-    }
+    updateOverview();
     applyFilter();
   }
 
-  async function loadSource(src) {
-    const safeSrc = /^[A-Za-z0-9_-]{1,64}$/.test(src) ? src : '_all';
+  function populateLectureSelect() {
+    if (!lecSelect) return;
+    const list = state.allMerged;
+    if (!list.length) return;
+    const total = list.reduce((s, g) => s + g.entries.length, 0);
+    const opts = [`<option value="_all">Všechny přednášky (${total})</option>`];
+    for (const g of list) {
+      opts.push(`<option value="${esc('date:' + g.key)}">${esc(g.heading)}</option>`);
+    }
+    lecSelect.innerHTML = opts.join('');
+    if (state.source === '_all' && state.activeDateKey) lecSelect.value = 'date:' + state.activeDateKey;
+    else if (state.source === '_all') lecSelect.value = '_all';
+    else if (state.groups.length === 1 && list.some(x => x.key === state.groups[0].key)) {
+      lecSelect.value = 'date:' + state.groups[0].key;
+    }
+  }
+
+  async function fetchGlosar(src) {
+    const r = await fetch('/api/teorie?source=' + encodeURIComponent(src), { credentials: 'same-origin' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (!d || typeof d.title !== 'string' || !Array.isArray(d.groups)) throw new Error('invalid');
+    return d;
+  }
+
+  async function selectView(pickVal, updateUrl = true) {
+    const isDatePick = String(pickVal || '').startsWith('date:');
+    const targetSrc = (isDatePick || pickVal === '_all') ? '_all' : pickVal;
+    const safeSrc = /^[A-Za-z0-9_-]{1,64}$/.test(targetSrc) ? targetSrc : '_all';
     state.source = safeSrc;
-    if (lecSelect && lecSelect.value !== safeSrc) lecSelect.value = safeSrc;
-    let r;
+    state.activeDateKey = isDatePick ? pickVal.slice(5) : '';
+
+    if (updateUrl) {
+      const u = new URL(location.href);
+      u.searchParams.set('source', safeSrc);
+      if (state.activeDateKey) u.searchParams.set('den', state.activeDateKey);
+      else u.searchParams.delete('den');
+      history.replaceState(null, '', u.pathname + u.search);
+    }
+
+    if (safeSrc === '_all' && state.allMerged.length) {
+      const subset = state.activeDateKey ? state.allMerged.filter(g => g.key === state.activeDateKey) : state.allMerged;
+      const viewTitle = state.activeDateKey && subset[0] ? subset[0].heading : state.rawTitle || 'Všechny přednášky podle data';
+      populateLectureSelect();
+      renderGroups(subset, viewTitle);
+      return;
+    }
+
     try {
-      r = await fetch('/api/teorie?source=' + encodeURIComponent(safeSrc), { credentials: 'same-origin' });
+      const d = await fetchGlosar(safeSrc);
+      state.rawTitle = d.title;
+      const merged = mergeGroupsByDate(d.groups);
+      if (safeSrc === '_all') state.allMerged = merged;
+      const subset = state.activeDateKey ? merged.filter(g => g.key === state.activeDateKey) : merged;
+      const viewTitle = state.activeDateKey && subset[0] ? subset[0].heading : d.title;
+      populateLectureSelect();
+      renderGroups(subset, viewTitle);
     } catch (_) {
       showEmpty('Teorii se nepodařilo načíst.');
-      return;
     }
-    if (!r.ok) { showEmpty('Teorii se nepodařilo načíst.'); return; }
-    let d;
-    try {
-      d = await r.json();
-    } catch (_) {
-      showEmpty('Neplatná odpověď serveru.');
-      return;
-    }
-    if (!d || typeof d.title !== 'string' || !Array.isArray(d.groups)) {
-      showEmpty('Neplatná data teorie.');
-      return;
-    }
-    renderData(d);
   }
 
   if (qInput) {
@@ -388,21 +548,23 @@ function gBody(body, termLabel) {
     }
   });
 
-  if (toggleSrcBtn) {
-    toggleSrcBtn.addEventListener('click', () => {
-      const open = toggleSrcBtn.getAttribute('aria-pressed') !== 'true';
-      outEl.querySelectorAll('details.entry-src').forEach(det => { det.open = open; });
-      toggleSrcBtn.setAttribute('aria-pressed', open ? 'true' : 'false');
-      toggleSrcBtn.textContent = open ? 'Sbalit zdroje' : 'Rozbalit zdroje';
-    });
-  }
-
   if (tocNav) {
     tocNav.addEventListener('click', e => {
       const link = e.target.closest('.toc-link');
       if (!link) return;
       tocNav.querySelectorAll('.toc-link.active').forEach(a => a.classList.remove('active'));
       link.classList.add('active');
+    });
+  }
+
+  if (ovLectures) {
+    ovLectures.addEventListener('click', async e => {
+      const btn = e.target.closest('.ov-lec-btn');
+      if (!btn) return;
+      const pick = btn.dataset.pick || '_all';
+      closeDrawer();
+      await selectView(pick, true);
+      window.scrollTo({ top: 0 });
     });
   }
 
@@ -415,27 +577,24 @@ function gBody(body, termLabel) {
 
   if (lecSelect) {
     lecSelect.addEventListener('change', () => {
-      const nextSrc = lecSelect.value || '_all';
-      const u = new URL(location.href);
-      u.searchParams.set('source', nextSrc);
-      history.replaceState(null, '', u.pathname + u.search);
-      loadSource(nextSrc);
+      selectView(lecSelect.value || '_all', true);
     });
   }
 
-  const rawSource = new URLSearchParams(location.search).get('source') || '_all';
+  const sp = new URLSearchParams(location.search);
+  const rawSource = sp.get('source') || '_all';
   const initSource = /^[A-Za-z0-9_-]{1,64}$/.test(rawSource) ? rawSource : '_all';
+  const initDen = sp.get('den') || '';
 
-  const [, srcRes] = await Promise.allSettled([
-    loadSource(initSource),
-    fetch('/api/sources', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).catch(() => null)
-  ]);
-
-  if (lecSelect && srcRes.status === 'fulfilled' && srcRes.value && Array.isArray(srcRes.value.sources)) {
-    const ordered = [...srcRes.value.sources].sort((a, b) => (a.id === '_all' ? -1 : b.id === '_all' ? 1 : 0));
-    lecSelect.innerHTML = ordered.map(s =>
-      `<option value="${esc(s.id)}">${esc(s.id === '_all' ? 'Všechny přednášky' : shortGrpTitle(s.label))}</option>`
-    ).join('');
-    lecSelect.value = state.source;
+  // Přednačíst _all pro kompletní přehled podle data i při otevření konkrétní banky z kvízu
+  if (initSource !== '_all') {
+    fetchGlosar('_all').then(allD => {
+      state.allMerged = mergeGroupsByDate(allD.groups);
+      if (!state.rawTitle) state.rawTitle = allD.title;
+      populateLectureSelect();
+      updateOverview();
+    }).catch(() => {});
   }
+
+  await selectView(initDen ? 'date:' + initDen : initSource, false);
 })();

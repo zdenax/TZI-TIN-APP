@@ -111,6 +111,14 @@ def test_r1_latex_katex_rendering():
           assert(gHtml.includes(cls), 'Chybí sémantický blok v glosáři: ' + cls);
         }
         assert(!gHtml.includes('style='), 'Zakázaný inline style= v gBody()');
+        const mergeGroupsByDate = vm.runInContext('mergeGroupsByDate', mCtx);
+        const merged = mergeGroupsByDate([
+          { label: '2. přednáška (8. 10. 2026): Výroková logika', entries: [{ term: 'Výrok', body: 'a' }] },
+          { label: '2. přednáška (8. 10. 2026): Důkazy (sada na cvičení)', entries: [{ term: 'Důkaz', body: 'b' }] },
+        ]);
+        assert.strictEqual(merged.length, 1, 'Přednášky se stejným datem se musí sloučit');
+        assert.strictEqual(merged[0].entries.length, 2, 'Sloučená přednáška musí obsahovat oba pojmy');
+        assert(merged[0].heading.includes('8. 10. 2026'), 'Nadpis musí obsahovat datum');
       }
     }
     """
