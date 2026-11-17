@@ -1,6 +1,8 @@
 try {
   const th = localStorage.getItem('tzi_theme');
-  if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th);
+  if (th === 'light' || th === 'dark' || th === 'amoled' || th === 'catppuccin' || th === 'auto') {
+    document.documentElement.setAttribute('data-theme', th);
+  }
 } catch (e) {}
 
 const svg = document.getElementById('board'), $ = id => document.getElementById(id);

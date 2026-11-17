@@ -205,8 +205,8 @@ function mergeGroupsByDate(groups) {
 }
 
 (async () => {
-  const THEME_ORDER = ['catppuccin', 'dark', 'light'];
-  const THEME_NAMES = { catppuccin: 'Mocha', dark: 'Dark', light: 'Světlý' };
+  const THEME_ORDER = ['catppuccin', 'dark', 'amoled', 'light'];
+  const THEME_NAMES = { catppuccin: 'Mocha', dark: 'Dark', amoled: 'AMOLED', light: 'Světlý', auto: 'Auto' };
   const themeBtn = document.getElementById('themeBtn');
   const applyTheme = t => {
     const mode = THEME_NAMES[t] ? t : 'catppuccin';
@@ -224,7 +224,8 @@ function mergeGroupsByDate(groups) {
   if (themeBtn) {
     themeBtn.addEventListener('click', () => {
       const cur = document.documentElement.getAttribute('data-theme') || 'catppuccin';
-      const next = THEME_ORDER[(THEME_ORDER.indexOf(cur) + 1) % THEME_ORDER.length];
+      const idx = THEME_ORDER.indexOf(cur);
+      const next = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
       applyTheme(next);
     });
   }

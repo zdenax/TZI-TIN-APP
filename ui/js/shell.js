@@ -38,12 +38,15 @@ function showToast(html) {
 }
 
 function applyUserTheme(th) {
-  localStorage.setItem('tzi_theme', th);
+  const valid = ['catppuccin', 'dark', 'amoled', 'light', 'auto'].includes(th) ? th : 'catppuccin';
+  try { localStorage.setItem('tzi_theme', valid); } catch (_) {}
   if (typeof document !== 'undefined' && document.documentElement) {
-    if (th === 'auto') {
-      document.documentElement.removeAttribute('data-theme');
-    } else {
-      document.documentElement.setAttribute('data-theme', th);
+    document.documentElement.setAttribute('data-theme', valid);
+    const tc = document.querySelector('meta[name="theme-color"]');
+    if (tc) {
+      const darkPref = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+      const bgMap = { catppuccin: '#1e1e2e', dark: '#141415', amoled: '#000000', light: '#EEF2F6', auto: darkPref ? '#EEF2F6' : '#141415' };
+      tc.setAttribute('content', bgMap[valid] || '#1e1e2e');
     }
   }
 }

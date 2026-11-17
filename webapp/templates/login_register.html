@@ -27,6 +27,40 @@
             --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
             --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
+        :root[data-theme="dark"] {
+            color-scheme: dark;
+            --bg: #141415; --surface: #19191b; --card: #232325;
+            --border: rgba(237, 237, 237, 0.1); --text: #ededed; --text-dim: #a1a1a6;
+            --accent: #38bdf8; --accent-ink: #09090b; --error: #f0656a; --green: #4cc38a;
+        }
+        :root[data-theme="amoled"] {
+            color-scheme: dark;
+            --bg: #000000; --surface: #09090b; --card: #121215;
+            --border: rgba(255, 255, 255, 0.13); --text: #f4f4f5; --text-dim: #a1a1aa;
+            --accent: #38bdf8; --accent-ink: #000000; --error: #f0656a; --green: #4cc38a;
+        }
+        :root[data-theme="light"] {
+            color-scheme: light;
+            --bg: #EEF2F6; --surface: #FFFFFF; --card: #E2E8F0;
+            --border: #C5CEDB; --text: #13203A; --text-dim: #47546B;
+            --accent: #2538D8; --accent-ink: #FFFFFF; --error: #B31E52; --green: #12754E;
+        }
+        @media (prefers-color-scheme: light) {
+            :root[data-theme="auto"] {
+                color-scheme: light;
+                --bg: #EEF2F6; --surface: #FFFFFF; --card: #E2E8F0;
+                --border: #C5CEDB; --text: #13203A; --text-dim: #47546B;
+                --accent: #2538D8; --accent-ink: #FFFFFF; --error: #B31E52; --green: #12754E;
+            }
+        }
+        @media (prefers-color-scheme: dark) {
+            :root[data-theme="auto"] {
+                color-scheme: dark;
+                --bg: #141415; --surface: #19191b; --card: #232325;
+                --border: rgba(237, 237, 237, 0.1); --text: #ededed; --text-dim: #a1a1a6;
+                --accent: #38bdf8; --accent-ink: #09090b; --error: #f0656a; --green: #4cc38a;
+            }
+        }
         @media (pointer: coarse) { :root { --target-size: 44px; } }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -268,6 +302,10 @@
     </footer>
 
     <script>
+        try {
+            const th = localStorage.getItem('tzi_theme');
+            if (['dark', 'amoled', 'light', 'catppuccin', 'auto'].includes(th)) document.documentElement.setAttribute('data-theme', th);
+        } catch (e) {}
         function switchTab(t) {
             document.getElementById('login-form').style.display = t === 'login' ? 'block' : 'none';
             document.getElementById('reg-form').style.display = t === 'reg' ? 'block' : 'none';
