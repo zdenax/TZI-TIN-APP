@@ -7,18 +7,56 @@
 <title>Teorie · TZI Trenér</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/glosar.css?v=19">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/glosar.css?v=20">
 </head>
 <body>
-<main>
-  <a class="back" href="/">← TZI Trenér</a>
-  <h1>Teorie</h1>
-  <p class="sub" id="sub"></p>
-  <div id="out"></div>
-</main>
+<header class="top-bar">
+  <div class="top-inner">
+    <div class="top-title">
+      <a class="back" href="/"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Kvíz</a>
+      <h1>Teorie</h1>
+      <span class="meta-count" id="countMeta"></span>
+    </div>
+    <div class="top-controls">
+      <div class="search-box">
+        <svg class="ico search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="q" autocomplete="off" spellcheck="false" placeholder="Hledat pojem nebo vzorec… (/)" aria-label="Hledat pojem nebo vzorec">
+        <button type="button" id="qClear" class="icon-clear" aria-label="Vymazat hledání" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <select id="lecSelect" aria-label="Vybrat přednášku"></select>
+      <button type="button" id="themeBtn" class="btn-ghost" title="Přepnout barevný motiv">Motiv: Mocha</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="toc-aside" id="tocAside" aria-label="Kapitoly přednášek">
+    <div class="toc-label" id="tocLabel">Kapitoly</div>
+    <nav id="tocNav" class="toc-nav" aria-labelledby="tocLabel"></nav>
+  </aside>
+
+  <main class="content-col">
+    <div class="toolbar-sub">
+      <p class="sub" id="sub">Načítám teorii…</p>
+      <div class="sub-actions">
+        <button type="button" id="toggleSrcBtn" class="btn-quiet" aria-pressed="false" hidden>Rozbalit zdroje</button>
+        <button type="button" id="resetFilterBtn" class="btn-quiet" hidden>Zrušit filtr</button>
+      </div>
+    </div>
+    <div id="out"></div>
+    <div id="emptySearch" class="empty-box" hidden>
+      <p id="emptyMsg">Žádný pojem neodpovídá hledání.</p>
+      <button type="button" id="emptyResetBtn" class="btn-ghost">Zobrazit vše</button>
+    </div>
+    <button type="button" id="toTop" class="to-top" aria-label="Zpět nahoru" title="Zpět nahoru" hidden>
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
+  </main>
+</div>
+
 <script src="/static/vendor/katex/katex.min.js"></script>
-<script src="/static/js/format.js?v=15"></script>
-<script src="/static/js/glosar.js?v=17"></script>
+<script src="/static/js/format.js?v=16"></script>
+<script src="/static/js/glosar.js?v=18"></script>
 </body>
 </html>
