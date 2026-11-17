@@ -49,8 +49,10 @@ function renderQ() {
   $('q-src').textContent = isRecall(q) ? `Doplňovačka · ${q.category} · otázka ${q.number}`
     : `${lec}. přednáška · otázka ${q.number}` + (isReveal(q) ? ' · zadání na rozbor' : isInput(q) ? ' · příklad na výsledek' : ' · teorie');
   const t = $('q-text'); t.innerHTML = fmt(q.text); t.className = 'question-text' + (q.type === 'input' ? ' calc' : '');
-  $('q-hint').textContent = isRecall(q) ? `Očekáváno: ${wordsLabel(q.words)}` + (q.hint ? `. ${q.hint}` : '')
-    : isInput(q) ? (q.hint || '') : (q.correct.length > 1 ? '(Vyberte více správných odpovědí)' : '');
+  const qh = $('q-hint');
+  if (isRecall(q)) qh.innerHTML = esc(`Očekáváno: ${wordsLabel(q.words)}`) + (q.hint ? `. ${fmt(q.hint)}` : '');
+  else if (isInput(q)) qh.innerHTML = q.hint ? fmt(q.hint) : '';
+  else qh.textContent = q.correct.length > 1 ? '(Vyberte více správných odpovědí)' : '';
   $('feedback').textContent = ''; $('feedback').className = 'feedback';
   const sol = $('solution'); sol.style.display = 'none'; sol.textContent = '';
 
@@ -224,10 +226,10 @@ function restoreState(rec) {
   if (isInput(q)) {
     const inp = $('ans-input'); inp.value = rec.userKeys[0] || ''; inp.disabled = true;
     inp.classList.add(rec.isCorrect ? 'correct' : 'wrong');
-    if (isRecall(q)) fb.innerHTML = esc(rec.manual ? (rec.isCorrect ? 'Uznáno ručně' : 'Ručně označeno jako špatně')
-        : rec.typo ? `Správně, uznáno jako překlep (${rec.typo})` : rec.isCorrect ? 'Správně' : `Špatně. Správně: ${q.accept[0]}`) +
+    if (isRecall(q)) fb.innerHTML = (rec.manual ? esc(rec.isCorrect ? 'Uznáno ručně' : 'Ručně označeno jako špatně')
+        : rec.typo ? `Správně, uznáno jako překlep (${esc(rec.typo)})` : rec.isCorrect ? 'Správně' : `Špatně. Správně: ${fmt(q.accept[0])}`) +
       ` <button class="btn-end" onclick="gradeTask(${!rec.isCorrect})">${rec.isCorrect ? 'Označit jako špatně' : 'Uznat jako správně'}</button>`;
-    else fb.textContent = rec.isCorrect ? 'Správně' : `Špatně. Správně: ${q.answer}`;
+    else fb.innerHTML = rec.isCorrect ? 'Správně' : `Špatně. Správně: ${fmt(q.answer)}`;
   } else {
     const cs = new Set(rec.correctKeys), us = new Set(rec.userKeys);
     for (const l of Object.keys(q.options)) {

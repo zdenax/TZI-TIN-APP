@@ -224,6 +224,10 @@ dialog label { display: block; font-weight: 700; margin: 10px 0 4px; }
 .svg-empty-msg { fill: var(--muted); font: 14px var(--font); text-anchor: middle; }
 .verdict-ok { color: var(--ok); }
 .verdict-bad { color: var(--bad); }
+.katex { font-size: 1.05em; }
+@media (max-width: 640px) { .katex { font-size: .88em; } }
+math { font-family: math, "Latin Modern Math", "Cambria Math", "STIX Two Math", serif; }
+math mtext.math-bb { font-family: var(--font), "DejaVu Sans", sans-serif; font-style: normal; font-weight: 500; }
 
 @media (max-width: 900px) {
   html, body { height: auto; min-height: 100dvh; overflow-y: auto; }

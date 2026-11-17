@@ -671,3 +671,4 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .room-standings li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: .85rem; }
   .room-standings li:last-child { border-bottom: none; }
   .katex { font-size: 1.05em; }
+  @media (max-width: 640px) { .katex { font-size: .88em; } }

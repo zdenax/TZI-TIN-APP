@@ -63,6 +63,31 @@ def test_r1_latex_katex_rendering():
     // 3. Běžný text bez LaTeXu si zachová dolní/horní indexy a šipky
     const outPlain = fmt('Posloupnost a_n -> Z^2');
     assert(outPlain.includes('a<sub>n</sub>') && outPlain.includes('→') && outPlain.includes('Z<sup>2</sup>'), 'Rozbité běžné formátování: ' + outPlain);
+
+    // 4. Rozšířené auto-KaTeX vzorce a přísný CSP mathml režim bez inline style= na reálném KaTeXu
+    const realKatex = require('./ui/vendor/katex/katex.min.js');
+    for (const mode of ['', 'mathml']) {
+      const mCtx = vm.createContext({
+        katex: realKatex,
+        document: { documentElement: { dataset: mode ? { katexMode: mode } : {} } }
+      });
+      vm.runInContext(fs.readFileSync('ui/js/format.js', 'utf8'), mCtx);
+      const rFmt = vm.runInContext('fmt', mCtx);
+      for (const expr of [
+        'V_k(n) = n! / (n−k)!',
+        '(n+k−1 nad k)',
+        'Σ_(i=1)^n a_i',
+        'Platí ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ ⊂ ℂ.',
+        'Q = {zavřeno, otevřeno}, u ⇒^(∗) z, D_(f⁻¹) = H_f'
+      ]) {
+        const rendered = rFmt(expr);
+        assert(rendered.includes('class="katex"'), 'Chybí KaTeX pro: ' + expr);
+        assert(!rendered.includes('katex-error'), 'Chyba KaTeX pro: ' + expr);
+        if (mode === 'mathml') {
+          assert(!rendered.includes('style='), 'Zakázaný inline style= v mathml režimu: ' + expr);
+        }
+      }
+    }
     """
     res = subprocess.run(["node", "-e", node_check], cwd=str(BASE), capture_output=True, text=True)
     assert res.returncode == 0, f"Node KaTeX test selhal: {res.stderr}\n{res.stdout}"
