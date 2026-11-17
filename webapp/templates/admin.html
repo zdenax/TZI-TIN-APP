@@ -28,6 +28,40 @@
             --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
             --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
+        :root[data-theme="dark"] {
+            color-scheme: dark;
+            --bg: #141415; --card: #19191b; --raised: #232325; --border: rgba(237, 237, 237, 0.1);
+            --text: #ededed; --text-dim: #a1a1a6; --mauve: #38bdf8; --accent-ink: #09090b;
+            --green: #4cc38a; --yellow: #eab308; --red: #f0656a;
+        }
+        :root[data-theme="amoled"] {
+            color-scheme: dark;
+            --bg: #000000; --card: #09090b; --raised: #121215; --border: rgba(255, 255, 255, 0.13);
+            --text: #f4f4f5; --text-dim: #a1a1aa; --mauve: #38bdf8; --accent-ink: #000000;
+            --green: #4cc38a; --yellow: #eab308; --red: #f0656a;
+        }
+        :root[data-theme="light"] {
+            color-scheme: light;
+            --bg: #EEF2F6; --card: #FFFFFF; --raised: #E2E8F0; --border: #C5CEDB;
+            --text: #13203A; --text-dim: #47546B; --mauve: #2538D8; --accent-ink: #FFFFFF;
+            --green: #12754E; --yellow: #8A5300; --red: #B31E52;
+        }
+        @media (prefers-color-scheme: light) {
+            :root[data-theme="auto"] {
+                color-scheme: light;
+                --bg: #EEF2F6; --card: #FFFFFF; --raised: #E2E8F0; --border: #C5CEDB;
+                --text: #13203A; --text-dim: #47546B; --mauve: #2538D8; --accent-ink: #FFFFFF;
+                --green: #12754E; --yellow: #8A5300; --red: #B31E52;
+            }
+        }
+        @media (prefers-color-scheme: dark) {
+            :root[data-theme="auto"] {
+                color-scheme: dark;
+                --bg: #141415; --card: #19191b; --raised: #232325; --border: rgba(237, 237, 237, 0.1);
+                --text: #ededed; --text-dim: #a1a1a6; --mauve: #38bdf8; --accent-ink: #09090b;
+                --green: #4cc38a; --yellow: #eab308; --red: #f0656a;
+            }
+        }
         @media (pointer: coarse) { :root { --target-size: 44px; } }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -353,6 +387,10 @@
     </main>
 
     <script>
+        try {
+            const th = localStorage.getItem('tzi_theme');
+            if (['dark', 'amoled', 'light', 'catppuccin', 'auto'].includes(th)) document.documentElement.setAttribute('data-theme', th);
+        } catch (e) {}
         const initialLimit = "<!--CURRENT_LIMIT-->";
         const limitSelect = document.getElementById("limit-select");
         if (limitSelect && initialLimit) {
