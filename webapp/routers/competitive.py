@@ -276,7 +276,7 @@ async def api_rooms_create(request: Request, response: Response, user: Dict[str,
 def api_room_detail(room_id: int, user: Dict[str, Any] = Depends(require_user)):
     room = scoring.get_comp_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Místnost neexistuje.")
+        raise HTTPException(status_code=404, detail="Místnost neexistuje nebo vypršel její 5minutový limit.")
     uid = user.get("user_id") or 0
     is_member = any(p.get("user_id") == uid for p in (room.get("players") or []))
     room_qs = _resolve_room_questions(room) if (is_member and room.get("status") in ("in_progress", "completed")) else []
@@ -345,7 +345,7 @@ async def api_room_submit(room_id: int, request: Request, response: Response, us
 
     room = scoring.get_comp_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Místnost neexistuje.")
+        raise HTTPException(status_code=404, detail="Místnost neexistuje nebo vypršel její 5minutový limit.")
 
     if room.get("status") != "in_progress":
         raise HTTPException(status_code=400, detail="Místnost není ve stavu in_progress (nebyla zahájena).")

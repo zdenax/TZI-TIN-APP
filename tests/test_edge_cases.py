@@ -245,3 +245,62 @@ def test_admin_account_and_webhook_edge_cases(iso_db, monkeypatch):
     assert stu.post("/webhook").status_code == 403
     assert stu.post("/webhook?secret=wrong").status_code == 403
     assert stu.post("/webhook?secret=%C4%8D%C5%99%C5%BE").status_code == 403
+
+
+def test_room_lobby_timeout_and_empty_cleanup(iso_db):
+    import scoring
+    c1, csrf1 = _register_browser_client("lobby_ttl_u1", "LobbyUA/1.0")
+    c2, csrf2 = _register_browser_client("lobby_ttl_u2", "LobbyUA/2.0")
+
+    # Fresh waiting room exposes ~300s countdown
+    created = c1.post(
+        "/api/rooms/create",
+        json={"mode": "ffa", "name": "ExpiringLobby", "count": 3, "source": "01-2026-10-01"},
+        headers={"X-CSRF-Token": csrf1},
+    ).json()["room"]
+    rid_exp = created["id"]
+    assert created["lobby_timeout_seconds"] == scoring.ROOM_LOBBY_TIMEOUT_SECONDS == 300
+    assert 295 <= created["expires_in_seconds"] <= 300
+
+    # Started (in_progress) room must NOT expire even after > 5 minutes
+    started = c1.post(
+        "/api/rooms/create",
+        json={"mode": "ffa", "name": "StartedRoom", "count": 3, "source": "01-2026-10-01"},
+        headers={"X-CSRF-Token": csrf1},
+    ).json()["room"]
+    rid_started = started["id"]
+    assert c1.post(f"/api/rooms/{rid_started}/start", headers={"X-CSRF-Token": csrf1}).status_code == 200
+
+    conn = db.get_db()
+    with conn:
+        conn.execute("UPDATE comp_rooms SET created_at = datetime('now', '-290 seconds') WHERE id = ?", (rid_exp,))
+        conn.execute("UPDATE comp_rooms SET created_at = datetime('now', '-600 seconds') WHERE id = ?", (rid_started,))
+
+    # Under 5 min waiting room is still listed with low remaining time
+    mid_rooms = c2.get("/api/rooms").json()["active_rooms"]
+    mid_map = {r["id"]: r for r in mid_rooms}
+    assert rid_exp in mid_map and 1 <= mid_map[rid_exp]["expires_in_seconds"] <= 15
+    assert rid_started in mid_map and mid_map[rid_started]["expires_in_seconds"] is None
+
+    # Past 5 min (305s) unstarted waiting room auto-expires & cascades players
+    with conn:
+        conn.execute("UPDATE comp_rooms SET created_at = datetime('now', '-305 seconds') WHERE id = ?", (rid_exp,))
+
+    after_rooms = c2.get("/api/rooms").json()["active_rooms"]
+    after_ids = {r["id"] for r in after_rooms}
+    assert rid_exp not in after_ids
+    assert rid_started in after_ids
+    assert c2.get(f"/api/rooms/{rid_exp}").status_code == 404
+    assert c2.post(f"/api/rooms/{rid_exp}/join", headers={"X-CSRF-Token": csrf2}).status_code == 400
+    assert c1.post(f"/api/rooms/{rid_exp}/start", headers={"X-CSRF-Token": csrf1}).status_code == 403
+    assert conn.execute("SELECT COUNT(*) FROM comp_room_players WHERE room_id = ?", (rid_exp,)).fetchone()[0] == 0
+
+    # Empty orphaned lobby (0 players) is also cleaned up automatically
+    uid1 = c1.get("/api/me").json()["user_id"]
+    with conn:
+        cur = conn.execute(
+            "INSERT INTO comp_rooms (name, mode, host_id, host_username, status) VALUES ('Orphan', 'ffa', ?, 'lobby_ttl_u1', 'waiting')",
+            (uid1,),
+        )
+        rid_orphan = cur.lastrowid
+    assert c2.get(f"/api/rooms/{rid_orphan}").status_code == 404

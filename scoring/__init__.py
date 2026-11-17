@@ -1,5 +1,5 @@
 """Bodování a soutěže. Veřejné API balíčku zůstává stejné jako dřívější scoring.py (import scoring; scoring.X)."""
-from .constants import DAILY_MIN_GOAL, KOTH_DEFAULT_QUESTIONS
+from .constants import DAILY_MIN_GOAL, KOTH_DEFAULT_QUESTIONS, ROOM_LOBBY_TIMEOUT_SECONDS
 from .points import (
     get_question_difficulty,
     is_recall_question,
@@ -24,6 +24,7 @@ from .rooms import (
 __all__ = [
     "DAILY_MIN_GOAL",
     "KOTH_DEFAULT_QUESTIONS",
+    "ROOM_LOBBY_TIMEOUT_SECONDS",
     "get_question_difficulty",
     "is_recall_question",
     "record_question_answer",

@@ -84,6 +84,36 @@ function renderKothUI(st, overview) {
   }
 }
 
+let roomCountdownTimer = null;
+let roomDeadlineMs = null;
+
+function formatRoomCountdown(secs) {
+  const s = Math.max(0, Math.floor(Number(secs) || 0));
+  const m = Math.floor(s / 60);
+  return `${m}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function updateRoomCountdownLabel() {
+  const el = $('rl-timer');
+  if (!el) return;
+  if (roomDeadlineMs == null) {
+    el.textContent = '';
+    el.classList.remove('warn');
+    return;
+  }
+  const remSec = Math.max(0, Math.ceil((roomDeadlineMs - Date.now()) / 1000));
+  el.textContent = `⏱ Limit ${formatRoomCountdown(remSec)}`;
+  el.classList.toggle('warn', remSec <= 60);
+}
+
+function handleRoomExpired() {
+  stopRoomPolling();
+  activeRoomId = null;
+  activeRoomData = null;
+  showToast('⏰ Lobby vypršelo (limit 5 minut bez spuštění).');
+  openCompArena();
+}
+
 function modeBadgeLabel(m) {
   return m === 'ffa' ? 'FFA' : m === 'duel' ? '1v1 Duel' : 'King of the Hill';
 }
@@ -103,13 +133,16 @@ function renderRoomsListUI(roomsData) {
   listEl.innerHTML = active.slice(0, 6).map(r => {
     const isMember = Array.isArray(r.players) && r.players.some(p => p.user_id === myUid);
     const playersNames = Array.isArray(r.players) ? r.players.map(p => (p.is_host ? '👑 ' : '') + esc(p.username)).join(', ') : '';
+    const expText = (r.status === 'waiting' && typeof r.expires_in_seconds === 'number')
+      ? ` · ⏱ ${formatRoomCountdown(r.expires_in_seconds)}`
+      : '';
     const btnLabel = r.status === 'waiting'
       ? (isMember ? 'Otevřít lobby 👑' : 'Připojit se')
       : (isMember ? 'Probíhá (Vstoupit)' : 'Probíhá');
     const canClick = r.status === 'waiting' || isMember;
     return `<li class="room-row">
       <div>
-        <div><b>${modeBadgeLabel(r.mode)} · ${esc(r.name)}</b> <span class="room-row-meta">(${r.player_count}/${r.max_players} hráčů · ${r.question_count} ot.)</span></div>
+        <div><b>${modeBadgeLabel(r.mode)} · ${esc(r.name)}</b> <span class="room-row-meta">(${r.player_count}/${r.max_players} hráčů · ${r.question_count} ot.${expText})</span></div>
         <div class="room-row-meta">Hráči: ${playersNames || esc(r.host_username)}</div>
       </div>
       ${canClick ? `<button type="button" class="room-join-btn" onclick="joinCompRoom(${Number(r.id)})">${btnLabel}</button>` : `<span class="room-row-meta">Hraje se</span>`}
@@ -155,12 +188,31 @@ function stopRoomPolling() {
     clearInterval(roomPollTimer);
     roomPollTimer = null;
   }
+  if (roomCountdownTimer) {
+    clearInterval(roomCountdownTimer);
+    roomCountdownTimer = null;
+  }
+  roomDeadlineMs = null;
 }
 
 function renderRoomLobbyView(room) {
   if (!room) return;
   activeRoomData = room;
   activeRoomId = room.id;
+  if (room.status === 'waiting' && typeof room.expires_in_seconds === 'number') {
+    roomDeadlineMs = Date.now() + room.expires_in_seconds * 1000;
+    updateRoomCountdownLabel();
+    if (!roomCountdownTimer) {
+      roomCountdownTimer = setInterval(updateRoomCountdownLabel, 1000);
+    }
+  } else {
+    roomDeadlineMs = null;
+    if (roomCountdownTimer) {
+      clearInterval(roomCountdownTimer);
+      roomCountdownTimer = null;
+    }
+    updateRoomCountdownLabel();
+  }
   const myUid = currentUserData ? currentUserData.user_id : 0;
   const isHost = room.host_id === myUid || (Array.isArray(room.players) && room.players.some(p => p.user_id === myUid && p.is_host));
   if ($('rl-mode-badge')) $('rl-mode-badge').textContent = `${modeBadgeLabel(room.mode)} · MÍSTNOST #${room.id}`;
@@ -216,11 +268,22 @@ function launchRoomQuiz(room, questions) {
 }
 
 function startRoomLobbyPolling(roomId) {
-  stopRoomPolling();
+  if (roomPollTimer) {
+    clearInterval(roomPollTimer);
+    roomPollTimer = null;
+  }
+  updateRoomCountdownLabel();
+  if (!roomCountdownTimer && roomDeadlineMs != null) {
+    roomCountdownTimer = setInterval(updateRoomCountdownLabel, 1000);
+  }
   roomPollTimer = setInterval(async () => {
     try {
       const res = await fetch(`/api/rooms/${roomId}`);
       if (!res.ok) {
+        if (res.status === 404) {
+          handleRoomExpired();
+          return;
+        }
         stopRoomPolling();
         return;
       }
@@ -307,6 +370,10 @@ async function startActiveRoomByHost() {
       launchRoomQuiz(data.room, data.questions);
     } else {
       const err = await res.json().catch(() => ({}));
+      if (res.status === 404 || (err.detail && err.detail.includes('vypršela'))) {
+        handleRoomExpired();
+        return;
+      }
       showToast('⚠️ ' + (err.detail || 'Hru může spustit pouze 👑 hostitel.'));
     }
   } catch (e) {}

@@ -1,10 +1,10 @@
-const CACHE_NAME = 'tzi-pwa-v22';
+const CACHE_NAME = 'tzi-pwa-v23';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icon.svg',
   '/static/vendor/katex/katex.min.css',
   '/static/vendor/katex/katex.min.js',
-  '/static/css/style.css?v=20',
+  '/static/css/style.css?v=21',
   '/static/css/glosar.css?v=22',
   '/static/js/core.js?v=14',
   '/static/js/format.js?v=16',
@@ -14,7 +14,7 @@ const STATIC_ASSETS = [
   '/static/js/account.js?v=14',
   '/static/js/offline.js?v=14',
   '/static/js/gamification.js?v=14',
-  '/static/js/rooms.js?v=14',
+  '/static/js/rooms.js?v=15',
   '/static/js/menu.js?v=15',
   '/static/js/chunks.js?v=14',
   '/static/js/modes.js?v=14',

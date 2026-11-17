@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/style.css?v=20">
+<link rel="stylesheet" href="/static/css/style.css?v=21">
   <link rel="stylesheet" href="/static/vendor/katex/katex.min.css">
   <script src="/static/vendor/katex/katex.min.js"></script>
 </head>
@@ -508,11 +508,14 @@
   <!-- Pohled: Čekárna místnosti (Room Lobby) -->
   <section id="room-lobby" aria-labelledby="rl-title">
     <div class="rl-card">
-      <span class="rl-badge" id="rl-mode-badge">LOBBY ROOM</span>
+      <div class="rl-head">
+        <span class="rl-badge" id="rl-mode-badge">LOBBY ROOM</span>
+        <span class="rl-timer" id="rl-timer"></span>
+      </div>
       <h1 id="rl-title" style="margin:0 0 4px;font-size:1.35rem;">Room</h1>
       <p id="rl-subtitle" style="margin:0;color:var(--muted);font-size:.85rem;">10 timed questions</p>
       <div class="rl-status" id="rl-status-banner">Waiting for players to join or host to start the match...</div>
-      <h3 style="margin:0 0 8px;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);">Players in Lobby (<span id="rl-player-count">1/8</span>)</h3>
+      <h2 style="margin:0 0 8px;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);">Players in Lobby (<span id="rl-player-count">1/8</span>)</h2>
       <ul class="rl-players" id="rl-players-list"></ul>
       <div class="rl-actions">
         <button type="button" class="primary" id="btn-rl-start" onclick="startActiveRoomByHost()">Start Match Now</button>
@@ -607,7 +610,7 @@
 <script src="/static/js/account.js?v=14"></script>
 <script src="/static/js/offline.js?v=14"></script>
 <script src="/static/js/gamification.js?v=14"></script>
-<script src="/static/js/rooms.js?v=14"></script>
+<script src="/static/js/rooms.js?v=15"></script>
 <script src="/static/js/menu.js?v=15"></script>
 <script src="/static/js/chunks.js?v=14"></script>
 <script src="/static/js/modes.js?v=14"></script>
