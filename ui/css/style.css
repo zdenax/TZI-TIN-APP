@@ -320,6 +320,11 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
 
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; gap: 36px; margin-top: 30px; }
+  .layout > section[aria-labelledby="h-lec"] { display: contents; }
+  .lec-panel { order: 1; }
+  .lec-panel .lectures { margin-bottom: 0; }
+  .layout > section[aria-label="Režimy"] { order: 2; }
+  .bits-panel { order: 3; }
   .top p { text-align: left; }
   #app { padding: 24px 16px 44px; }
 }
@@ -716,4 +721,5 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; 
   .room-standings li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: .85rem; }
   .room-standings li:last-child { border-bottom: none; }
   .katex { font-size: 1.05em; }
+  .question-text .katex, .opt .katex, .solution .katex { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; }
   @media (max-width: 640px) { .katex { font-size: .88em; } }

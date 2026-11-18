@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/css/style.css?v=21">
+<link rel="stylesheet" href="/static/css/style.css?v=22">
   <link rel="stylesheet" href="/static/vendor/katex/katex.min.css">
   <script src="/static/vendor/katex/katex.min.js"></script>
 </head>
@@ -80,19 +80,23 @@
 
     <div class="layout">
       <section aria-labelledby="h-lec">
-        <h2 id="h-lec">Přednáška</h2>
-        <ul class="lectures" id="lectures"></ul>
+        <div class="lec-panel">
+          <h2 id="h-lec">Přednáška</h2>
+          <ul class="lectures" id="lectures"></ul>
+        </div>
 
-        <header class="bits-head">
-          <h2 style="margin:0">Tvůj postup</h2>
-          <output id="bits-sum"></output>
-        </header>
-        <figure class="bits" id="bits" role="group" aria-label="Postup po blocích, klikni na blok"></figure>
-        <footer class="legend" aria-hidden="true">
-          <span class="ok"><i>1</i>správně</span>
-          <span class="bad"><i>0</i>chybně</span>
-          <span class="new"><i>·</i>nová</span>
-        </footer>
+        <div class="bits-panel">
+          <header class="bits-head">
+            <h2 style="margin:0">Tvůj postup</h2>
+            <output id="bits-sum"></output>
+          </header>
+          <figure class="bits" id="bits" role="group" aria-label="Postup po blocích, klikni na blok"></figure>
+          <footer class="legend" aria-hidden="true">
+            <span class="ok"><i>1</i>správně</span>
+            <span class="bad"><i>0</i>chybně</span>
+            <span class="new"><i>·</i>nová</span>
+          </footer>
+        </div>
       </section>
 
       <section aria-label="Režimy">
