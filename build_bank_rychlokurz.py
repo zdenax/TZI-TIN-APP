@@ -214,7 +214,8 @@ choice(
     "Generativní gramatika je G = (Π, Σ, S, P):\n"
     "• Π neterminály (velká písmena), Σ terminály (malá písmena, číslice), Π ∩ Σ = ∅,\n"
     "• S ∈ Π počáteční symbol,\n"
-    "• P pravidla α → β, kde levá strana α obsahuje aspoň jeden neterminál.",
+    "• P pravidla α → β, kde levá strana α (to, co je PŘED šipkou) obsahuje aspoň jeden neterminál, tedy aspoň "
+    "jedno VELKÉ písmeno z Π. Pravá strana může být cokoli, i prázdné slovo e.",
     "Gramatika má Π = {S, B}, Σ = {a, b}. Které pravidlo v generativní gramatice NENÍ dovolené?",
     "ab → ba",
     ["aB → Ba", "S → e", "B → aSb"],
