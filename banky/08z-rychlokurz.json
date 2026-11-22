@@ -1,0 +1,607 @@
+{
+ "title": "Rychlokurz: gramatiky a zásobníkové automaty",
+ "lecture": 8,
+ "date": "2026-11-19",
+ "questions": [
+  {
+   "type": "choice",
+   "theory": "⏱ 0:00 · ČÁST 1: GRAMATIKY (do 0:50). Pojmy: přepis a odvození.\nPřepisovací systém je R = (V, P): V je konečná abeceda, P konečná množina pravidel u → v (u, v ∈ V*).\nPřímý přepis u ⇒ z: ve slově u najdu levou stranu x nějakého pravidla x → y a nahradím ji pravou stranou y. Okolí zůstane: u = v x w, z = v y w. Jedno pravidlo, jednou.",
+   "text": "Co přesně je přímý přepis u ⇒ z?",
+   "options": {
+    "A": "Jedno použití jednoho pravidla x → y na jeden výskyt x ve slově u.",
+    "B": "Použití všech pravidel z P najednou na celé slovo u.",
+    "C": "Nahrazení celého slova u slovem z bez ohledu na pravidla.",
+    "D": "Libovolně dlouhý řetěz použití pravidel."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "u = v x w a z = v y w, kde x → y ∈ P. Řetěz kroků je až ⇒*. Chytil, Def. 3.1.2, s. 118. Přednáška 12. 11.",
+   "number": 1,
+   "id": "8z-1"
+  },
+  {
+   "type": "input",
+   "theory": "Přepis (odvození) u ⇒* z je řetěz přímých přepisů u ⇒ u₁ ⇒ … ⇒ z. Smí mít i nula kroků (⇒* je reflexivní).\nOdvození je minimální, když se v něm žádné slovo neopakuje. Lemma: když u ⇒* z, existuje i minimální odvození (opakující se úsek se vyhodí).\nU odvození vždy podtrhni přepsanou část a nad ⇒ napiš číslo pravidla.",
+   "text": "Přepisovací systém z přednášky: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Odvození 00110 ⇒ 00101 ⇒ 00011: napiš čísla použitých pravidel.",
+   "answer": "22",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "solution": "Oba kroky pravidlem 2 (10 → 01): nejdřív poslední dvojice 10 v 00110, pak 10 na 3.–4. místě v 00101. Chytil, Př. 3.1.3, s. 118–119. Přednáška 12. 11.",
+   "number": 2,
+   "id": "8z-2"
+  },
+  {
+   "type": "input",
+   "theory": "⇒* je reflexivní: každé slovo se přepíše samo na sebe nulou kroků.",
+   "text": "Přepisovací systém: V = {0, 1}, pravidla (1) 01 → 10, (2) 10 → 01. Platí 0110 ⇒* 0110?",
+   "answer": "ano",
+   "hint": "ano nebo ne (bez tečky)",
+   "solution": "Ano, odvození délky 0 (žádný krok) je dovolené, ⇒* je reflexivní a tranzitivní uzávěr ⇒. Chytil, s. 118. Přednáška 12. 11.",
+   "number": 3,
+   "id": "8z-3"
+  },
+  {
+   "type": "choice",
+   "theory": "Generativní gramatika je G = (Π, Σ, S, P):\n• Π neterminály (velká písmena), Σ terminály (malá písmena, číslice), Π ∩ Σ = ∅,\n• S ∈ Π počáteční symbol,\n• P pravidla α → β, kde levá strana α obsahuje aspoň jeden neterminál.",
+   "text": "Gramatika má Π = {S, B}, Σ = {a, b}. Které pravidlo v generativní gramatice NENÍ dovolené?",
+   "options": {
+    "A": "ab → ba",
+    "B": "aB → Ba",
+    "C": "S → e",
+    "D": "B → aSb"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Levá strana ab neobsahuje žádný neterminál. Proto se v úloze 2 ze cvičení prohazují aB, aC, BC, ne přímo terminály. Chytil, Def. 3.1.5, s. 119. Přednáška 12. 11.",
+   "number": 4,
+   "id": "8z-4"
+  },
+  {
+   "type": "choice",
+   "theory": "Jazyk gramatiky: L(G) = {w ∈ Σ*; S ⇒* w}.\nZačnu slovem S a přepisuji, dokud nezůstanou jen terminály. Slovo, ve kterém ještě je neterminál, do L(G) nepatří.",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Platí S ⇒ aBb. Patří aBb do L(G)?",
+   "options": {
+    "A": "Ne, obsahuje neterminál B, v L(G) jsou jen slova z Σ*.",
+    "B": "Ano, protože se odvodí z S.",
+    "C": "Ano, protože je odvozené jedním krokem.",
+    "D": "Ne, protože aBb nemá stejný počet a a b."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "L(G) obsahuje jen terminální slova. aBb je jen mezikrok (větná forma). Přednáška 12. 11.",
+   "number": 5,
+   "id": "8z-5"
+  },
+  {
+   "type": "input",
+   "theory": "Odvození v gramatice zapisuj stejně: podtrhni neterminál, který přepisuješ, a nad ⇒ napiš číslo pravidla.",
+   "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Napiš čísla pravidel odvození S ⇒* aabaacb.",
+   "answer": "1234",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "solution": "S ⇒(1) aBb ⇒(2) aaCcb ⇒(3) aabBacb ⇒(4) aabaacb. Je to jediné odvození tohoto slova. Přednáška 12. 11.",
+   "number": 6,
+   "id": "8z-6"
+  },
+  {
+   "type": "choice",
+   "theory": "Analytická gramatika má stejné (Π, Σ, S, P), ale neterminál musí být na PRAVÉ straně pravidla, a L(G) = {w ∈ Σ*; w ⇒* S}: slovo se „sbaluje“ zpátky na S (jako rozbor věty).\nObrátím-li šipky generativní gramatiky, dostanu analytickou se stejným jazykem.",
+   "text": "Čím se liší analytická gramatika od generativní?",
+   "options": {
+    "A": "Neterminál musí být na pravé straně pravidla a slovo se přepisuje na S, ne z S.",
+    "B": "Nemá počáteční symbol S.",
+    "C": "Smí mít jen pravidla tvaru X → aY.",
+    "D": "Generuje vždy konečný jazyk."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Generativní: neterminál vlevo, S ⇒* w. Analytická: neterminál vpravo, w ⇒* S. Chytil, Def. 3.1.8, s. 123–124. Přednáška 12. 11.",
+   "number": 7,
+   "id": "8z-7"
+  },
+  {
+   "type": "choice",
+   "theory": "⏱ 0:15 · Cvičení, úloha 1: gramatika pro {0ⁿ1ⁿ; n ≥ 1}.\nNápad: pravidlo S → 0S1 přidá najednou jednu 0 vlevo a jednu 1 vpravo, počty tedy zůstanou stejné. Pravidlo S → 01 odvození ukončí (S zmizí).\nS → e místo S → 01 by do jazyka přidalo prázdné slovo, které tam při n ≥ 1 není.",
+   "text": "Která gramatika (Π = {S}, Σ = {0, 1}) generuje přesně {0ⁿ1ⁿ; n ≥ 1}?",
+   "options": {
+    "A": "S → 0S1, S → 01",
+    "B": "S → 0S1, S → e",
+    "C": "S → 0S, S → S1, S → 01",
+    "D": "S → 0S1"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "S → e přidá prázdné slovo; 0S a S1 zvlášť rozbijí počty (vznikne 001); bez ukončovacího pravidla S nezmizí a L(G) = ∅. Ověřeno výpočtem do délky 10. Cvičení 19. 11.",
+   "number": 8,
+   "id": "8z-8"
+  },
+  {
+   "type": "input",
+   "theory": "Gramatika z úlohy 1: (1) S → 0S1, (2) S → 01. Každé použití pravidla 1 přidá jednu dvojici 0…1, pravidlo 2 přidá poslední dvojici 01 doprostřed.",
+   "text": "Gramatika: Π = {S}, Σ = {0, 1}, pravidla (1) S → 0S1, (2) S → 01. Napiš čísla pravidel odvození S ⇒* 000111.",
+   "answer": "112",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "solution": "S ⇒(1) 0S1 ⇒(1) 00S11 ⇒(2) 000111. Tedy S ⇒* 000111 a 000111 ∈ L(G). Cvičení 19. 11.",
+   "number": 9,
+   "id": "8z-9"
+  },
+  {
+   "type": "input",
+   "theory": "Na 0ⁿ1ⁿ je potřeba (n − 1)× pravidlo 1 a jednou pravidlo 2.",
+   "text": "Gramatika: Π = {S}, Σ = {0, 1}, pravidla (1) S → 0S1, (2) S → 01. Kolik kroků má odvození slova 0000011111?",
+   "answer": "5",
+   "hint": "číslo",
+   "solution": "4× pravidlo 1 a 1× pravidlo 2: S ⇒ 0S1 ⇒ 00S11 ⇒ 000S111 ⇒ 0000S1111 ⇒ 0000011111. Cvičení 19. 11.",
+   "number": 10,
+   "id": "8z-10"
+  },
+  {
+   "type": "choice",
+   "theory": "Častá varianta zadání: změní se dolní mez nebo poměr počtů. Ukončovací pravidlo odpovídá nejmenšímu slovu jazyka, opakující se pravidlo přidává „jednu jednotku“.",
+   "text": "Jak upravit gramatiku, aby generovala {0ⁿ1²ⁿ; n ≥ 1} (za každou nulu dvě jedničky)?",
+   "options": {
+    "A": "S → 0S11, S → 011",
+    "B": "S → 0S1, S → 011",
+    "C": "S → 00S1, S → 001",
+    "D": "S → 0S11, S → e"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Každá 0 musí přinést dvě 1 a nejmenší slovo je 011. Ověřeno výpočtem do délky 12. Cvičení 19. 11.",
+   "number": 11,
+   "id": "8z-11"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "theory": "Na papír: odvoď sám 000111 v gramatice S → 0S1 | 01. U každého kroku podtrhni přepisované S, nad ⇒ napiš číslo pravidla a urči v, x, w (okolí a přepsanou část). Až pak odkryj řešení.",
+   "text": "Gramatika: (1) S → 0S1, (2) S → 01. Rozepiš odvození S ⇒* 000111 po přímých přepisech (u = v x w, z = v y w).",
+   "solution": "krok 1: S, v = e, x = S, w = e, pravidlo 1 → 0S1\nkrok 2: 0S1, v = 0, x = S, w = 1, pravidlo 1 → 00S11\nkrok 3: 00S11, v = 00, x = S, w = 11, pravidlo 2 → 000111\nS ⇒(1) 0S1 ⇒(1) 00S11 ⇒(2) 000111, tedy 000111 ∈ L(G). Cvičení 19. 11.",
+   "number": 12,
+   "id": "8z-12"
+  },
+  {
+   "type": "choice",
+   "theory": "⏱ 0:25 · Cvičení, úloha 2: slova se stejným počtem a, b, c.\n1. Počty: pravidla 1 a 2 vyrobí n trojic aBC, každá přidá jedno a, jedno B, jedno C.\n2. Pořadí: pravidla 3–8 prohazují sousední a, B, C oběma směry (jako bubble sort), takže jde dostat libovolné pořadí.\n3. Dokončení: pravidla 9 a 10 přepíšou B → b, C → c.",
+   "text": "Proč gramatika úlohy 2 pracuje s neterminály B a C, a ne rovnou s terminály b a c?",
+   "options": {
+    "A": "Levá strana pravidla musí obsahovat neterminál, pravidlo ab → ba by nebylo dovolené.",
+    "B": "Terminály se v gramatice nesmí opakovat.",
+    "C": "Neterminály jsou kratší na zápis.",
+    "D": "Jinak by gramatika byla regulární."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "V generativní gramatice musí mít každé pravidlo vlevo neterminál (Chytil, Def. 3.1.5, s. 119). Dvojice aB, aC, BC ho obsahují. Gramatika je Chytilův Př. 3.1.6 bod 2, s. 120–121. Cvičení 19. 11.",
+   "number": 13,
+   "id": "8z-13"
+  },
+  {
+   "type": "input",
+   "theory": "Postup na krátké slovo: nejdřív pravidly 1 a 2 vyrob správný počet trojic, pak prohazuj, nakonec přepiš B a C. Prohazovat smíš jen dvojice, ve kterých je neterminál.",
+   "text": "Gramatika úlohy 2: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → SaBC, (2) S → aBC, (3) aB → Ba, (4) Ba → aB, (5) aC → Ca, (6) Ca → aC, (7) BC → CB, (8) CB → BC, (9) B → b, (10) C → c. Napiš čísla pravidel odvození S ⇒* cab (S ⇒ aBC ⇒ aCB ⇒ CaB ⇒ caB ⇒ cab).",
+   "answer": "2 7 5 10 9",
+   "hint": "čísla pravidel v pořadí použití oddělená mezerou, např. 2 10 9",
+   "solution": "S ⇒(2) aBC ⇒(7) aCB ⇒(5) CaB ⇒(10) caB ⇒(9) cab. Cvičení 19. 11.",
+   "number": 14,
+   "id": "8z-14"
+  },
+  {
+   "type": "input",
+   "theory": "Nejkratší odvození: kolik trojic je ve slově, tolik pravidel 1 a 2 dohromady; každé b a c stojí jeden krok (pravidla 9 a 10); prohazování jen tam, kde pořadí aBC nesedí.",
+   "text": "Gramatika úlohy 2: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → SaBC, (2) S → aBC, (3) aB → Ba, (4) Ba → aB, (5) aC → Ca, (6) Ca → aC, (7) BC → CB, (8) CB → BC, (9) B → b, (10) C → c. Kolik kroků má nejkratší odvození slova abcabc?",
+   "answer": "6",
+   "hint": "číslo",
+   "solution": "S ⇒(1) SaBC ⇒(2) aBCaBC ⇒(9) abCaBC ⇒(10) abcaBC ⇒(9) abcabC ⇒(10) abcabc. Prohazovat netřeba. Ověřeno prohledáním všech odvození. Cvičení 19. 11.",
+   "number": 15,
+   "id": "8z-15"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "theory": "Na papír (hlavní úloha cvičení, ~10 minut): odvoď caabbcbac. Tři trojice (1, 1, 2), pak prohazuj a přepisuj zleva. Podtrhávej a čísluj. Až pak odkryj řešení.",
+   "text": "Gramatika úlohy 2: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → SaBC, (2) S → aBC, (3) aB → Ba, (4) Ba → aB, (5) aC → Ca, (6) Ca → aC, (7) BC → CB, (8) CB → BC, (9) B → b, (10) C → c. Odvoď S ⇒* caabbcbac.",
+   "solution": "S ⇒(1) SaBC ⇒(1) SaBCaBC ⇒(2) aBCaBCaBC\n⇒(7) aCBaBCaBC ⇒(5) CaBaBCaBC ⇒(10) caBaBCaBC\n⇒(4) caaBBCaBC ⇒(9) caabBCaBC ⇒(9) caabbCaBC\n⇒(10) caabbcaBC ⇒(3) caabbcBaC ⇒(10) caabbcBac ⇒(9) caabbcbac\n13 kroků, výsledek jen z terminálů, tedy caabbcbac ∈ L(G). Pořadí kroků je Chytilovo (Př. 3.1.6, s. 120–121), každý krok ověřen výpočtem. Cvičení 19. 11.",
+   "number": 16,
+   "id": "8z-16"
+  },
+  {
+   "type": "choice",
+   "theory": "⏱ 0:40 · Chomského hierarchie (bude zkoušet!). Typ podle tvaru pravidel, X, Y ∈ Π, w ∈ Σ*:\n• typ 0 obecná: α → β, vlevo aspoň jeden neterminál,\n• typ 1 kontextová: αXβ → αγβ, γ neprázdné (jediná výjimka S → e, pak S není na žádné pravé straně),\n• typ 2 bezkontextová: X → γ (vlevo jediný neterminál, γ libovolné, i e),\n• typ 3 regulární: X → wY nebo X → w (nejvýš jeden neterminál, úplně vpravo).\n𝓛₃ ⊆ 𝓛₂ ⊆ 𝓛₁ ⊆ 𝓛₀.",
+   "text": "Která gramatika má pravidla tvaru X → γ, kde X je jeden neterminál a γ ∈ (Π ∪ Σ)*?",
+   "options": {
+    "A": "Bezkontextová (typ 2)",
+    "B": "Regulární (typ 3)",
+    "C": "Kontextová (typ 1)",
+    "D": "Analytická"
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Vlevo jediný neterminál, přepíše se bez ohledu na okolí. Chytil, Def. 3.2.1 bod 3, s. 124. Přednáška 12. 11.",
+   "number": 17,
+   "id": "8z-17"
+  },
+  {
+   "type": "input",
+   "theory": "Postup: 1) je vlevo jediný neterminál? ne → zkus typ 1 (okolí α, β zůstane, přepíše se jeden neterminál na neprázdné), jinak typ 0. 2) ano → typ 2; navíc je vpravo nejvýš jeden neterminál úplně na konci → typ 3.",
+   "text": "X, Y, Z, B, S ∈ Π, a, b, 0, 1 ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie, jehož tvar splňuje pravidlo S → 0S1?",
+   "answer": "2",
+   "hint": "číslo 0 až 3",
+   "solution": "Typ 2: vlevo jeden neterminál, ale vpravo stojí za neterminálem terminál 1, regulární tedy ne. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 18,
+   "id": "8z-18"
+  },
+  {
+   "type": "input",
+   "theory": "Postup: 1) je vlevo jediný neterminál? ne → zkus typ 1 (okolí α, β zůstane, přepíše se jeden neterminál na neprázdné), jinak typ 0. 2) ano → typ 2; navíc je vpravo nejvýš jeden neterminál úplně na konci → typ 3.",
+   "text": "X, Y, Z, B, S ∈ Π, a, b, 0, 1 ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie, jehož tvar splňuje pravidlo X → aY?",
+   "answer": "3",
+   "hint": "číslo 0 až 3",
+   "solution": "Typ 3: neterminál je jen jeden a úplně vpravo. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 19,
+   "id": "8z-19"
+  },
+  {
+   "type": "input",
+   "theory": "Postup: 1) je vlevo jediný neterminál? ne → zkus typ 1 (okolí α, β zůstane, přepíše se jeden neterminál na neprázdné), jinak typ 0. 2) ano → typ 2; navíc je vpravo nejvýš jeden neterminál úplně na konci → typ 3.",
+   "text": "X, Y, Z, B, S ∈ Π, a, b, 0, 1 ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie, jehož tvar splňuje pravidlo aB → Ba?",
+   "answer": "0",
+   "hint": "číslo 0 až 3",
+   "solution": "Typ 0: vlevo dva symboly (bezkontextové ne) a mění se obě pozice, tvar αXβ → αγβ to není. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 20,
+   "id": "8z-20"
+  },
+  {
+   "type": "input",
+   "theory": "Postup: 1) je vlevo jediný neterminál? ne → zkus typ 1 (okolí α, β zůstane, přepíše se jeden neterminál na neprázdné), jinak typ 0. 2) ano → typ 2; navíc je vpravo nejvýš jeden neterminál úplně na konci → typ 3.",
+   "text": "X, Y, Z, B, S ∈ Π, a, b, 0, 1 ∈ Σ. Jaký je nejvyšší typ Chomského hierarchie, jehož tvar splňuje pravidlo aXb → aYZb?",
+   "answer": "1",
+   "hint": "číslo 0 až 3",
+   "solution": "Typ 1: X v kontextu a…b se přepíše na neprázdné YZ, okolí zůstane. Chytil, Def. 3.2.1, s. 124–125. Přednáška 12. 11.",
+   "number": 21,
+   "id": "8z-21"
+  },
+  {
+   "type": "choice",
+   "theory": "Typ gramatiky = nejvyšší typ, který splňují VŠECHNA její pravidla.\nÚloha 1: S → 0S1, S → 01. Úloha 2 má prohazovací pravidla aB → Ba, BC → CB.",
+   "text": "Jakého typu jsou gramatiky ze cvičení (úloha 1, úloha 2)?",
+   "options": {
+    "A": "Úloha 1 typ 2 (bezkontextová), úloha 2 typ 0 (obecná).",
+    "B": "Obě typ 2.",
+    "C": "Úloha 1 typ 3, úloha 2 typ 1.",
+    "D": "Obě typ 0."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Úloha 1: obě pravidla X → γ, regulární není (0S1). Úloha 2: prohození aB → Ba nemá tvar αXβ → αγβ, formálně typ 0 (jestli jde jazyk generovat vyšším typem, je jiná otázka). Chytil, Def. 3.2.1, s. 124. Cvičení 19. 11.",
+   "number": 22,
+   "id": "8z-22"
+  },
+  {
+   "type": "choice",
+   "theory": "Gramatiky a automaty (tabulka ze zkoušky):\n• typ 3 regulární ↔ konečný automat (Kleeneova věta: regulární ⇔ rozpoznatelný KA),\n• typ 2 bezkontextové ↔ (nedeterministický) zásobníkový automat,\n• typ 1 kontextové ↔ lineárně omezený Turingův stroj,\n• typ 0 ↔ Turingův stroj.\nGramatiku ke KA: stavy = neterminály, S = q₀, za δ(q, a) = q' pravidlo q → aq', za koncový q pravidlo q → e.",
+   "text": "Jaký automat rozpoznává jazyk {0ⁿ1ⁿ; n ≥ 1} z úlohy 1, když konečný automat na něj nestačí?",
+   "options": {
+    "A": "Zásobníkový automat (jazyk je bezkontextový, typ 2).",
+    "B": "Konečný automat s více stavy.",
+    "C": "Jen Turingův stroj.",
+    "D": "Žádný automat."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Jazyk není regulární (Chytil, 1.3.6), je bezkontextový; bezkontextové jazyky rozpoznávají zásobníkové automaty (Chytil, čl. 4.5, s. 172). Na to navazuje část 2. Přednáška 12. 11.",
+   "number": 23,
+   "id": "8z-23"
+  },
+  {
+   "type": "choice",
+   "theory": "⏸ 0:50–1:00 PAUZA 10 minut, odejdi od obrazovky. Pak pokračuj.\n⏱ 1:00 · ČÁST 2: ZÁSOBNÍKOVÉ AUTOMATY. Zásobníkový automat (ZA) = konečný automat + zásobník (čte a píše se jen nahoře). Je to sedmice M = (Q, Σ, Γ, δ, q₀, Z₀, F):\nQ stavy, Σ vstupní abeceda, Γ zásobníková abeceda, δ přechodová funkce, q₀ počáteční stav, Z₀ ∈ Γ počáteční zásobníkový symbol (na začátku je v zásobníku jen on), F ⊆ Q koncové stavy.",
+   "text": "Co je v sedmici zásobníkového automatu Γ?",
+   "options": {
+    "A": "Zásobníková abeceda: symboly, které smí být v zásobníku.",
+    "B": "Množina koncových stavů.",
+    "C": "Vstupní abeceda.",
+    "D": "Počáteční obsah zásobníku."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Γ (gama) je zásobníková abeceda, Σ vstupní, F koncové stavy, Z₀ počáteční symbol zásobníku. Chytil, Def. 4.4.1, s. 164. Přednáška 19. 11.",
+   "number": 24,
+   "id": "8z-24"
+  },
+  {
+   "type": "choice",
+   "theory": "δ : Q × (Σ ∪ {e}) × Γ → konečné podmnožiny Q × Γ*.\nδ(q, a, X) = {(q₁, η₁), …, (qₘ, ηₘ)}: ve stavu q, při čtení a, s X nahoře MŮŽE přejít do qᵢ a X nahradit slovem ηᵢ.\nHodnota je MNOŽINA možností, proto je ZA obecně nedeterministický. δ = ∅ znamená „není definováno“, výpočet v té větvi skončí.",
+   "text": "Proč je zásobníkový automat obecně nedeterministický?",
+   "options": {
+    "A": "δ vrací množinu dvojic (stav, slovo do zásobníku), možností může být víc.",
+    "B": "Protože má zásobník.",
+    "C": "Protože nemá koncové stavy.",
+    "D": "Protože čte vstup zprava doleva."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Chytil, s. 164. Deterministický ZA je zvláštní případ (viz dál). Přednáška 19. 11.",
+   "number": 25,
+   "id": "8z-25"
+  },
+  {
+   "type": "input",
+   "theory": "Jak se mění zásobník (zápis zleva, VRCHOL VLEVO): vrchní X se vždy nahradí slovem η.\n• η = e → X se odebere (pop),\n• η = X → beze změny,\n• η = YX → nad X přibude Y (push),\n• η = Y → X se vymění za Y.",
+   "text": "Pravidlo (q', AZ) ∈ δ(q, 0, Z), v zásobníku je jen Z. Co je po kroku na vrcholu zásobníku?",
+   "answer": "A",
+   "hint": "jeden symbol",
+   "solution": "Z se nahradí slovem AZ: první symbol slova je nahoře, tedy nahoře A, pod ním Z (push). Chytil, s. 164. Přednáška 19. 11.",
+   "number": 26,
+   "id": "8z-26"
+  },
+  {
+   "type": "choice",
+   "theory": "e-krok: δ(q, e, X) = {…}. Automat změní stav a vrchol zásobníku, ale nic nepřečte, hlava na pásce stojí.",
+   "text": "Co udělá krok podle (q', e) ∈ δ(q, e, Z)?",
+   "options": {
+    "A": "Nic nepřečte, přejde do q' a odebere Z ze zásobníku.",
+    "B": "Přečte symbol e ze vstupu a Z nechá.",
+    "C": "Přečte jeden symbol a zásobník vyprázdní celý.",
+    "D": "Ukončí výpočet a slovo odmítne."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "e na místě vstupu = nečte se; e jako nové slovo do zásobníku = pop. Chytil, s. 165. Přednáška 19. 11.",
+   "number": 27,
+   "id": "8z-27"
+  },
+  {
+   "type": "choice",
+   "theory": "Situace (konfigurace) je trojice (q, w, η): stav, ZBÝVAJÍCÍ část vstupu, obsah zásobníku (vrchol vlevo).\nPočáteční situace je (q₀, w, Z₀).",
+   "text": "Co je ve situaci (q, w, η) druhá složka w?",
+   "options": {
+    "A": "Úsek vstupního slova, který automat ještě nepřečetl.",
+    "B": "Celé vstupní slovo.",
+    "C": "Již přečtená část vstupu.",
+    "D": "Obsah zásobníku."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Chytil, Def. 4.4.2, s. 165–166. Přednáška 19. 11.",
+   "number": 28,
+   "id": "8z-28"
+  },
+  {
+   "type": "input",
+   "theory": "Krok ⊢: (q, aw, Yη) ⊢ (q', w, νη), když (q', ν) ∈ δ(q, a, Y), a ∈ Σ ∪ {e}.\nKrok se dívá jen na tři věci: stav, první symbol zbytku vstupu, vrchol zásobníku. Zbytek pásky w a zbytek zásobníku η se nemění.",
+   "text": "Pravidlo δ(q₁, 0, A) = {(q₁, AA)}. Situace (q₁, 011, AZ) vede jedním krokem k (q₁, 11, ?). Co je na místě otazníku (obsah zásobníku)?",
+   "answer": "AAZ",
+   "hint": "obsah zásobníku, vrchol vlevo, např. ABZ",
+   "solution": "(q₁, 011, AZ) ⊢ (q₁, 11, AAZ): přečte 0 (zbude 11), vrchol A se nahradí AA, pod ním zůstane Z. Chytil, Def. 4.4.2, s. 166. Přednáška 19. 11.",
+   "number": 29,
+   "id": "8z-29"
+  },
+  {
+   "type": "input",
+   "theory": "⊢* = řetěz kroků (i nula). Důležité: ze situace s PRÁZDNÝM zásobníkem už žádný krok nevede, každý krok potřebuje vrchní symbol (ani e-krok nejde).",
+   "text": "Může ze situace (q, 01, e) vést nějaký krok?",
+   "answer": "ne",
+   "hint": "ano nebo ne (bez tečky)",
+   "solution": "Zásobník je prázdný, není vrchol Y, žádná instrukce nejde použít. Chytil, Pozn. 4.4.3, s. 166. Přednáška 19. 11.",
+   "number": 30,
+   "id": "8z-30"
+  },
+  {
+   "type": "choice",
+   "theory": "Dva způsoby přijetí slova:\n• koncovým stavem: L(M) = {w; (q₀, w, Z₀) ⊢* (q, e, η), q ∈ F}: celé přečteno, stav koncový, zásobník cokoli,\n• prázdným zásobníkem: N(M) = {w; (q₀, w, Z₀) ⊢* (q, e, e)}: celé přečteno, zásobník prázdný, stav libovolný.\nStačí JEDEN takový výpočet. U prázdného zásobníku se klade F = ∅.",
+   "text": "Kdy je slovo přijato prázdným zásobníkem?",
+   "options": {
+    "A": "Když existuje výpočet, po kterém je celé slovo přečtené a zásobník prázdný.",
+    "B": "Když automat skončí v koncovém stavu.",
+    "C": "Když je vstupní slovo prázdné.",
+    "D": "Když všechny výpočty skončí s prázdným zásobníkem."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "N(M), stav je libovolný (proto F = ∅). Chytil, Def. 4.4.4, s. 166–167. Přednáška 19. 11.",
+   "number": 31,
+   "id": "8z-31"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "theory": "⏱ 1:15 · Příklad z přednášky 1 (koncový stav). Vyučující píše hodnoty δ bez závorek: δ(q₀, a, Z₀) = (q₀, AZ₀) znamená {(q₀, AZ₀)}, nenapsané hodnoty jsou ∅.\nPostup krokování: v každém kroku stav + první symbol zbytku + vrchol → najdi pravidlo → nová situace. Na papír si udělej tabulku krok | situace | pravidlo. Až pak odkryj.",
+   "text": "Zásobníkový automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {a, b}, Γ = {Z₀, A, B}, F = {q₂}, pravidla (1) δ(q₀, a, Z₀) = (q₀, AZ₀), (2) δ(q₀, b, A) = (q₁, B), (3) δ(q₁, a, B) = (q₂, A). Odkrokuj slovo aba a rozhodni, jestli je přijato koncovým stavem.",
+   "solution": "(q₀, aba, Z₀) ⊢ (q₀, ba, AZ₀) ⊢ (q₁, a, BZ₀) ⊢ (q₂, e, AZ₀)\nkrok 1: pravidlo 1, přečte a, nad Z₀ přidá A (push)\nkrok 2: pravidlo 2, přečte b, A vymění za B\nkrok 3: pravidlo 3, přečte a, B vymění za A\nCelé slovo přečteno a q₂ ∈ F, tedy aba ∈ L(M). V zásobníku zůstalo AZ₀, na tom u koncového stavu nezáleží. Ověřeno simulací: L(M) = {aba}. Přednáška 19. 11.",
+   "number": 32,
+   "id": "8z-32"
+  },
+  {
+   "type": "input",
+   "theory": "U koncového stavu na zásobníku nezáleží. Ale co prázdným zásobníkem? Podívej se, jestli nějaké pravidlo vůbec něco ze zásobníku odebírá.",
+   "text": "Zásobníkový automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {a, b}, Γ = {Z₀, A, B}, F = {q₂}, pravidla (1) δ(q₀, a, Z₀) = (q₀, AZ₀), (2) δ(q₀, b, A) = (q₁, B), (3) δ(q₁, a, B) = (q₂, A). Přijme tento automat slovo aba prázdným zásobníkem?",
+   "answer": "ne",
+   "hint": "ano nebo ne (bez tečky)",
+   "solution": "Výpočet skončí v (q₂, e, AZ₀), zásobník není prázdný a další krok nevede. Žádné pravidlo neodebírá, N(M) = ∅ (ověřeno simulací do délky 8). Přednáška 19. 11.",
+   "number": 33,
+   "id": "8z-33"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "theory": "Příklad z přednášky 2 (prázdný zásobník). Rozdíly proti příkladu 1: pravidlo 1 Z₀ NAHRADÍ symbolem A (nepřidává), pravidlo 3 B ODEBERE (η = e), F = ∅.\nOdkrokuj na papír, pak odkryj.",
+   "text": "Zásobníkový automat z přednášky: Q = {q₀, q₁, q₂}, Σ = {a, b}, Γ = {Z₀, A, B}, F = ∅, pravidla (1) δ(q₀, a, Z₀) = (q₀, A), (2) δ(q₀, b, A) = (q₁, B), (3) δ(q₁, a, B) = (q₂, e). Odkrokuj slovo aba a rozhodni, jestli je přijato prázdným zásobníkem.",
+   "solution": "(q₀, aba, Z₀) ⊢ (q₀, ba, A) ⊢ (q₁, a, B) ⊢ (q₂, e, e)\nkrok 1: pravidlo 1, přečte a, Z₀ → A\nkrok 2: pravidlo 2, přečte b, A → B\nkrok 3: pravidlo 3, přečte a, B → e (pop), zásobník prázdný\nCelé slovo přečteno a zásobník prázdný, tedy aba ∈ N(M); stav q₂ stačí libovolný (q₂ ∈ Q). Ověřeno simulací: N(M) = {aba}, L(M) = ∅. Přednáška 19. 11.",
+   "number": 34,
+   "id": "8z-34"
+  },
+  {
+   "type": "choice",
+   "theory": "Srovnání obou příkladů: stejné Q, Σ, Γ i slovo, liší se pravidla 1 a 3 a F.",
+   "text": "Čím se liší pravidlo 1 v příkladu 1 a v příkladu 2 (δ(q₀, a, Z₀) = (q₀, AZ₀) vs. (q₀, A))?",
+   "options": {
+    "A": "V příkladu 1 se A přidá nad Z₀, v příkladu 2 Z₀ nahradí, takže dno zmizí.",
+    "B": "Nijak, AZ₀ a A znamenají totéž.",
+    "C": "V příkladu 2 se A přidá pod Z₀.",
+    "D": "V příkladu 1 je to e-krok, v příkladu 2 ne."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Vrchol se vždy nahrazuje slovem η; AZ₀ = push A, A = výměna. Proto v příkladu 2 může zásobník na konci zůstat prázdný. Přednáška 19. 11.",
+   "number": 35,
+   "id": "8z-35"
+  },
+  {
+   "type": "input",
+   "theory": "⏱ 1:30 · Stejný jazyk jako v úloze 1, teď automatem: ZA pro {0ⁿ1ⁿ; n ≥ 1} prázdným zásobníkem.\nNápad: za každou 0 dej do zásobníku A, za každou 1 jedno A odeber; když zbude jen dno Z, e-krokem ho odeber.\nPravidla: 1 první 0 (push A nad Z), 2 další 0 (push A), 3 první 1 (pop A, přechod do q₂), 4 další 1 (pop A), 5 e-krok, odebere dno Z.",
+   "text": "Zásobníkový automat M = ({q₁, q₂}, {0, 1}, {Z, A}, δ, q₁, Z, ∅), pravidla (1) δ(q₁, 0, Z) = (q₁, AZ), (2) δ(q₁, 0, A) = (q₁, AA), (3) δ(q₁, 1, A) = (q₂, e), (4) δ(q₂, 1, A) = (q₂, e), (5) δ(q₂, e, Z) = (q₂, e). Napiš čísla pravidel výpočtu pro slovo 000111.",
+   "answer": "1223445",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "solution": "(q₁, 000111, Z) ⊢ (q₁, 00111, AZ) ⊢ (q₁, 0111, AAZ) ⊢ (q₁, 111, AAAZ) ⊢ (q₂, 11, AAZ) ⊢ (q₂, 1, AZ) ⊢ (q₂, e, Z) ⊢ (q₂, e, e). Celé přečteno, zásobník prázdný: 000111 ∈ N(M). Chytil, Pozn. 4.4.9 bod 2, s. 171; Barilla, kap. 8, úkol 1. Přednáška 19. 11.",
+   "number": 36,
+   "id": "8z-36"
+  },
+  {
+   "type": "input",
+   "theory": "Počet kroků: každý přečtený symbol je jeden krok, plus e-kroky.",
+   "text": "Zásobníkový automat M = ({q₁, q₂}, {0, 1}, {Z, A}, δ, q₁, Z, ∅), pravidla (1) δ(q₁, 0, Z) = (q₁, AZ), (2) δ(q₁, 0, A) = (q₁, AA), (3) δ(q₁, 1, A) = (q₂, e), (4) δ(q₂, 1, A) = (q₂, e), (5) δ(q₂, e, Z) = (q₂, e). Kolik kroků ⊢ má přijímající výpočet pro 000111?",
+   "answer": "7",
+   "hint": "číslo",
+   "solution": "6 symbolů = 6 kroků se čtením, plus 1 e-krok (pravidlo 5) na odebrání Z. Přednáška 19. 11.",
+   "number": 37,
+   "id": "8z-37"
+  },
+  {
+   "type": "input",
+   "theory": "Nepřijetí: výpočet se zasekne, když pro (stav, symbol, vrchol) není pravidlo, nebo dojde vstup a zásobník není prázdný.",
+   "text": "Zásobníkový automat M = ({q₁, q₂}, {0, 1}, {Z, A}, δ, q₁, Z, ∅), pravidla (1) δ(q₁, 0, Z) = (q₁, AZ), (2) δ(q₁, 0, A) = (q₁, AA), (3) δ(q₁, 1, A) = (q₂, e), (4) δ(q₂, 1, A) = (q₂, e), (5) δ(q₂, e, Z) = (q₂, e). Přijme slovo 001?",
+   "answer": "ne",
+   "hint": "ano nebo ne (bez tečky)",
+   "solution": "(q₁, 001, Z) ⊢ (q₁, 01, AZ) ⊢ (q₁, 1, AAZ) ⊢ (q₂, e, AZ). Vstup došel, nahoře A, pravidlo 5 jde jen se Z nahoře. Zásobník není prázdný, nepřijato. Ověřeno simulací. Přednáška 19. 11.",
+   "number": 38,
+   "id": "8z-38"
+  },
+  {
+   "type": "choice",
+   "theory": "Proč je v automatu pravidlo 5 (e-krok)? Po poslední 1 zbude v zásobníku dno Z a vstup je přečtený. Bez kroku, který Z odebere, by zásobník nikdy nebyl prázdný.",
+   "text": "K čemu slouží pravidlo δ(q₂, e, Z) = (q₂, e) v automatu pro 0ⁿ1ⁿ?",
+   "options": {
+    "A": "Po přečtení všech jedniček odebere dno Z, aby byl zásobník prázdný a slovo přijato.",
+    "B": "Přečte prázdné slovo na začátku vstupu.",
+    "C": "Přidá Z zpět na zásobník.",
+    "D": "Umožní přijmout prázdné slovo e."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Jen ve stavu q₂, takže prázdné slovo přijato není: (q₁, e, Z) žádný krok nemá. Přednáška 19. 11.",
+   "number": 39,
+   "id": "8z-39"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "theory": "Na papír (Barilla kap. 8, úkol 1, typ úlohy ke zkoušce): sestroj ZA pro {0ⁿ1ⁿ; n ≥ 1} prázdným zásobníkem a rozpoznej 000111. Zkus pravidla napsat z hlavy, pak tabulku krok | situace | co se stalo.",
+   "text": "Sestrojte ZA, který rozpoznává L = {0ⁿ1ⁿ; n ≥ 1} pomocí prázdného zásobníku, a rozpoznejte slovo 000111.",
+   "solution": "M = ({q₁, q₂}, {0, 1}, {Z, A}, δ, q₁, Z, ∅):\n(1) δ(q₁, 0, Z) = {(q₁, AZ)}, (2) δ(q₁, 0, A) = {(q₁, AA)}, (3) δ(q₁, 1, A) = {(q₂, e)}, (4) δ(q₂, 1, A) = {(q₂, e)}, (5) δ(q₂, e, Z) = {(q₂, e)}\nkrok 0: (q₁, 000111, Z)\nkrok 1: (q₁, 00111, AZ)\nkrok 2: (q₁, 0111, AAZ)\nkrok 3: (q₁, 111, AAAZ)\nkrok 4: (q₂, 11, AAZ)\nkrok 5: (q₂, 1, AZ)\nkrok 6: (q₂, e, Z)\nkrok 7: (q₂, e, e)\nCelé slovo přečteno, zásobník prázdný: 000111 ∈ N(M). Automat je deterministický. Přednáška 19. 11.",
+   "number": 40,
+   "id": "8z-40"
+  },
+  {
+   "type": "choice",
+   "theory": "⏱ 1:40 · Deterministický ZA (Chytil, Def. 4.4.7):\n1. Jestliže δ(q, e, Z) ≠ ∅, potom δ(q, a, Z) = ∅ pro všechna a ∈ Σ (volba „číst, nebo nečíst“ je zakázaná).\n2. Každé δ(q, a, Z) má nejvýš jeden prvek.\nPak má automat v každé situaci nejvýš jeden možný krok. Na zkoušce může chtít oba druhy.",
+   "text": "Je automat pro 0ⁿ1ⁿ (pravidla 1–5 výše) deterministický?",
+   "options": {
+    "A": "Ano: každé δ má nejvýš jeden prvek a pro (q₂, Z) s e-krokem neexistuje krok se čtením.",
+    "B": "Ne, protože má e-krok.",
+    "C": "Ne, protože má dva stavy.",
+    "D": "Ano, protože nemá koncové stavy."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "e-krok sám o sobě nevadí, vadí jen e-krok a čtení pro tutéž dvojici (stav, vrchol). Ověřeno podle obou podmínek. Přednáška 19. 11.",
+   "number": 41,
+   "id": "8z-41"
+  },
+  {
+   "type": "choice",
+   "theory": "Barilla kap. 8, úkol 2: ZA pro {wwᴿ; w ∈ {0, 1}*} (palindromy sudé délky) prázdným zásobníkem.\nVe stavu p ukládá první polovinu (0 jako B, 1 jako C). Když „usoudí“, že je v polovině, přejde do q a už jen odebírá a porovnává. Dno A odebere e-krok.",
+   "text": "Automat pro wwᴿ má pro (p, 0, B) i (p, 1, C) dvě instrukce: (p, BB) a (q, e), resp. (p, CC) a (q, e). Proč není deterministický?",
+   "options": {
+    "A": "Pravidla 3 a 6 mají dvě možnosti: ukládat dál, nebo přejít do q a začít odebírat.",
+    "B": "Protože má e-kroky 9 a 10.",
+    "C": "Protože má dva stavy.",
+    "D": "Protože zásobníková abeceda má tři symboly."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Porušená podmínka 2 (víc prvků v δ). Automat „hádá“ střed slova; stačí, že jeden výpočet vede k přijetí. Chytil, Př. 4.4.5, s. 167–168. Ověřeno simulací do délky 8. Přednáška 19. 11.",
+   "number": 42,
+   "id": "8z-42"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "theory": "Na papír: odkrokuj 01011010 = 0101 · 1010. Prvních 4 symbolů ukládej, u 5. symbolu zvol přechod do q, pak odebírej. Až pak odkryj.",
+   "text": "Automat M = ({p, q}, {0, 1}, {A, B, C}, δ, p, A, ∅): (1) δ(p, 0, A) = {(p, BA)}, (2) δ(p, 1, A) = {(p, CA)}, (3) δ(p, 0, B) = {(p, BB), (q, e)}, (4) δ(p, 0, C) = {(p, BC)}, (5) δ(p, 1, B) = {(p, CB)}, (6) δ(p, 1, C) = {(p, CC), (q, e)}, (7) δ(q, 0, B) = {(q, e)}, (8) δ(q, 1, C) = {(q, e)}, (9) δ(p, e, A) = {(q, e)}, (10) δ(q, e, A) = {(q, e)}. Rozpoznejte slovo 01011010 (najdi přijímající výpočet).",
+   "solution": "krok 0: (p, 01011010, A)\nkrok 1: (p, 1011010, BA), pravidlo 1\nkrok 2: (p, 011010, CBA), pravidlo 5\nkrok 3: (p, 11010, BCBA), pravidlo 4\nkrok 4: (p, 1010, CBCBA), pravidlo 5\nkrok 5: (q, 010, BCBA), pravidlo 6, druhá možnost (střed slova)\nkrok 6: (q, 10, CBA), pravidlo 7\nkrok 7: (q, 0, BA), pravidlo 8\nkrok 8: (q, e, A), pravidlo 7\nkrok 9: (q, e, e), pravidlo 10 (e-krok)\nPřečteno a zásobník prázdný: 01011010 ∈ N(M). Chytil, Př. 4.4.5, s. 167; Barilla, kap. 8, úkol 2. Přednáška 19. 11.",
+   "number": 43,
+   "id": "8z-43"
+  },
+  {
+   "type": "choice",
+   "theory": "Závěr přednášky 19. 11. (Chytil, Lemma 4.4.8):\n1. Ke každému deterministickému ZA M₁ jde sestrojit deterministický ZA M₂ s N(M₁) = L(M₂).\n2. Existuje regulární jazyk, který žádný deterministický ZA prázdným zásobníkem nerozpozná, např. {a, aa}: po přijetí a by musel mít prázdný zásobník, a pak už aa nedočte.\nU deterministických ZA je tedy koncový stav silnější; u nedeterministických jsou oba způsoby rovnocenné.",
+   "text": "Proč deterministický ZA nerozpozná jazyk {a, aa} prázdným zásobníkem?",
+   "options": {
+    "A": "Po přečtení a musí mít prázdný zásobník, a z té situace už žádný krok nevede, takže aa nedočte.",
+    "B": "Protože jazyk {a, aa} není regulární.",
+    "C": "Protože deterministický ZA nemá e-kroky.",
+    "D": "Protože {a, aa} je nekonečný jazyk."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Prázdný zásobník = konec výpočtu (Pozn. 4.4.3) a deterministický automat má pro a i aa stejný začátek výpočtu. Chytil, Lemma 4.4.8 a důkaz, s. 170–171. Přednáška 19. 11.",
+   "number": 44,
+   "id": "8z-44"
+  },
+  {
+   "type": "choice",
+   "theory": "Propojení obou částí: jazyk {0ⁿ1ⁿ; n ≥ 1} generuje gramatika S → 0S1 | 01 (typ 2) a rozpoznává ZA s pravidly 1–5. Gramatika přidává páry 0…1 kolem středu, automat páry počítá v zásobníku (push za 0, pop za 1).",
+   "text": "Co platí o jazyce {0ⁿ1ⁿ; n ≥ 1}?",
+   "options": {
+    "A": "Je bezkontextový, není regulární a rozpozná ho i deterministický ZA prázdným zásobníkem.",
+    "B": "Je regulární, stačí na něj konečný automat.",
+    "C": "Je typu 0, ale ne typu 2.",
+    "D": "Rozpozná ho jen nedeterministický ZA."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Chytil, Pozn. 4.4.9 bod 2, s. 171 (deterministický ZA prázdným zásobníkem) a 1.3.6 (není regulární). Přednáška 19. 11.",
+   "number": 45,
+   "id": "8z-45"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "theory": "⏱ 1:55 · REKAPITULACE. Bez výpisků napiš na půl stránky: definici gramatiky a L(G), Chomského typy 0–3 s tvarem pravidel, sedmici ZA, situaci a krok ⊢, L(M) vs. N(M), podmínky determinismu a jak spolu souvisí typ 2 a ZA. Pak odkryj a porovnej.",
+   "text": "Shrň gramatiky a zásobníkové automaty z hlavy, pak porovnej.",
+   "solution": "• G = (Π, Σ, S, P), pravidla s neterminálem vlevo; L(G) = {w ∈ Σ*; S ⇒* w}, jen terminální slova.\n• ⇒ = jedno pravidlo jednou, ⇒* = řetěz (i 0 kroků); u odvození podtrhávat a číslovat pravidla.\n• Typ 0 α → β; typ 1 αXβ → αγβ, γ ≠ e (výjimka S → e); typ 2 X → γ; typ 3 X → wY | w. 𝓛₃ ⊆ 𝓛₂ ⊆ 𝓛₁ ⊆ 𝓛₀.\n• Typ 3 ↔ KA (Kleene), typ 2 ↔ ZA, typ 1 ↔ LOTS, typ 0 ↔ TS.\n• ZA M = (Q, Σ, Γ, δ, q₀, Z₀, F), δ(q, a nebo e, X) = množina (q', η), vrchol vlevo, X se nahradí η.\n• Situace (q, zbytek, zásobník), krok (q, aw, Yη) ⊢ (q', w, νη); prázdný zásobník = konec.\n• L(M): přečteno + koncový stav; N(M): přečteno + prázdný zásobník (F = ∅).\n• Deterministický: nejvýš 1 prvek v δ a e-krok vylučuje čtení pro stejné (q, Z).\n• {0ⁿ1ⁿ}: gramatika S → 0S1 | 01, ZA push za 0, pop za 1, e-krok odebere Z.",
+   "number": 46,
+   "id": "8z-46"
+  }
+ ]
+}
