@@ -608,6 +608,7 @@ let session = null;
 let typeFilter = 'all';
 
 let queue = [], idx = 0, history = [], checked = false, suddenDeath = false;
+let theoryPhase = false, theoryRead = new Set(); // rychlokurz: nejdřív výklad, pak otázka bez něj
 let selected = new Set(), modalMode = 'random', studyMode = false, studyPicks = [];
 let examMode = false, examTimer = null, examEndTime = 0;
 let optOrder = {};    // q.id → zamíchané původní klíče možností, stálé po celou sadu (i po „Předchozí“)
@@ -909,7 +910,7 @@ function updateExamTimer() {
 
 function beginSession(qs, sd) {
   if (!qs.length) return;
-  queue = qs; idx = 0; history = []; optOrder = {}; suddenDeath = sd; studyMode = false; examMode = false;
+  queue = qs; idx = 0; history = []; optOrder = {}; theoryRead = new Set(); suddenDeath = sd; studyMode = false; examMode = false;
   $('sudden-banner').style.display = sd ? 'block' : 'none';
   show('quiz'); renderQ();
 }
@@ -989,7 +990,8 @@ function onInput() { if (!checked && !studyMode) syncAction(); }
 
 function renderQ() {
   const q = queue[idx];
-  checked = false; selected = new Set();
+  checked = false; selected = new Set(); theoryPhase = false;
+  ['q-theory', 'q-text', 'q-hint', 'opts'].forEach(id => { $(id).hidden = false; });
   const total = queue.length;
   const correct = history.filter(h => h.isCorrect).length;
   const pct = history.length ? Math.round(correct / history.length * 100) : 0;
@@ -1038,11 +1040,19 @@ function renderQ() {
       if (isInput(q)) inp.value = rec.userKeys[0] || '';
       else { selected = new Set(rec.userKeys); rec.userKeys.forEach(l => $('opt-' + l)?.classList.add('selected')); }
     }
+    $('q-theory').hidden = true;
     $('btn-action').innerHTML = (idx < total - 1 ? 'Další' : 'Odeslat test') + '<span class="kh">Enter</span>';
     syncAction();
     if (isInput(q)) inp.focus();
     return;
   }
+  if (q.theory && !rec && !theoryRead.has(q.id)) { // fáze výkladu: otázka a možnosti zatím skryté
+    theoryPhase = true;
+    ['q-text', 'q-hint', 'opts'].forEach(id => { $(id).hidden = true; }); inp.style.display = 'none';
+    $('btn-action').disabled = false; $('btn-action').innerHTML = 'K otázce<span class="kh">Enter</span>';
+    return;
+  }
+  $('q-theory').hidden = !rec; // při odpovídání bez výkladu, po odpovědi zpět
   if (rec && isReveal(q)) revealTask(q); else if (rec) restoreState(rec); else if (isInput(q)) inp.focus();
 }
 
@@ -1097,6 +1107,7 @@ function toggleOpt(letter) {
 }
 
 function handleAction() {
+  if (theoryPhase) { theoryRead.add(queue[idx].id); renderQ(); return; }
   if (studyMode) { studyNext(); return; }
   if (examMode) { examNext(); return; }
   if (!checked) confirmAnswer(); else if (isReveal(queue[idx])) gradeTask(true); else nextQ();
@@ -1145,7 +1156,7 @@ function gradeTask(ok) {
 
 function confirmAnswer() {
   if (!hasAnswer()) return;
-  checked = true;
+  checked = true; $('q-theory').hidden = false;
   const q = queue[idx];
   if (isReveal(q)) { revealTask(q); return; }
   const rec = record(q);
