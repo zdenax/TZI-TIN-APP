@@ -224,6 +224,8 @@ choice(
 
 choice(
     "Jazyk gramatiky: L(G) = {w ∈ Σ*; S ⇒* w}.\n"
+    "Čti: „všechna slova w taková, že w je jen z terminálů (w ∈ Σ*) a ze S jde w odvodit (S ⇒* w)“. "
+    "Σ* = všechna slova z terminálů (malá písmena, číslice), i prázdné e.\n"
     "Začnu slovem S a přepisuji, dokud nezůstanou jen terminály. Slovo, ve kterém ještě je neterminál, do L(G) nepatří.",
     "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, "
     "(4) B → a, (5) C → b. Platí S ⇒ aBb. Patří aBb do L(G)?",

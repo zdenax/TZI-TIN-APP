@@ -59,7 +59,7 @@
   },
   {
    "type": "choice",
-   "theory": "Jazyk gramatiky: L(G) = {w ∈ Σ*; S ⇒* w}.\nZačnu slovem S a přepisuji, dokud nezůstanou jen terminály. Slovo, ve kterém ještě je neterminál, do L(G) nepatří.",
+   "theory": "Jazyk gramatiky: L(G) = {w ∈ Σ*; S ⇒* w}.\nČti: „všechna slova w taková, že w je jen z terminálů (w ∈ Σ*) a ze S jde w odvodit (S ⇒* w)“. Σ* = všechna slova z terminálů (malá písmena, číslice), i prázdné e.\nZačnu slovem S a přepisuji, dokud nezůstanou jen terminály. Slovo, ve kterém ještě je neterminál, do L(G) nepatří.",
    "text": "Gramatika z přednášky: Π = {S, B, C}, Σ = {a, b, c}, pravidla (1) S → aBb, (2) B → aCc, (3) C → bBa, (4) B → a, (5) C → b. Platí S ⇒ aBb. Patří aBb do L(G)?",
    "options": {
     "A": "Ne, obsahuje neterminál B, v L(G) jsou jen slova z Σ*.",
