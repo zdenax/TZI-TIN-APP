@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""Převede výpisky z přednášky (Obsidian .md) na sekci v vypisky/vypisky.json pro stránku /vypisky.
+
+Spuštění:  python3 build_vypisky.py /cesta/k/2026-11-12-gramatiky.md 07-2026-11-12
+Výstup: {"banks": {"<stem banky>": {title, date, source, sections: [{level, heading, id, body}]}}}.
+Soubor ve vaultu se jen čte. LaTeX se převádí převodníkem z build_glosar.py (režim NOTES), neznámý příkaz nebo
+nepodporovaná markdown konstrukce skript zastaví, ať se nic tiše nepokazí.
+Formát těla (čte ui/md.js): odstavce, odrážky „- “, číslované „1. “, tabulky, citace a callouty „> [!typ]± název“
+(vnořené „> > “), řádky display matematiky „@@ text“ (víc po sobě = jeden blok), blok „{small}“ … „{/small}“,
+podtržení mezi znaky U+E000 a U+E001. Z přednášky se vynechá odkaz na plátno a pdf (sekce „Originál“).
+"""
+import json
+import re
+import sys
+import unicodedata
+from pathlib import Path
+
+import build_glosar as bg
+
+bg.NOTES = True
+OUT = Path(__file__).parent / "vypisky" / "vypisky.json"
+PREFIX = re.compile(r"^((?:>\s?)*)(.*)$")
+
+
+def fail(msg, ln):
+    raise SystemExit(f"CHYBA: {msg}\n  v řádku: {ln}")
+
+
+def display_rows(src):
+    """Obsah $$…$$ na řádky „@@ text“; prostředí aligned se rozdělí po \\\\ a & se zahodí (zarovnání se nezachová)."""
+    src = re.sub(r"\\(begin|end)\{aligned\}", "", src)
+    rows = [r.replace("&", "").strip() for r in src.split("\\\\")]
+    return ["@@ " + bg.tex(r) for r in rows if r]
+
+
+def convert(lines):
+    out, acc = [], None  # acc = (prefix, [řádky]) uvnitř víceřádkového $$ … $$
+    for raw in lines:
+        pre, c = PREFIX.match(raw).groups()
+        if acc is not None:
+            acc[1].append(c)
+            if c.rstrip().endswith("$$"):
+                body = "\n".join(acc[1]).strip()[2:-2]
+                out += [acc[0] + r for r in display_rows(body)]
+                acc = None
+            continue
+        s = c.strip()
+        if s.startswith("$$"):
+            if len(s) > 4 and s.endswith("$$") and "$$" not in s[2:-2]:
+                out += [pre + r for r in display_rows(s[2:-2])]
+            elif "$$" not in s[2:]:
+                acc = (pre, [c])
+            else:
+                fail("nepodporované $$", raw)
+            continue
+        if "$$" in c:
+            fail("$$ uprostřed řádku", raw)
+        if "![[" in c or ".excalidraw]]" in c:  # plátno s rukopisem: ve vaultu, ve webu nemá smysl
+            if ".excalidraw]]" in c and "![[" not in c:
+                continue
+            fail("vložený soubor ![[…]]", raw)
+        if s == "<small>":
+            out.append("{small}"); continue
+        if s == "</small>":
+            out.append("{/small}"); continue
+        if re.search(r"<[a-zA-Z/]", c):
+            fail("HTML značka", raw)
+        if re.match(r"\s+([-*]|\d+\.) ", c):
+            fail("vnořený seznam není podporovaný", raw)
+        if re.search(r"\]\([^)]*\)|^#{4,} ", c):
+            fail("odkaz [text](url) nebo nadpis 4. úrovně není podporovaný", raw)
+        c = bg.clean(c)
+        if "$" in c or "[[" in c or re.search(r"\\[A-Za-z]", c):
+            fail("nepřevedený LaTeX nebo odkaz", raw)
+        c = re.sub(r"(?<=\d)/(?=\d)", "∕", c)  # „č. 7/2026“ nesmí `fmt` vykreslit jako zlomek
+        out.append(pre + c)
+    if acc is not None:
+        fail("neukončené $$", acc[1][0])
+    return out
+
+
+def slug(t, used):
+    s = unicodedata.normalize("NFD", t.lower())
+    s = re.sub(r"[^a-z0-9]+", "-", "".join(ch for ch in s if not unicodedata.combining(ch))).strip("-") or "sekce"
+    base, n = s, 2
+    while s in used:
+        s, n = f"{base}-{n}", n + 1
+    used.add(s)
+    return s
+
+
+def main(src, stem):
+    text = Path(src).read_text(encoding="utf-8")
+    m = re.match(r"---\n(.*?)\n---\n", text, re.S)
+    if not m:
+        raise SystemExit("CHYBA: chybí frontmatter")
+    meta = dict(l.split(": ", 1) for l in m.group(1).split("\n") if ": " in l)
+    text = text[m.end():]
+    head, orig, tail = text.partition("\n## Originál\n")
+    if orig and tail.strip() != "![[" + Path(src).stem + ".pdf]]":
+        raise SystemExit("CHYBA: sekce Originál obsahuje něco jiného než vložené pdf")
+    lines = convert(head.split("\n"))
+    y, mo, d = meta["datum"].split("-")
+    title = re.sub(r"^TZI1 — ", "", next(l[2:] for l in lines if l.startswith("# ")))
+    secs, used = [], set()
+    for ln in lines:
+        h = re.match(r"(#{1,3}) (.*)", ln)
+        if h and len(h.group(1)) == 1:
+            secs.append({"level": 0, "heading": title, "id": "uvod", "body": []}); used.add("uvod")
+        elif h:
+            secs.append({"level": len(h.group(1)), "heading": h.group(2).strip(), "id": slug(h.group(2), used), "body": []})
+        elif secs:
+            if ln.startswith("←") or ln.strip() == "---":  # navigace ve vaultu a oddělovač
+                continue
+            secs[-1]["body"].append(ln)
+    for s in secs:
+        s["body"] = re.sub(r"\n{3,}", "\n\n", "\n".join(s["body"]).strip())
+    vault = str(Path(src).resolve()).split("/Vault/", 1)[-1]
+    data = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {"banks": {}}
+    data["banks"][stem] = {"title": title, "date": f"{int(d)}. {int(mo)}. {y}", "source": vault, "sections": secs}
+    OUT.parent.mkdir(exist_ok=True)
+    OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"{stem}: {len(secs)} sekcí -> {OUT}")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2])

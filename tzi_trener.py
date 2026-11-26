@@ -23,6 +23,7 @@ from urllib.parse import parse_qs, urlparse
 BASE = Path(__file__).resolve().parent
 BANKS = BASE / "banky"
 GLOSAR = BASE / "glosar" / "glosar.json"  # hesla podle přednášky, generuje build_glosar.py
+VYPISKY = BASE / "vypisky" / "vypisky.json"  # výpisky z přednášek, generuje build_vypisky.py
 RECALL_DIR = BANKS / "doplnovacka"  # otázky typu recall; běžné režimy čtou jen banky/*.json, tyhle nevidí
 PROGRESS_FILE = BASE / "progress.json"
 PORT = 5051
@@ -73,6 +74,16 @@ def load_glosar(source):
     return {"title": "Všechny přednášky dohromady" if source == ALL else source_label(banks[source]), "groups": groups}
 
 
+def load_vypisky(source):
+    """Výpisky z přednášky (generuje build_vypisky.py); bez zdroje seznam banek, které výpisky mají."""
+    data = json.loads(VYPISKY.read_text(encoding="utf-8"))["banks"] if VYPISKY.exists() else {}
+    if not source:
+        return {"sources": [k for k in load_banks() if k in data]}
+    banks = load_banks()
+    d = dict(data[source])  # KeyError -> 404
+    return {**d, "label": source_label(banks[source]), "glosar": source in banks}
+
+
 def load_recall():
     """Otázky pro režim Doplňovačka ze všech bank v banky/doplnovacka/."""
     return [q for p in sorted(RECALL_DIR.glob("*.json"))
@@ -94,6 +105,9 @@ UI_DIR = BASE / "ui"
 UI_FILES = {"novy": "novy.html", "klasicky": "klasicky.html"}
 AUTOMAT_FILES = {"/automat": ("text/html; charset=utf-8", "automat.html"),
                 "/glosar": ("text/html; charset=utf-8", "glosar.html"),
+                "/vypisky": ("text/html; charset=utf-8", "vypisky.html"),
+                "/search.js": ("text/javascript; charset=utf-8", "search.js"),
+                "/md.js": ("text/javascript; charset=utf-8", "md.js"),
                 "/fmt.js": ("text/javascript; charset=utf-8", "fmt.js"),
                 "/automat-core.js": ("text/javascript; charset=utf-8", "automat-core.js"),
                 "/automat-delta.jpg": ("image/jpeg", "automat-delta.jpg")}
@@ -189,6 +203,11 @@ class Handler(BaseHTTPRequestHandler):
         if u.path == "/api/glosar":
             try:
                 return self._json(load_glosar(source))
+            except (KeyError, OSError, ValueError) as e:
+                return self._json({"error": str(e)}, 404)
+        if u.path == "/api/vypisky":
+            try:
+                return self._json(load_vypisky(source))
             except (KeyError, OSError, ValueError) as e:
                 return self._json({"error": str(e)}, 404)
         if u.path == "/api/recall":

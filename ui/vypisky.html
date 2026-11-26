@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Výpisky · TZI Trenér</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Designový systém "Zvýrazňovač": chladný papír, inkoust, žlutý zvýrazňovač jako jediný výrazný tón,
+   1 / 0 (správně / chybně) jako vlastní pismo postupu. Stejné tokeny jsou v novy.html, glosar.html a automat.html. */
+:root {
+  --paper: #E4ECFC;      /* pozadí stránky: jasně světle modré */
+  --wash: linear-gradient(180deg, #CFDDFA 0, #E4ECFC 340px);
+  --surface: #F8FAFF;    /* karty, políčka */
+  --paper-2: #D2DEF7;    /* ponořená plocha (segmenty, hlavičky tabulek) */
+  --card: #F8FAFF;
+  --ink: #0F1B3D;
+  --muted: #465680;
+  --line: #B9C9EC;
+  --line-strong: #6F86BF;
+  --blue: #2433D6;       /* hlavní akcent: tlačítka, výběr, odkazy, fokus */
+  --blue-ink: #FFFFFF;
+  --focus: #2433D6;
+  --primary: #2433D6;    /* hlavní tlačítko (bílý text 8,5:1) */
+  --primary-ink: #FFFFFF;
+  --primary-hover: #1A26B3;
+  --marker: #FFD84A;     /* zvýrazňovač: jen logo a drobné štítky */
+  --marker-ink: #231C00;
+  --hl: #FFDF63;         /* žlutý hover */
+  --hl-ink: #1B1500;
+  --pick-bg: #C5D4F8;    /* vybraná přednáška */
+  --pick-ink: #0F1B2D;
+  --ok: #0F7A4F;
+  --bad: #C21F55;
+  --new: #7C8794;
+  --warn: #A24A06;
+  --active: #FFE58A;
+  --thumb: #8A97AE;
+  --exam: #0F1B2D;
+  --exam-text: #EEF2F6;
+  --exam-accent: #FFD84A;
+  --shadow: 0 10px 28px -14px rgba(15, 27, 45, .35);
+  --r-s: 8px; --r-m: 12px; --r-l: 16px;
+  --font: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+    --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+    --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+    --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+    --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
+    --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
+    --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
+    --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+  --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+  --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+  --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+  --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
+  --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
+  --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
+  --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
+}
+html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--line-strong) transparent; }
+body { background: var(--paper) var(--wash) no-repeat; color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+a { color: var(--blue); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+::selection { background: var(--marker); color: var(--marker-ink); }
+input, textarea, select { caret-color: var(--blue); accent-color: var(--ink); }
+/* značka a hlavička sdílená všemi stránkami */
+.mark { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; background: var(--marker); color: var(--marker-ink); border-radius: 10px; font: 700 1.05rem/1 var(--mono); letter-spacing: -.04em; }
+.chip { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--ink); font-weight: 500; font-size: .9375rem; text-decoration: none; white-space: nowrap; }
+.chip:hover { background: var(--hl); color: var(--hl-ink); border-color: var(--hl-ink); }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
+main { max-width: 760px; margin: 0 auto; padding: 24px 20px 96px; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; font-weight: 800; letter-spacing: -.02em; font-size: 1.15rem; }
+.brand .mark { width: 2.2rem; height: 2.2rem; font-size: .9rem; }
+h1 { font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin: 28px 0 6px; font-variation-settings: "opsz" 72; }
+.sub { color: var(--muted); margin-bottom: 20px; }
+.search { position: sticky; top: 0; z-index: 5; padding: 10px 0; background: var(--paper); }
+.search input { width: 100%; min-height: 48px; padding: 0 16px; font: 400 1rem var(--font); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line-strong); border-radius: var(--r-m); }
+.search input:focus-visible { border-color: var(--ink); }
+.search input::placeholder { color: var(--muted); }
+.count { color: var(--muted); font-size: .875rem; margin: 4px 0 0; min-height: 1.3em; }
+h2 { font-size: 1.15rem; font-weight: 800; margin: 36px 0 12px; line-height: 1.25; }
+.entry { padding: 16px 18px 12px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); }
+.entry h3 { font-size: 1.1rem; font-weight: 700; margin: 0 0 8px; }
+.entry p, .entry ul { margin: 0 0 8px; font: 400 1.0625rem/1.6 var(--serif); max-width: 68ch; }
+.entry ul { padding-left: 1.2em; }
+.entry table { border-collapse: separate; border-spacing: 0; margin: 6px 0 10px; font-size: .9375rem; border: 1px solid var(--line-strong); border-radius: var(--r-s); overflow: hidden; }
+.entry td, .entry th { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 5px 12px; text-align: left; }
+.entry tr:last-child td { border-bottom: 0; } .entry td:last-child, .entry th:last-child { border-right: 0; }
+.entry th { background: var(--paper-2); }
+.entry .src { color: var(--muted); font: 400 .875rem/1.5 var(--font); }
+.entry code { font-family: var(--mono); font-size: .9em; }
+.srow { display: flex; gap: 8px; }
+.srow input { flex: 1; min-width: 0; }
+.sbtn { flex: none; width: 48px; height: 48px; display: grid; place-items: center; background: var(--surface); border: 1.5px solid var(--line-strong); border-radius: var(--r-m); color: var(--ink); }
+.sbtn:hover:not(:disabled) { background: var(--hl); color: var(--hl-ink); border-color: var(--hl-ink); }
+.sbtn:disabled { opacity: .45; cursor: default; }
+mark.hit { background: var(--hl); color: var(--hl-ink); border-radius: 3px; padding: 0 1px; }
+mark.hit.cur { background: #FF9F1C; color: #1B1000; outline: 2px solid var(--ink); outline-offset: 1px; }
+sub, sup { font-size: .72em; line-height: 0; }
+.frac, .binom > span { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .85em; line-height: 1.3; }
+.frac { margin: 0 .1em; }
+.frac > span { padding: 0 .25em; white-space: nowrap; }
+.frac > span + span { border-top: 1.5px solid currentColor; }
+.binom { display: inline-flex; align-items: center; vertical-align: middle; white-space: nowrap; }
+.binom::before, .binom::after { font-size: 1.9em; font-weight: 300; line-height: 1; }
+.binom::before { content: "("; } .binom::after { content: ")"; }
+.empty { color: var(--muted); }
+/* ---------- výpisky ---------- */
+:root { --ai: #6B3FD0; --ai-ink: #FFFFFF; --teal: #0B6E7F; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ai: #B79CFF; --ai-ink: #1A0F3D; --teal: #5CCBDD; } }
+:root[data-theme="dark"] { --ai: #B79CFF; --ai-ink: #1A0F3D; --teal: #5CCBDD; }
+main { max-width: 1120px; }
+.wrap { display: grid; grid-template-columns: 250px minmax(0, 46rem); gap: 56px; justify-content: center; align-items: start; }
+.eyebrow { margin-top: 28px; color: var(--muted); font-size: .9375rem; font-weight: 500; }
+.eyebrow + h1 { margin-top: 4px; }
+.links { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 18px; }
+.toc { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; padding: 4px 0; font-size: .9375rem; }
+.toc summary { font-weight: 700; padding: 10px 0; cursor: pointer; }
+.toc ol { list-style: none; border-left: 2px solid var(--line); }
+.toc a { display: block; padding: 5px 10px 5px 14px; margin-left: -2px; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; line-height: 1.3; }
+.toc a:hover { background: var(--hl); color: var(--hl-ink); border-left-color: var(--hl-ink); }
+.toc a.on { color: var(--ink); font-weight: 700; border-left-color: var(--blue); }
+@media (min-width: 900px) { .toc summary { display: none; } }
+@media (max-width: 899px) {
+  .wrap { display: block; }
+  .toc { position: static; max-height: none; margin: 0 0 8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-m); padding: 0 14px; }
+  .toc[open] { padding-bottom: 8px; }
+}
+.search { top: 0; margin: 0 -4px; padding: 10px 4px; }
+#out h2 { font-size: 1.55rem; font-weight: 800; letter-spacing: -.02em; margin: 44px 0 10px; scroll-margin-top: 84px; }
+#out h3 { font-size: 1.2rem; font-weight: 700; margin: 30px 0 8px; scroll-margin-top: 84px; }
+#out p, #out li { font: 400 1.0625rem/1.7 var(--serif); }
+#out p { margin: 0 0 10px; }
+#out ul, #out ol { margin: 0 0 12px; padding-left: 1.35em; }
+#out li { margin: 2px 0; }
+#out b { font-weight: 600; }
+#out u { text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+#out .dm { margin: 14px 0; padding: 10px 12px; text-align: center; font: 400 1.2rem/1.9 var(--serif); background: color-mix(in srgb, var(--paper-2) 60%, transparent); border-radius: var(--r-s); overflow-x: auto; }
+#out .dm div { overflow-wrap: anywhere; }
+#out .tw { overflow-x: auto; margin: 12px 0 14px; max-width: 100%; }
+#out table { border-collapse: separate; border-spacing: 0; font: 400 .9375rem/1.45 var(--font); border: 1px solid var(--line-strong); border-radius: var(--r-s); background: var(--surface); }
+#out td, #out th { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 7px 12px; text-align: left; vertical-align: top; }
+#out tr:last-child td { border-bottom: 0; } #out td:last-child, #out th:last-child { border-right: 0; }
+#out th { background: var(--paper-2); font-weight: 700; }
+.small { color: var(--muted); }
+#out .small p, #out .small li { font-size: .9375rem; line-height: 1.6; color: var(--muted); }
+#out p.ai-note { padding-left: 12px; border-left: 3px solid var(--ai); color: var(--muted); font-size: .9375rem; }
+/* callouty z Obsidianu */
+.co { --c: var(--muted); margin: 16px 0; border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line)); border-left: 5px solid var(--c); border-radius: var(--r-m); background: color-mix(in srgb, var(--c) 9%, var(--surface)); }
+.co-info { --c: var(--blue); } .co-note { --c: var(--muted); } .co-warning { --c: var(--warn); } .co-important { --c: var(--bad); }
+.co-example { --c: var(--ok); } .co-success { --c: var(--teal); }
+.co.ai { --c: var(--ai); border-style: dashed; border-left-style: solid; background: color-mix(in srgb, var(--ai) 8%, var(--surface)); }
+.co-h { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; padding: 10px 14px 6px; font: 700 .9375rem/1.35 var(--font); color: var(--c); list-style: none; }
+.co.ai > .co-h .co-t { color: var(--ink); }
+summary.co-h { cursor: pointer; padding-bottom: 10px; }
+summary.co-h::-webkit-details-marker { display: none; }
+summary.co-h::before { content: "▸"; flex: none; transition: transform .15s; }
+details[open] > summary.co-h::before { transform: rotate(90deg); }
+details[open] > summary.co-h { padding-bottom: 6px; }
+summary.co-h:hover, summary.co-h:hover .co-t { background: var(--hl); color: var(--hl-ink); }
+.co-b { padding: 2px 16px 6px; }
+.co-b > :last-child { margin-bottom: 6px; }
+.co .co { margin: 12px 0; }
+.ai-tag { display: inline-block; padding: 1px 10px; border-radius: 999px; background: var(--ai); color: var(--ai-ink); font: 700 .8125rem/1.5 var(--font); }
+</style>
+</head>
+<body>
+<main>
+  <div class="bar"><a class="brand" href="/"><span class="mark" aria-hidden="true">10</span>TZI Trenér</a><a class="chip" href="/">← TZI Trenér</a></div>
+  <div class="wrap">
+    <details class="toc" id="toc"><summary>Obsah</summary><nav aria-label="Obsah výpisků"><ol id="toc-list"></ol></nav></details>
+    <article>
+      <p class="eyebrow" id="eyebrow">Výpisky z přednášky</p>
+      <h1 id="h1">Výpisky</h1>
+      <div class="links" id="links"></div>
+      <div class="search"><div class="srow"><input type="search" id="q" placeholder="Hledat ve výpiscích (Ctrl+F)" aria-label="Hledat ve výpiscích" autocomplete="off">
+        <button type="button" class="sbtn" id="sprev" aria-label="Předchozí nález (Shift+Enter)" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+        <button type="button" class="sbtn" id="snext" aria-label="Další nález (Enter)" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
+      <p class="count" id="cnt" role="status" aria-live="polite"></p></div>
+      <div id="out"></div>
+    </article>
+  </div>
+</main>
+<script src="/fmt.js"></script>
+<script src="/md.js"></script>
+<script src="/search.js"></script>
+<script>
+(async () => {
+  const source = new URLSearchParams(location.search).get('source') || '';
+  const out = document.getElementById('out');
+  const r = await fetch('/api/vypisky?source=' + encodeURIComponent(source));
+  if (!r.ok) { out.innerHTML = '<p class="empty">K téhle přednášce zatím nejsou výpisky.</p>'; document.getElementById('toc').hidden = true; return; }
+  const d = await r.json();
+  const name = d.title.replace(/^Přednáška [\d. ]+: /, '');
+  document.title = `Výpisky: ${name} · TZI Trenér`;
+  document.getElementById('eyebrow').textContent = `Výpisky z přednášky · ${d.date}`;
+  document.getElementById('h1').textContent = name;
+  document.getElementById('links').innerHTML = d.glosar ? `<a class="chip" href="/glosar?source=${encodeURIComponent(source)}">Glosář k přednášce</a>` : '';
+  const pre = d.sections.filter(s => s.level === 0), secs = d.sections.filter(s => s.level > 0);
+  out.innerHTML = pre.map(s => mdRender(s.body)).join('') + secs.map(s => `<section><h${s.level} id="${esc(s.id)}">${gInline(s.heading)}</h${s.level}>${mdRender(s.body)}</section>`).join('');
+  const h2 = secs.filter(s => s.level === 2);
+  document.getElementById('toc-list').innerHTML = h2.map(s => `<li><a href="#${esc(s.id)}">${gInline(s.heading)}</a></li>`).join('');
+  // obsah: na širokém okně vždy rozbalený, na úzkém sbalitelný; zvýrazní se sekce, která je právě nahoře
+  const toc = document.getElementById('toc'), wide = matchMedia('(min-width: 900px)');
+  toc.open = wide.matches;
+  wide.addEventListener('change', () => { toc.open = wide.matches; });
+  const links = [...toc.querySelectorAll('a')];
+  links.forEach(a => a.addEventListener('click', () => { if (!wide.matches) toc.open = false; }));
+  const heads = h2.map(s => document.getElementById(s.id));
+  function spy() {
+    let k = 0;
+    heads.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) k = i; });
+    links.forEach((a, i) => a.classList.toggle('on', i === k));
+  }
+  addEventListener('scroll', spy, { passive: true }); spy();
+  if (location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+  initSearch('section', '');
+})();
+</script>
+</body>
+</html>
