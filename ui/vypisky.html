@@ -237,6 +237,7 @@ ul.omyly .om-why { color: var(--muted); }
 (async () => {
   // stejná stránka pro výpisky z přednášky (/vypisky?source=) i příklady ze cvičení (/cviceni?id=)
   const cv = location.pathname === '/cviceni', qs = new URLSearchParams(location.search);
+  if (cv) { const q = document.getElementById('q'); q.placeholder = 'Hledat v příkladech (Ctrl+F)'; q.setAttribute('aria-label', 'Hledat v příkladech'); }
   const key = (cv ? qs.get('id') : qs.get('source')) || '';
   const out = document.getElementById('out');
   const r = await fetch((cv ? '/api/cviceni?id=' : '/api/vypisky?source=') + encodeURIComponent(key));
