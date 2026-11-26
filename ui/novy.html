@@ -12,31 +12,34 @@
 /* Designový systém "Zvýrazňovač": chladný papír, inkoust, žlutý zvýrazňovač jako jediný výrazný tón,
    1 / 0 (správně / chybně) jako vlastní pismo postupu. Stejné tokeny jsou v novy.html, glosar.html a automat.html. */
 :root {
-  --paper: #F1F3F1;      /* pozadí stránky */
-  --surface: #FFFFFF;    /* karty, políčka */
-  --paper-2: #E3E8E5;    /* ponořená plocha (segmenty, hlavičky tabulek) */
-  --card: #FFFFFF;
-  --ink: #0F1B2D;
-  --muted: #536074;
-  --line: #D3D9D5;
-  --line-strong: #A9B4AF;
-  --blue: #2B45D4;       /* odkazy a fokus */
+  --paper: #E4ECFC;      /* pozadí stránky: jasně světle modré */
+  --wash: linear-gradient(180deg, #CFDDFA 0, #E4ECFC 340px);
+  --surface: #F8FAFF;    /* karty, políčka */
+  --paper-2: #D2DEF7;    /* ponořená plocha (segmenty, hlavičky tabulek) */
+  --card: #F8FAFF;
+  --ink: #0F1B3D;
+  --muted: #465680;
+  --line: #B9C9EC;
+  --line-strong: #6F86BF;
+  --blue: #2433D6;       /* hlavní akcent: tlačítka, výběr, odkazy, fokus */
   --blue-ink: #FFFFFF;
-  --focus: #2B45D4;
-  --primary: #0F1B2D;    /* hlavní tlačítko */
-  --primary-ink: #F1F3F1;
-  --primary-hover: #26354F;
-  --marker: #FFD84A;     /* zvýrazňovač: výběr, aktuální krok, pokračovat */
+  --focus: #2433D6;
+  --primary: #2433D6;    /* hlavní tlačítko (bílý text 8,5:1) */
+  --primary-ink: #FFFFFF;
+  --primary-hover: #1A26B3;
+  --marker: #FFD84A;     /* zvýrazňovač: jen logo a drobné štítky */
   --marker-ink: #231C00;
-  --pick-bg: #FFD84A;    /* vybraná přednáška */
-  --pick-ink: #231C00;
+  --hl: #FFDF63;         /* žlutý hover (text na něm vždy tmavý) */
+  --hl-ink: #1B1500;
+  --pick-bg: #C5D4F8;    /* vybraná přednáška */
+  --pick-ink: #0F1B2D;
   --ok: #0F7A4F;
   --bad: #C21F55;
   --new: #7C8794;
   --warn: #A24A06;
   --active: #FFE58A;
   --thumb: #8A97AE;
-  --exam: #0F1B2D;
+  --exam: #111E55;
   --exam-text: #EEF2F6;
   --exam-accent: #FFD84A;
   --shadow: 0 10px 28px -14px rgba(15, 27, 45, .35);
@@ -47,28 +50,28 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0D1320; --surface: #151D2E; --paper-2: #1C2640; --card: #151D2E;
-    --ink: #E8EDF5; --muted: #9CA8BC; --line: #26314A; --line-strong: #46567A;
-    --blue: #93A1FF; --blue-ink: #0D1320; --focus: #FFD84A;
-    --primary: #FFD84A; --primary-ink: #1B1600; --primary-hover: #FFE37A;
-    --pick-bg: #3B3512; --pick-ink: #FFF3C2;
+    --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+    --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+    --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+    --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+    --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
     --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
     --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
     --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0D1320; --surface: #151D2E; --paper-2: #1C2640; --card: #151D2E;
-  --ink: #E8EDF5; --muted: #9CA8BC; --line: #26314A; --line-strong: #46567A;
-  --blue: #93A1FF; --blue-ink: #0D1320; --focus: #FFD84A;
-  --primary: #FFD84A; --primary-ink: #1B1600; --primary-hover: #FFE37A;
-  --pick-bg: #3B3512; --pick-ink: #FFF3C2;
+  --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+  --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+  --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+  --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+  --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
   --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
   --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
   --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
 }
 html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--line-strong) transparent; }
-body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
+body { background: var(--paper) var(--wash) no-repeat; color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
 [hidden] { display: none !important; } /* jinak ho přebijí display: flex u .options a podobných */
 button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
 a { color: var(--blue); text-underline-offset: 3px; }
@@ -76,7 +79,7 @@ a { color: var(--blue); text-underline-offset: 3px; }
 ::selection { background: var(--marker); color: var(--marker-ink); }
 input, textarea, select { caret-color: var(--blue); accent-color: var(--ink); }
 /* značka a hlavička sdílená všemi stránkami */
-.mark { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; background: var(--marker); color: var(--marker-ink); border-radius: 10px; font: 700 1.05rem/1 var(--mono); letter-spacing: -.04em; }
+.mark { flex: none; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; background: var(--marker); color: var(--marker-ink); border-radius: 10px; font: 700 1.05rem/1 var(--mono); letter-spacing: -.04em; }
 .chip { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--ink); font-weight: 500; font-size: .9375rem; text-decoration: none; white-space: nowrap; }
 .chip:hover { border-color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
@@ -86,11 +89,20 @@ sub, sup { font-size: .72em; line-height: 0; }
 #app { max-width: 1120px; margin: 0 auto; padding: 28px 24px 56px; }
 
 /* ---------- hlavička ---------- */
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 14px; }
-.top h1 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.1rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.025em; font-variation-settings: "opsz" 72; }
-.top p { margin: 2px 0 0; color: var(--muted); font-size: .9375rem; }
+.top h1 { margin: 0; font-size: clamp(1.35rem, 3.5vw, 1.7rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.025em; font-variation-settings: "opsz" 72; }
+.top p { margin: 2px 0 0; color: var(--muted); font-size: .875rem; }
 .topnav { display: flex; gap: 8px; flex-wrap: wrap; }
+.vyp { position: relative; }
+.vyp-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; --vyp-row: 52px; width: min(440px, calc(100vw - 32px)); padding: 14px 8px 8px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-l); box-shadow: var(--shadow); }
+.vyp-pop h2 { display: block; margin: 0 0 6px 12px; font-size: .8125rem; font-weight: 700; color: var(--muted); }
+/* nejvýš 8 řádků stejné výšky, zbytek se posouvá po celých řádcích; na nízkém okně se výška ořízne podle okna */
+.vyp-pop ul { list-style: none; max-height: min(calc(8 * var(--vyp-row)), calc(100dvh - 190px)); overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; }
+.vyp-pop li { height: var(--vyp-row); scroll-snap-align: start; }
+.vyp-pop a { display: grid; grid-template-columns: 2rem 1fr; gap: 10px; align-items: center; height: 100%; padding: 4px 12px; border-radius: var(--r-s); color: var(--ink); text-decoration: none; line-height: 1.2; }
+.vyp-pop a > span:last-child { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.vyp-pop a .n { font: 700 1.1rem/1 var(--mono); color: var(--muted); text-align: center; }
 
 .layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; margin-top: 32px; align-items: start; }
 .layout > * { min-width: 0; }
@@ -98,29 +110,29 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .step { flex: none; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--ink); color: var(--paper); font: 700 .8125rem/1 var(--mono); }
 
 /* ---------- přednášky ---------- */
-.lectures { list-style: none; margin: 0 0 32px; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); overflow-y: auto; overscroll-behavior: contain; }
-.lectures li { display: flex; align-items: stretch; padding: 3px 6px; }
-.lectures li:first-child { padding-top: 6px; } .lectures li:last-child { padding-bottom: 6px; }
-.gl-btn { flex: none; align-self: center; margin-right: 6px; padding: 8px 12px; border-radius: 999px; color: var(--muted); font-size: .875rem; text-decoration: none; border: 1px solid transparent; }
-.gl-btn:hover { color: var(--ink); border-color: var(--line-strong); }
-.lec { display: grid; grid-template-columns: 2rem 1fr auto; gap: 12px; align-items: center; width: 100%; min-height: 56px; padding: 10px 8px 10px 12px; background: none; border: 0; border-radius: var(--r-m); text-align: left; }
-.lec .n { font: 700 1.35rem/1 var(--mono); color: var(--muted); text-align: center; }
-.lec .t { font-weight: 500; line-height: 1.3; }
-.lec .d { color: var(--muted); font-size: .8125rem; white-space: nowrap; }
-.lec:hover { background: var(--paper-2); }
-.lec[aria-pressed="true"] { background: var(--pick-bg); color: var(--pick-ink); }
-.lec[aria-pressed="true"] .n, .lec[aria-pressed="true"] .d { color: var(--pick-ink); }
+.lectures { --lec-row: 64px; position: relative; list-style: none; margin: 0 0 14px; padding: 0; box-sizing: border-box; height: calc(5 * var(--lec-row) + 2px); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; }
+.lectures li { box-sizing: border-box; display: flex; align-items: center; height: var(--lec-row); flex: none; border-bottom: 1px solid var(--line); scroll-snap-align: start; }
+.lectures li:last-child { border-bottom: 0; }
+.gl-btn { flex: none; margin: 0 8px; padding: 8px 10px; border-radius: var(--r-s); color: var(--muted); font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; }
+.lec { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); column-gap: 10px; align-content: center; align-items: center; flex: 1; min-width: 0; height: 100%; padding: 4px 8px 4px 14px; background: none; border: 0; border-radius: 0; text-align: left; }
+.lec .n { grid-row: 1 / span 2; font: 700 1.5rem/1 var(--mono); color: var(--muted); text-align: center; }
+.lec .t { grid-column: 2; font-weight: 500; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.lec .d { grid-column: 2; color: var(--muted); font-size: .8125rem; line-height: 1.25; }
+.lec .d:empty { display: none; }
+.lectures li:has(.lec[aria-pressed="true"]) { background: var(--pick-bg); color: var(--pick-ink); outline: 2px solid var(--blue); outline-offset: -2px; border-radius: var(--r-s); }
+.lec[aria-pressed="true"] .n { color: var(--blue); }
+.lec[aria-pressed="true"] .d, .lectures li:has(.lec[aria-pressed="true"]) .gl-btn { color: var(--pick-ink); }
 .lec[aria-pressed="true"] .t { font-weight: 700; }
 
 /* ---------- postup jako bity ---------- */
-.bits-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.bits-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; }
 .bits-head h2 { margin: 0; }
 .bits-head span { color: var(--muted); font-size: .875rem; }
-.bits { font-family: var(--mono); font-weight: 700; font-size: clamp(1.15rem, 3vw, 1.6rem); line-height: 1; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); padding: 8px 12px; }
-.brow { display: flex; align-items: center; gap: 14px; padding: 8px 4px; width: 100%; min-height: 40px; background: none; border: 0; border-radius: var(--r-s); text-align: left; }
+.bits { font-family: var(--mono); font-weight: 700; font-size: clamp(.68rem, 1.45vh, .95rem); line-height: 1; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); padding: 10px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(10.4em, 1fr)); gap: 0 8px; align-content: start; }
+.brow { display: flex; align-items: center; gap: 6px; padding: 3px 4px; width: 100%; min-height: 0; background: none; border: 0; border-radius: var(--r-s); text-align: left; }
 .brow:hover { background: var(--paper-2); }
-.brow b { flex: none; width: 1.6rem; font: 500 .8rem/1 var(--font); color: var(--muted); text-align: right; }
-.brow .cells { display: flex; flex-wrap: wrap; gap: .45em; flex: 1; }
+.brow b { flex: none; width: 1.5rem; font: 500 .7rem/1 var(--font); color: var(--muted); text-align: right; }
+.brow .cells { display: flex; flex-wrap: wrap; gap: .15em; flex: 1; }
 .bit { width: 1ch; text-align: center; }
 .bits.anim .bit { opacity: 0; animation: flip .35s cubic-bezier(.16, 1, .3, 1) forwards; }
 .bit.ok { color: var(--ok); }
@@ -128,7 +140,7 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .bit.new { color: var(--new); font-weight: 500; }
 @keyframes flip { from { opacity: 0; transform: translateY(.35em) } to { opacity: 1; transform: none } }
 @media (prefers-reduced-motion: reduce) { .bits.anim .bit { animation: none; opacity: 1; } }
-.legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; font-size: .875rem; color: var(--muted); }
+.legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 8px; font-size: .875rem; color: var(--muted); }
 .legend i { font: 700 1rem/1 var(--mono); font-style: normal; margin-right: 6px; }
 .legend .ok i { color: var(--ok); } .legend .bad i { color: var(--bad); } .legend .new i { color: var(--new); }
 
@@ -136,7 +148,8 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .filter { display: flex; background: var(--paper-2); border-radius: var(--r-m); padding: 4px; margin-bottom: 16px; gap: 2px; }
 .filter button { flex: 1; min-height: 44px; background: none; border: 0; padding: 0 12px; border-radius: 9px; font-weight: 500; font-size: .9375rem; white-space: nowrap; }
 .filter button:hover { background: color-mix(in srgb, var(--surface) 60%, transparent); }
-.filter button[aria-pressed="true"] { background: var(--surface); box-shadow: 0 1px 3px rgba(15, 27, 45, .25); font-weight: 700; }
+.filter button[aria-pressed="true"]:hover { background: var(--primary-hover); }
+.filter button[aria-pressed="true"] { background: var(--primary); color: var(--primary-ink); font-weight: 700; }
 
 .go { display: block; width: 100%; background: var(--primary); color: var(--primary-ink); border: 0; border-radius: var(--r-l); padding: 22px 24px 20px; text-align: left; margin-bottom: 32px; box-shadow: var(--shadow); transition: background-color .15s; }
 .go strong { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 1.5rem; line-height: 1.2; font-weight: 800; letter-spacing: -0.015em; }
@@ -146,7 +159,7 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .go:hover strong::after { transform: translateX(4px); }
 .sbar { display: flex; height: 6px; margin-top: 16px; border-radius: 3px; overflow: hidden; background: color-mix(in srgb, var(--primary-ink) 22%, transparent); }
 .sbar b { display: block; height: 100%; width: 0; transition: width .5s cubic-bezier(.16, 1, .3, 1); }
-.sbar .ok { background: #4CC38A; } .sbar .bad { background: #FF7FA8; }
+.sbar .ok { background: #7FE3B0; } .sbar .bad { background: #FFB0C8; }
 .go .sbar-lab { margin-top: 8px; font: 500 .8125rem/1.2 var(--mono); opacity: .9; }
 
 .group { margin-bottom: 28px; }
@@ -175,6 +188,44 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .foot button, .foot a { background: none; border: 0; color: var(--muted); padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
 .foot button:hover, .foot a:hover { color: var(--ink); }
 .foot .danger:hover { color: var(--bad); }
+.modes li, .mode { min-width: 0; }
+
+/* desktop: celé menu na jednu obrazovku bez posouvání, výška se rozdělí podle okna */
+@media (min-width: 861px) {
+  #app { padding: 14px 24px 16px; }
+  #menu { height: max(calc(100dvh - 30px), 640px); display: flex; flex-direction: column; }
+  .layout { flex: 1; min-height: 0; margin-top: 14px; gap: 28px; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); align-items: stretch; }
+  .layout > section { display: flex; flex-direction: column; min-height: 0; }
+  .layout > section:last-child { justify-content: space-between; gap: 10px; }
+  .lectures { flex: none; }
+  h2 { font-size: 1rem; margin-bottom: 8px; }
+  .filter { margin-bottom: 0; }
+  .filter button { min-height: 38px; }
+  .go { padding: 12px 16px; margin-bottom: 0; }
+  .go strong { font-size: 1.25rem; }
+  .go span { margin-top: 2px; font-size: .875rem; }
+  .sbar { margin-top: 8px; } .go .sbar-lab { margin-top: 5px; }
+  .group { margin-bottom: 0; }
+  .modes { gap: 8px; }
+  .mode { padding: 10px 12px; gap: 2px 10px; }
+  .mode .desc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .modes.three .mode { grid-template-columns: auto 1fr; align-items: center; gap: 0 10px; }
+  .modes.three .mode .count { grid-column: 1; grid-row: 1; font-size: 1.4rem; }
+  .modes.three .mode .name { grid-column: 2; grid-row: 1; font-size: .8125rem; line-height: 1.15; }
+  .modes.three .mode .desc { display: none; }
+  .exam { padding: 12px 14px 14px; }
+  .exam h2 { margin-bottom: 8px; }
+  .exam .mode .desc { white-space: normal; }
+  .foot { margin-top: 0; }
+  .foot button, .foot a { padding: 4px 0; }
+}
+/* nízké okno (např. 1280x720): popisky režimů jsou jen v tooltipu, podtitul pryč */
+@media (min-width: 861px) and (max-height: 820px) {
+  .top p { display: none; }
+  .group .mode .desc { display: none; }
+  .modes.three .mode .name { font-size: .8125rem; line-height: 1.15; }
+  .layout { margin-top: 10px; }
+}
 .ai { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8125rem; max-width: 70ch; }
 
 @media (max-width: 860px) {
@@ -191,17 +242,19 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
   .filter { order: 4; } .go { order: 5; } .layout .group { order: 6; } .exam { order: 7; } .foot { order: 8; }
 }
 @media (max-width: 600px) {
-  .lec { grid-template-columns: 1.8rem minmax(0, 1fr); }
-  .lec .d { grid-column: 2; white-space: normal; margin-top: 2px; }
-  .lec { row-gap: 0; align-items: start; padding-top: 12px; padding-bottom: 12px; }
-  .lec .n { padding-top: 2px; }
+  .lectures { height: auto; scroll-snap-type: none; overflow: visible; }
+  .bits { grid-template-columns: repeat(auto-fill, minmax(10.6em, 1fr)); font-size: .85rem; }
+  .brow { min-height: 36px; }
   .modes, .modes.three { grid-template-columns: 1fr; }
   .modes.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .modes.three .mode { padding: 12px; }
+  .modes.three .mode .name { font-size: .8125rem; overflow-wrap: anywhere; }
   .modes.three .mode .desc { display: none; }
   .filter { display: grid; grid-template-columns: 1fr 1fr; }
   .filter button { padding: 0 6px; }
-  .topnav { width: 100%; }
+  .topnav { width: 100%; position: relative; }
+  .vyp { position: static; }
+  .vyp-pop { left: 0; right: 0; width: auto; }
   .top p { display: none; }
   .top { padding-bottom: 16px; }
 }
@@ -281,9 +334,9 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .pchain i.ok { color: var(--ok); font-weight: 700; }
 .pchain i.bad { color: var(--bad); font-weight: 700; }
 .pchain i.ans { color: var(--muted); font-weight: 700; }
-.pchain i.cur { background: var(--marker); color: var(--marker-ink); font-weight: 700; box-shadow: 0 0 0 3px var(--marker); }
+.pchain i.cur { background: var(--primary); color: var(--primary-ink); font-weight: 700; box-shadow: 0 0 0 3px var(--primary); }
 .progress-bar { height: 4px; background: var(--line); border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
-.progress-bar .fill { height: 100%; background: var(--ink); transition: width .35s cubic-bezier(.16, 1, .3, 1); }
+.progress-bar .fill { height: 100%; background: var(--blue); transition: width .35s cubic-bezier(.16, 1, .3, 1); }
 .question-box { padding: 22px 24px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-l); }
 .qsrc { display: inline-block; font-size: .8125rem; color: var(--muted); margin-bottom: 12px; padding: 3px 10px; background: var(--paper-2); border-radius: 999px; }
 .qsrc:empty { display: none; }
@@ -311,8 +364,8 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .opt::after { font: 700 .8125rem/1.2 var(--mono); white-space: nowrap; }
 .opt:hover:not(.disabled) { border-color: var(--ink); }
 .opt:hover:not(.disabled) .letter { border-color: var(--ink); color: var(--ink); }
-.opt.selected { border-color: var(--ink); background: color-mix(in srgb, var(--marker) 34%, var(--surface)); font-weight: 600; }
-.opt.selected .letter { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.opt.selected { border-color: var(--blue); background: var(--pick-bg); font-weight: 600; }
+.opt.selected .letter { background: var(--blue); border-color: var(--blue); color: var(--blue-ink); }
 .opt.disabled { cursor: default; color: var(--muted); }
 .opt.correct, .opt.wrong, .opt.missed { color: var(--ink); }
 .opt.correct { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 11%, var(--surface)); }
@@ -416,6 +469,15 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .bye h1 { font-size: clamp(2rem, 6vw, 3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; font-variation-settings: "opsz" 96; }
 .bye p { margin-top: 12px; color: var(--muted); }
 .bye .bits { margin-top: 28px; font: 700 1.5rem/1 var(--mono); letter-spacing: .5em; background: none; border: 0; padding: 0; }
+
+/* žlutý hover na ovladatelných položkách (modré pozadí zůstává, text na žluté je vždy tmavý) */
+#app .lectures li:not(:has(.lec[aria-pressed="true"])):hover { background: var(--hl); color: var(--hl-ink); }
+#app .lectures li:hover :is(.n, .d, .t, .gl-btn) { color: var(--hl-ink); }
+#app :is(.mode:not(:disabled), .brow, .chunk-btn, .q-pill, .filter button:not([aria-pressed="true"]), .opt:not(.disabled), .chip, .vyp-pop a, .chunk-detail-btns button:not(:first-child), .res-btns button:not(.primary), .btn-prev:not(:disabled), .btn-end, .timer button):hover { background: var(--hl); color: var(--hl-ink); border-color: var(--hl-ink); }
+#app :is(.mode, .brow, .opt, .chunk-btn, .vyp-pop a):hover :is(.n, .d, .t, .name, .desc, .count, b, .letter, .bit, small) { color: var(--hl-ink); }
+#app .opt:not(.disabled):hover .letter { border-color: var(--hl-ink); }
+#app .brow:hover .bit.ok { color: #0A5C3A; } #app .brow:hover .bit.bad { color: #A3153F; }
+#app .exam .mode:hover { background: var(--hl); }
 </style>
 </head>
 <body>
@@ -425,7 +487,8 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
     <header class="top">
       <div class="brand"><span class="mark" aria-hidden="true">10</span>
         <div><h1>TZI Trenér</h1><p>Opakování přednášek z Teoretické informatiky, KI/TIN</p></div></div>
-      <nav class="topnav" aria-label="Další nástroje"><a class="chip" href="/automat">Návrhář automatů</a><a class="chip" href="/glosar?source=_all">Glosář</a></nav>
+      <nav class="topnav" aria-label="Další nástroje"><a class="chip" href="/automat">Návrhář automatů</a><a class="chip" href="/glosar?source=_all">Glosář</a><div class="vyp"><button type="button" class="chip" id="vyp-btn" aria-expanded="false" aria-controls="vyp-pop">Výpisky</button>
+        <div class="vyp-pop" id="vyp-pop" role="region" aria-label="Výpisky" hidden><h2>Glosáře</h2><ul id="vyp-list"></ul></div></div></nav>
     </header>
 
     <div class="layout">
@@ -464,19 +527,19 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
         <div class="group">
           <h2><span class="step" aria-hidden="true">3</span>Jak procvičovat</h2>
           <ul class="modes">
-            <li><button class="mode" onclick="showChunks()"><span class="name">Po <span id="menu-chunk-size">10</span></span><span class="desc">Postupně po blocích, v bloku si vybereš podmnožinu</span><span class="count" id="c-blocks"></span></button></li>
-            <li><button class="mode" onclick="startAll()"><span class="name">Vše popořadě</span><span class="desc">Celá banka od první otázky</span><span class="count" id="c-all"></span></button></li>
-            <li><button class="mode" onclick="showRandomModal('random')"><span class="name">Náhodný výběr</span><span class="desc">Zadáš kolik otázek chceš</span><span class="count">?</span></button></li>
-            <li><button class="mode" onclick="showRandomModal('study')"><span class="name">Studuj, pak testuj</span><span class="desc">Nejdřív otázky s odpovědí a postupem, potom test</span><span class="count"></span></button></li>
+            <li><button title="Postupně po blocích, v bloku si vybereš podmnožinu" class="mode" onclick="showChunks()"><span class="name">Po <span id="menu-chunk-size">10</span></span><span class="desc">Postupně po blocích, v bloku si vybereš podmnožinu</span><span class="count" id="c-blocks"></span></button></li>
+            <li><button title="Celá banka od první otázky" class="mode" onclick="startAll()"><span class="name">Vše popořadě</span><span class="desc">Celá banka od první otázky</span><span class="count" id="c-all"></span></button></li>
+            <li><button title="Zadáš kolik otázek chceš" class="mode" onclick="showRandomModal('random')"><span class="name">Náhodný výběr</span><span class="desc">Zadáš kolik otázek chceš</span><span class="count">?</span></button></li>
+            <li><button title="Nejdřív otázky s odpovědí a postupem, potom test" class="mode" onclick="showRandomModal('study')"><span class="name">Studuj, pak testuj</span><span class="desc">Nejdřív otázky s odpovědí a postupem, potom test</span><span class="count"></span></button></li>
           </ul>
         </div>
 
         <div class="group">
           <h2>Vrať se k tomu, co ti nejde</h2>
           <ul class="modes three">
-            <li><button class="mode new" id="btn-unseen" onclick="startUnseen()"><span class="name">Jen neprozkoumané</span><span class="desc">Na tyhle jsi ještě neodpovídal</span><span class="count" id="unseen-count"></span></button></li>
-            <li><button class="mode bad" id="btn-wrongs" onclick="startWrongs()"><span class="name">Jen chybné</span><span class="desc">Odpověděl jsi špatně</span><span class="count" id="wrongs-count"></span></button></li>
-            <li><button class="mode ok" id="btn-correct" onclick="startCorrect()"><span class="name">Zopakovat správné</span><span class="desc">Ať ti nevyprchaly z hlavy</span><span class="count" id="correct-count"></span></button></li>
+            <li><button title="Na tyhle jsi ještě neodpovídal" class="mode new" id="btn-unseen" onclick="startUnseen()"><span class="name">Nové</span><span class="desc">Na tyhle jsi ještě neodpovídal</span><span class="count" id="unseen-count"></span></button></li>
+            <li><button title="Odpověděl jsi špatně" class="mode bad" id="btn-wrongs" onclick="startWrongs()"><span class="name">Chybné</span><span class="desc">Odpověděl jsi špatně</span><span class="count" id="wrongs-count"></span></button></li>
+            <li><button title="Ať ti nevyprchaly z hlavy" class="mode ok" id="btn-correct" onclick="startCorrect()"><span class="name">Správné</span><span class="desc">Ať ti nevyprchaly z hlavy</span><span class="count" id="correct-count"></span></button></li>
           </ul>
         </div>
 
@@ -484,14 +547,13 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
           <h2>Zkouška nanečisto</h2>
           <ul class="modes">
             <li><button class="mode" onclick="startExam()"><span class="name">Ostrý test</span><span class="desc"><span id="exam-n">15</span> otázek, <span id="exam-min">30</span> minut, na úspěch orientačně 60 %</span><span class="count" id="exam-clock">30:00</span></button></li>
-            <li><button class="mode" onclick="startSuddenDeath()"><span class="name">Sudden Death</span><span class="desc">Náhodné otázky, první chyba ukončí hru</span><span class="count">1 život</span></button></li>
+            <li><button title="Náhodné otázky, první chyba ukončí hru" class="mode" onclick="startSuddenDeath()"><span class="name">Sudden Death</span><span class="desc">Náhodné otázky, první chyba ukončí hru</span><span class="count">1 život</span></button></li>
           </ul>
         </div>
 
         <div class="foot">
           <button class="lnk danger" onclick="clearSourceProgress()">Smazat postup této přednášky</button>
           <button class="lnk" onclick="shutdown()">Ukončit server</button>
-          <a class="lnk" href="/?ui=klasicky">Starý vzhled</a>
         </div>
       </section>
     </div>
@@ -620,6 +682,7 @@ async function init() {
   const data = await r.json();
   sources = data.sources;
   currentSource = data.default;
+  renderNotes();
   RECALL = await fetch('/api/recall').then(r => r.ok ? r.json() : []).catch(() => []); // starý server endpoint nemá
   renderLectures();
   await loadSource(currentSource);
@@ -634,15 +697,37 @@ function parseSource(s) {
 }
 const recallCats = () => [...new Set(RECALL.map(q => q.category))];
 function selectRecallCat(i) { recallCat = i < 0 ? '' : recallCats()[i]; renderLectures(); applyFilter(); }
-// seznam ukáže max. 4 řádky, zbytek se posouvá; poprvé odjede dolů na nejnovější
-let lecScrolled = false;
-function fitLectures() {
-  const ul = $('lectures'), li = [...ul.children];
-  if (!ul.offsetParent) return; // skryté menu nemá výšky
-  ul.style.maxHeight = li.length > 4 ? li.slice(-4).reduce((h, e) => h + e.offsetHeight, 1) + 'px' : '';
-  if (!lecScrolled && ul.offsetHeight) { ul.scrollTop = ul.scrollHeight; lecScrolled = true; }
+// seznam přednášek se vejde celý (kompaktní řádky, dva sloupce), žádný strop výšky ani vnitřní posuv
+function fitLectures() { // vybraná přednáška se při prvním zobrazení vycentruje v seznamu (seznam se v rámečku posouvá)
+  const ul = $('lectures'), sel = ul.querySelector('[aria-pressed="true"]');
+  if (!ul.offsetParent || lecScrolled || !sel) return;
+  const li = sel.closest('li');
+  ul.scrollTop = Math.max(0, li.offsetTop - 2 * li.offsetHeight); lecScrolled = true; // vybraná je ve 3. řádku z 5
 }
+let lecScrolled = false;
 addEventListener('resize', fitLectures);
+// Výpisky: rozbalovací nabídka v hlavičce, zatím jen odkazy na glosáře (stejné zdroje jako seznam přednášek)
+function renderNotes() {
+  $('vyp-list').innerHTML = sources.map(s => {
+    const p = parseSource(s);
+    return `<li><a href="/glosar?source=${encodeURIComponent(s.id)}" title="${esc(p.title)}"><span class="n">${esc(p.n)}</span><span>${esc(p.title)}</span></a></li>`;
+  }).join('');
+}
+(() => {
+  const btn = $('vyp-btn'), pop = $('vyp-pop');
+  const set = open => { pop.hidden = !open; btn.setAttribute('aria-expanded', open); };
+  const links = () => [...pop.querySelectorAll('a')];
+  btn.addEventListener('click', () => { set(pop.hidden); if (!pop.hidden) links()[0]?.focus(); });
+  document.addEventListener('click', e => { if (!pop.hidden && !pop.contains(e.target) && e.target !== btn) set(false); });
+  document.addEventListener('keydown', e => {
+    if (pop.hidden) return;
+    if (e.key === 'Escape') { set(false); btn.focus(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault(); const l = links(), i = l.indexOf(document.activeElement);
+      l[(i + (e.key === 'ArrowDown' ? 1 : -1) + l.length) % l.length]?.focus();
+    }
+  });
+})();
 function renderLectures() {
   const top = $('lectures').scrollTop;
   _renderLectures();
@@ -653,7 +738,7 @@ function _renderLectures() {
   const rc = typeFilter === 'recall';
   $('h-lec').textContent = rc ? 'Kategorie' : 'Přednáška';
   if (rc) { // doplňovačka: místo přednášek kategorie
-    const row = (i, n, name, count, on) => `<li><button class="lec" onclick="selectRecallCat(${i})" aria-pressed="${on}">` +
+    const row = (i, n, name, count, on) => `<li><button class="lec" title="${esc(name)}" onclick="selectRecallCat(${i})" aria-pressed="${on}">` +
       `<span class="n">${n}</span><span class="t">${esc(name)}</span><span class="d">${count}</span></button></li>`;
     $('lectures').innerHTML = recallCats().map((c, i) => row(i, i + 1, c, RECALL.filter(q => q.category === c).length, c === recallCat)).join('')
       + row(-1, 'Σ', 'Všechny kategorie', RECALL.length, !recallCat);
@@ -661,9 +746,9 @@ function _renderLectures() {
   }
   $('lectures').innerHTML = sources.map(s => {
     const p = parseSource(s);
-    return `<li><button class="lec" onclick="selectSource('${esc(s.id)}')" aria-pressed="${s.id === currentSource}">` +
+    return `<li><button class="lec" title="${esc(p.title)}${p.date ? ' (' + esc(p.date) + ')' : ''}" onclick="selectSource('${esc(s.id)}')" aria-pressed="${s.id === currentSource}">` +
       `<span class="n">${esc(p.n)}</span><span class="t">${esc(p.title)}</span><span class="d">${esc(p.date)}</span></button>` +
-      `<a class="gl-btn" href="/glosar?source=${encodeURIComponent(s.id)}">Glosář</a></li>`;
+      `<a class="gl-btn" href="/glosar?source=${encodeURIComponent(s.id)}" aria-label="Glosář: ${esc(p.title)}">Glosář</a></li>`;
   }).join('');
 }
 

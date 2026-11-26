@@ -48,3 +48,11 @@ Písma: Bricolage Grotesque (UI a nadpisy, beze změny), **Source Serif 4** pro 
 
 - Seznam přednášek má dál omezenou výšku (poslední 4 řádky, posuvný), řídí to `fitLectures`.
 - Plátno návrháře (SVG) beze změn kromě barev z tokenů; dotykové ovládání na iPhonu jsem ručně nezkoušel.
+
+## Dodatek: zpětná vazba majitele
+
+- Menu na desktopu je na jedné obrazovce (výška okna se dělí mezi sloupce), seznam přednášek má pevnou výšku přesně 5 řádků (`--lec-row`), stejně vysoké řádky, scroll-snap, vybraná přednáška se při načtení posune do seznamu. Měřeno (výchozí přednáška / „Všechny dohromady“): 1280x720 720 / 751 px, 1440x900 900 / 900, 1920x1080 1080 / 1080.
+- Modrý směr: světle modré pozadí a gradient, modré hlavní tlačítko (bílý text 8,3:1), v tmavém režimu tmavě modré pozadí a světlejší modrá; žlutá zůstala jako hover a v logu.
+- Hlavička: Návrhář automatů, Glosář, Výpisky (rozbalovací nabídka glosářů, max. 8 řádků, Esc, šipky, kliknutí mimo zavře).
+- Glosář: hledání jako Ctrl+F (zvýraznění všech shod, čítač, Enter / Shift+Enter, Esc, Ctrl/Cmd+F zaměří pole).
+- Odstraněn odkaz „Starý vzhled“ z menu (klasicky.html i route `?ui=` zůstaly).

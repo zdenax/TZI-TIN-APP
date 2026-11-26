@@ -12,24 +12,27 @@
 /* Designový systém "Zvýrazňovač": chladný papír, inkoust, žlutý zvýrazňovač jako jediný výrazný tón,
    1 / 0 (správně / chybně) jako vlastní pismo postupu. Stejné tokeny jsou v novy.html, glosar.html a automat.html. */
 :root {
-  --paper: #F1F3F1;      /* pozadí stránky */
-  --surface: #FFFFFF;    /* karty, políčka */
-  --paper-2: #E3E8E5;    /* ponořená plocha (segmenty, hlavičky tabulek) */
-  --card: #FFFFFF;
-  --ink: #0F1B2D;
-  --muted: #536074;
-  --line: #D3D9D5;
-  --line-strong: #A9B4AF;
-  --blue: #2B45D4;       /* odkazy a fokus */
+  --paper: #E4ECFC;      /* pozadí stránky: jasně světle modré */
+  --wash: linear-gradient(180deg, #CFDDFA 0, #E4ECFC 340px);
+  --surface: #F8FAFF;    /* karty, políčka */
+  --paper-2: #D2DEF7;    /* ponořená plocha (segmenty, hlavičky tabulek) */
+  --card: #F8FAFF;
+  --ink: #0F1B3D;
+  --muted: #465680;
+  --line: #B9C9EC;
+  --line-strong: #6F86BF;
+  --blue: #2433D6;       /* hlavní akcent: tlačítka, výběr, odkazy, fokus */
   --blue-ink: #FFFFFF;
-  --focus: #2B45D4;
-  --primary: #0F1B2D;    /* hlavní tlačítko */
-  --primary-ink: #F1F3F1;
-  --primary-hover: #26354F;
-  --marker: #FFD84A;     /* zvýrazňovač: výběr, aktuální krok, pokračovat */
+  --focus: #2433D6;
+  --primary: #2433D6;    /* hlavní tlačítko (bílý text 8,5:1) */
+  --primary-ink: #FFFFFF;
+  --primary-hover: #1A26B3;
+  --marker: #FFD84A;     /* zvýrazňovač: jen logo a drobné štítky */
   --marker-ink: #231C00;
-  --pick-bg: #FFD84A;    /* vybraná přednáška */
-  --pick-ink: #231C00;
+  --hl: #FFDF63;         /* žlutý hover */
+  --hl-ink: #1B1500;
+  --pick-bg: #C5D4F8;    /* vybraná přednáška */
+  --pick-ink: #0F1B2D;
   --ok: #0F7A4F;
   --bad: #C21F55;
   --new: #7C8794;
@@ -47,28 +50,28 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0D1320; --surface: #151D2E; --paper-2: #1C2640; --card: #151D2E;
-    --ink: #E8EDF5; --muted: #9CA8BC; --line: #26314A; --line-strong: #46567A;
-    --blue: #93A1FF; --blue-ink: #0D1320; --focus: #FFD84A;
-    --primary: #FFD84A; --primary-ink: #1B1600; --primary-hover: #FFE37A;
-    --pick-bg: #3B3512; --pick-ink: #FFF3C2;
+    --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+    --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+    --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+    --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+    --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
     --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
     --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
     --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0D1320; --surface: #151D2E; --paper-2: #1C2640; --card: #151D2E;
-  --ink: #E8EDF5; --muted: #9CA8BC; --line: #26314A; --line-strong: #46567A;
-  --blue: #93A1FF; --blue-ink: #0D1320; --focus: #FFD84A;
-  --primary: #FFD84A; --primary-ink: #1B1600; --primary-hover: #FFE37A;
-  --pick-bg: #3B3512; --pick-ink: #FFF3C2;
+  --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+  --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+  --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+  --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+  --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
   --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
   --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
   --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
 }
 html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--line-strong) transparent; }
-body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
+body { background: var(--paper) var(--wash) no-repeat; color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
 button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
 a { color: var(--blue); text-underline-offset: 3px; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
@@ -77,7 +80,7 @@ input, textarea, select { caret-color: var(--blue); accent-color: var(--ink); }
 /* značka a hlavička sdílená všemi stránkami */
 .mark { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; background: var(--marker); color: var(--marker-ink); border-radius: 10px; font: 700 1.05rem/1 var(--mono); letter-spacing: -.04em; }
 .chip { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--ink); font-weight: 500; font-size: .9375rem; text-decoration: none; white-space: nowrap; }
-.chip:hover { border-color: var(--ink); }
+.chip:hover { background: var(--hl); color: var(--hl-ink); border-color: var(--hl-ink); }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
 main { max-width: 760px; margin: 0 auto; padding: 24px 20px 96px; }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
@@ -101,7 +104,13 @@ h2 { font-size: 1.15rem; font-weight: 800; margin: 36px 0 12px; line-height: 1.2
 .entry th { background: var(--paper-2); }
 .entry .src { color: var(--muted); font: 400 .875rem/1.5 var(--font); }
 .entry code { font-family: var(--mono); font-size: .9em; }
-mark { background: var(--marker); color: var(--marker-ink); border-radius: 2px; }
+.srow { display: flex; gap: 8px; }
+.srow input { flex: 1; min-width: 0; }
+.sbtn { flex: none; width: 48px; height: 48px; display: grid; place-items: center; background: var(--surface); border: 1.5px solid var(--line-strong); border-radius: var(--r-m); color: var(--ink); }
+.sbtn:hover:not(:disabled) { background: var(--hl); color: var(--hl-ink); border-color: var(--hl-ink); }
+.sbtn:disabled { opacity: .45; cursor: default; }
+mark.hit { background: var(--hl); color: var(--hl-ink); border-radius: 3px; padding: 0 1px; }
+mark.hit.cur { background: #FF9F1C; color: #1B1000; outline: 2px solid var(--ink); outline-offset: 1px; }
 sub, sup { font-size: .72em; line-height: 0; }
 .frac, .binom > span { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .85em; line-height: 1.3; }
 .frac { margin: 0 .1em; }
@@ -118,7 +127,10 @@ sub, sup { font-size: .72em; line-height: 0; }
   <div class="bar"><a class="brand" href="/"><span class="mark" aria-hidden="true">10</span>TZI Trenér</a><a class="chip" href="/">Zpět do menu</a></div>
   <h1>Glosář</h1>
   <p class="sub" id="sub"></p>
-  <div class="search"><input type="search" id="q" placeholder="Hledat pojem nebo větu" aria-label="Hledat v glosáři" autocomplete="off"><p class="count" id="cnt" role="status" aria-live="polite"></p></div>
+  <div class="search"><div class="srow"><input type="search" id="q" placeholder="Hledat v glosáři (Ctrl+F)" aria-label="Hledat v glosáři" autocomplete="off">
+    <button type="button" class="sbtn" id="sprev" aria-label="Předchozí nález (Shift+Enter)" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+    <button type="button" class="sbtn" id="snext" aria-label="Další nález (Enter)" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
+  <p class="count" id="cnt" role="status" aria-live="polite"></p></div>
   <div id="out"></div>
 </main>
 <script src="/fmt.js"></script>
@@ -164,20 +176,64 @@ function gBody(body) {
   initSearch();
 })();
 
-// vyhledávání: schová pojmy bez shody (bez ohledu na velikost písmen a diakritiku) a prázdné nadpisy balíčků
+// vyhledávání jako Ctrl+F: pojmy zůstanou vidět, shody se zvýrazní (bez ohledu na velikost písmen a diakritiku),
+// čítač „3 / 17“, Enter = další, Shift+Enter = předchozí, Esc smaže. Prochází jen textové uzly, takže zlomky a indexy zůstanou celé.
 function initSearch() {
   const q = document.getElementById('q'), cnt = document.getElementById('cnt'), out = document.getElementById('out');
-  const fold = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const entries = [...out.querySelectorAll('.entry')].map(e => ({ e, t: fold(e.textContent) }));
-  const total = entries.length;
-  cnt.textContent = total ? total + ' pojmů' : '';
-  q.addEventListener('input', () => {
+  const prevB = document.getElementById('sprev'), nextB = document.getElementById('snext');
+  const total = out.querySelectorAll('.entry').length;
+  const fold1 = c => c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const fold = t => [...t].map(fold1).join('');
+  let marks = [], cur = -1;
+  const idle = () => { cnt.textContent = total ? total + ' pojmů' : ''; prevB.disabled = nextB.disabled = true; };
+  function clear() {
+    out.querySelectorAll('mark.hit').forEach(m => { const p = m.parentNode; p.replaceChild(document.createTextNode(m.textContent), m); p.normalize(); });
+    marks = []; cur = -1;
+  }
+  function go(i, scroll) {
+    if (!marks.length) return;
+    if (cur >= 0) marks[cur].classList.remove('cur');
+    cur = (i + marks.length) % marks.length;
+    marks[cur].classList.add('cur');
+    cnt.textContent = (cur + 1) + ' / ' + marks.length;
+    if (scroll) marks[cur].scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+  function run() {
+    clear();
     const w = fold(q.value.trim());
-    let n = 0;
-    for (const x of entries) { const hit = !w || x.t.includes(w); x.e.hidden = !hit; if (hit) n++; }
-    out.querySelectorAll('h2').forEach(h => { let el = h.nextElementSibling, any = false; while (el && el.tagName !== 'H2') { if (!el.hidden) any = true; el = el.nextElementSibling; } h.hidden = !any; });
-    cnt.textContent = w ? (n ? n + ' z ' + total + ' pojmů' : 'Nic nenalezeno. Zkus kratší výraz.') : total + ' pojmů';
+    if (!w) { idle(); return; }
+    const walker = document.createTreeWalker(out, NodeFilter.SHOW_TEXT), nodes = [];
+    for (let n; (n = walker.nextNode());) nodes.push(n);
+    for (const node of nodes) {
+      const chars = [...node.data], f = chars.map(fold1); // 1 znak původního textu = 1 položka (diakritika se skládá po znacích)
+      const flat = f.join(''), map = []; // map: pozice ve složeném textu -> index znaku původního textu
+      f.forEach((x, i) => { for (let k = 0; k < x.length; k++) map.push(i); });
+      const hits = [];
+      for (let i = flat.indexOf(w); i >= 0; i = flat.indexOf(w, i + w.length)) hits.push([map[i], map[i + w.length - 1] + 1]);
+      for (let h = hits.length - 1; h >= 0; h--) { // odzadu, aby se neposouvaly pozice
+        const [a, b] = hits[h], off = a => chars.slice(0, a).join('').length;
+        node.splitText(off(b)); const mid = node.splitText(off(a));
+        const m = document.createElement('mark'); m.className = 'hit';
+        mid.parentNode.replaceChild(m, mid); m.appendChild(mid);
+        marks.unshift(m);
+      }
+    }
+    // pořadí v dokumentu: zpracování uzlů je popořadě, uvnitř uzlu zpětně, proto seřadit
+    marks.sort((x, y) => (x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
+    prevB.disabled = nextB.disabled = !marks.length;
+    if (marks.length) go(0, true); else cnt.textContent = 'Nic nenalezeno. Zkus kratší výraz.';
+  }
+  q.addEventListener('input', run);
+  q.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); go(cur + (e.shiftKey ? -1 : 1), true); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); go(cur + 1, true); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); go(cur - 1, true); }
+    else if (e.key === 'Escape') { q.value = ''; run(); }
   });
+  nextB.addEventListener('click', () => go(cur + 1, true));
+  prevB.addEventListener('click', () => go(cur - 1, true));
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') { e.preventDefault(); q.focus(); q.select(); } });
+  idle();
 }
 </script>
 </body>

@@ -12,24 +12,27 @@
 /* Designový systém "Zvýrazňovač": chladný papír, inkoust, žlutý zvýrazňovač jako jediný výrazný tón,
    1 / 0 (správně / chybně) jako vlastní pismo postupu. Stejné tokeny jsou v novy.html, glosar.html a automat.html. */
 :root {
-  --paper: #F1F3F1;      /* pozadí stránky */
-  --surface: #FFFFFF;    /* karty, políčka */
-  --paper-2: #E3E8E5;    /* ponořená plocha (segmenty, hlavičky tabulek) */
-  --card: #FFFFFF;
-  --ink: #0F1B2D;
-  --muted: #536074;
-  --line: #D3D9D5;
-  --line-strong: #A9B4AF;
-  --blue: #2B45D4;       /* odkazy a fokus */
+  --paper: #E4ECFC;      /* pozadí stránky: jasně světle modré */
+  --wash: linear-gradient(180deg, #CFDDFA 0, #E4ECFC 340px);
+  --surface: #F8FAFF;    /* karty, políčka */
+  --paper-2: #D2DEF7;    /* ponořená plocha (segmenty, hlavičky tabulek) */
+  --card: #F8FAFF;
+  --ink: #0F1B3D;
+  --muted: #465680;
+  --line: #B9C9EC;
+  --line-strong: #6F86BF;
+  --blue: #2433D6;       /* hlavní akcent: tlačítka, výběr, odkazy, fokus */
   --blue-ink: #FFFFFF;
-  --focus: #2B45D4;
-  --primary: #0F1B2D;    /* hlavní tlačítko */
-  --primary-ink: #F1F3F1;
-  --primary-hover: #26354F;
-  --marker: #FFD84A;     /* zvýrazňovač: výběr, aktuální krok, pokračovat */
+  --focus: #2433D6;
+  --primary: #2433D6;    /* hlavní tlačítko (bílý text 8,5:1) */
+  --primary-ink: #FFFFFF;
+  --primary-hover: #1A26B3;
+  --marker: #FFD84A;     /* zvýrazňovač: jen logo a drobné štítky */
   --marker-ink: #231C00;
-  --pick-bg: #FFD84A;    /* vybraná přednáška */
-  --pick-ink: #231C00;
+  --hl: #FFDF63;         /* žlutý hover */
+  --hl-ink: #1B1500;
+  --pick-bg: #C5D4F8;    /* vybraná přednáška */
+  --pick-ink: #0F1B2D;
   --ok: #0F7A4F;
   --bad: #C21F55;
   --new: #7C8794;
@@ -47,28 +50,28 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0D1320; --surface: #151D2E; --paper-2: #1C2640; --card: #151D2E;
-    --ink: #E8EDF5; --muted: #9CA8BC; --line: #26314A; --line-strong: #46567A;
-    --blue: #93A1FF; --blue-ink: #0D1320; --focus: #FFD84A;
-    --primary: #FFD84A; --primary-ink: #1B1600; --primary-hover: #FFE37A;
-    --pick-bg: #3B3512; --pick-ink: #FFF3C2;
+    --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+    --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+    --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+    --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+    --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
     --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
     --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
     --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0D1320; --surface: #151D2E; --paper-2: #1C2640; --card: #151D2E;
-  --ink: #E8EDF5; --muted: #9CA8BC; --line: #26314A; --line-strong: #46567A;
-  --blue: #93A1FF; --blue-ink: #0D1320; --focus: #FFD84A;
-  --primary: #FFD84A; --primary-ink: #1B1600; --primary-hover: #FFE37A;
-  --pick-bg: #3B3512; --pick-ink: #FFF3C2;
+  --paper: #0B1233; --wash: linear-gradient(180deg, #16275F 0, #0B1233 340px); --surface: #131D4A; --paper-2: #1B2A63; --card: #131D4A;
+  --ink: #E8EEFC; --muted: #A5B3DA; --line: #2B3C78; --line-strong: #5B70B3;
+  --blue: #93A1FF; --blue-ink: #0D1320; --focus: #B4BEFF;
+  --primary: #8795FF; --primary-ink: #0B1020; --primary-hover: #A3AEFF;
+  --pick-bg: #2B3C8A; --pick-ink: #E8EDF5;
   --ok: #4CC38A; --bad: #FF7FA8; --new: #6D7A94; --warn: #F5A524; --active: #7A5C00; --thumb: #5A6B8F;
   --exam: #1C2640; --exam-text: #E8EDF5; --exam-accent: #FFD84A;
   --shadow: 0 10px 28px -12px rgba(0, 0, 0, .7);
 }
 html { -webkit-text-size-adjust: 100%; scrollbar-color: var(--line-strong) transparent; }
-body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
+body { background: var(--paper) var(--wash) no-repeat; color: var(--ink); font: 400 16px/1.5 var(--font); min-height: 100vh; }
 button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
 a { color: var(--blue); text-underline-offset: 3px; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
@@ -77,10 +80,10 @@ input, textarea, select { caret-color: var(--blue); accent-color: var(--ink); }
 /* značka a hlavička sdílená všemi stránkami */
 .mark { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; background: var(--marker); color: var(--marker-ink); border-radius: 10px; font: 700 1.05rem/1 var(--mono); letter-spacing: -.04em; }
 .chip { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--ink); font-weight: 500; font-size: .9375rem; text-decoration: none; white-space: nowrap; }
-.chip:hover { border-color: var(--ink); }
+.chip:hover { background: var(--hl); color: var(--hl-ink); border-color: var(--hl-ink); }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
 html, body { height: 100%; }
-body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+body { background: var(--paper) var(--wash) no-repeat; color: var(--ink); font: 400 16px/1.5 var(--font); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 button, input, select, textarea { font: inherit; color: inherit; }
 /* viditelné posuvné lišty všude, kde se obsah nevejde */
 #pane, #zad, .treebox, dialog { scrollbar-width: auto; scrollbar-color: var(--thumb) var(--paper-2); }
@@ -91,6 +94,7 @@ header { flex: none; display: flex; align-items: center; gap: 10px 12px; padding
 header .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
 header .brand .mark { width: 2.2rem; height: 2.2rem; font-size: .9rem; }
 button:hover:not(:disabled) { border-color: var(--ink); }
+.btn:hover:not(:disabled):not(.primary), .tools button:hover:not([aria-pressed="true"]), .tab:hover:not([aria-selected="true"]) { background: var(--hl); color: var(--hl-ink); border-color: var(--hl-ink); }
 header h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: -.015em; }
 header select { max-width: 380px; min-width: 0; flex: 1 1 200px; }
 #app { flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); }
@@ -106,7 +110,7 @@ header select { max-width: 380px; min-width: 0; flex: 1 1 200px; }
 .tab { border: 1px solid var(--line-strong); background: var(--surface); min-height: 44px; padding: 0 16px; border-radius: 999px; font-weight: 700; }
 .tab[aria-selected="true"] { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
 .tab .ck { color: var(--ok); margin-left: 6px; }
-.tab[aria-selected="true"] .ck { color: var(--marker); }
+.tab[aria-selected="true"] .ck { color: var(--primary-ink); }
 #tabs .sp { flex: 1; }
 #pane { flex: 1; min-height: 0; overflow-y: scroll; padding: 20px 28px; }
 .panel[hidden] { display: none !important; }
@@ -116,7 +120,7 @@ header select { max-width: 380px; min-width: 0; flex: 1 1 200px; }
 svg#board { position: absolute; inset: 0; width: 100%; height: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 10px; touch-action: none; user-select: none; }
 .btn, .tools button { border: 1px solid var(--line-strong); background: var(--surface); min-height: 44px; padding: 0 14px; border-radius: var(--r-s); font-weight: 500; }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; align-items: center; }
-.tools button[aria-pressed="true"] { background: var(--marker); color: var(--marker-ink); border-color: var(--ink); font-weight: 700; }
+.tools button[aria-pressed="true"] { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); font-weight: 700; }
 .btn.primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); font-weight: 700; }
 .btn.primary:hover:not(:disabled) { background: var(--primary-hover); }
 .btn:disabled { opacity: .5; cursor: default; }
