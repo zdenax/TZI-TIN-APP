@@ -133,6 +133,86 @@
      "body": "- Zadání: Barilla, *Teorie automatů a formálních jazyků*, kap. 4, ÚKOLY 1, 2 a 3, s. 18 (PDF ve vaultu, textová vrstva). Úkol 3 zní: „Sestrojte gramatiku, která generuje jazyk tvořený slovy, která obsahují stejný počet symbolů a, b a c.“\n- Gramatika úlohy 1: Chytil, *Automaty a gramatiky*, Příklad 3.1.6 bod 1, s. 120 (ověřeno podle skenu); přepis 03-pojem-gramatiky.\n- Gramatika úlohy 2 a důkaz: Chytil, Příklad 3.1.6 bod 2, s. 120–121 (ověřeno podle skenu).\n- Chomského hierarchie: Chytil, Def. 3.2.1, s. 124–125 (ověřeno podle skenu).\n- Definice: Chytil, Def. 3.1.2 (s. 118) a Def. 3.1.5 (s. 119), jak jsou v 2026-11-12-gramatiky.\n- Chytil v témže příkladu (s. 120, bod 2) píše čísla pravidel **pod** šipku, ⇒_(1); vyučující na přednášce nad šipku. Obojí znamená totéž."
     }
    ]
+  },
+  "cviko-2026-11-26-za-0n1n": {
+   "bank": "09-2026-11-26",
+   "title": "Cvičení 26. 11. 2026: zásobníkový automat pro {0^(n) 1^(n)}",
+   "date": "26. 11. 2026",
+   "source": "Skola/Aktualni/TZI1/Cviceni/cviko-2026-11-26-za-0n1n.md",
+   "sections": [
+    {
+     "level": 0,
+     "heading": "Cvičení 26. 11. 2026: zásobníkový automat pro {0^(n) 1^(n)}",
+     "id": "uvod",
+     "body": "> [!info] Deklarace využití AI\n> Vysvětlení a formátování výpisků provedl nástroj **Claude Opus 5.5** (Anthropic, https://claude.ai, 2026) podle mého sešitu ze cvičení. Automat jsem si nechal ověřit simulací v pythonu (všechna slova nad {0, 1} do délky 10). Uvedeno v souladu se Směrnicí rektora UJEP č. 7∕2026 (pro výpisky povinné není, uvádím dobrovolně).\n\n> [!warning] 🤖 Doplněno z Claude (AI), 26. 11. 2026\n> - **Ze cvičení (sešit):** kontrola domácího cvičení (gramatika pro stejný počet a, b, c), zadání L = {0^(n)1^(n); n ≥ 1}, ukázka slov, Π, Σ, pravidla gramatiky a sedmice ℳ.\n> - **Moje (Claude):** přechodová funkce δ, výpočet automatu nad 0011, vysvětlení kroků, proč je automat nedeterministický, časté chyby. Konstrukce podle Chytila, Věta 4.5.1 (s. 172–173, **ověřeno podle skenu** při výpiscích z přednášky). Automat ověřen simulací: do délky 10 přijímá prázdným zásobníkem přesně slova 0^(n)1^(n), n ≥ 1.\n\nNa cvičení se nejdřív zkontrolovalo domácí cvičení z minula, pak se z gramatiky pro {0^(n)1^(n); n ≥ 1} stavěl **nedeterministický zásobníkový automat** stejným postupem jako na přednášce téhož dne."
+    },
+    {
+     "level": 2,
+     "heading": "Na začátku: kontrola domácího cvičení",
+     "id": "na-zacatku-kontrola-domaciho-cviceni",
+     "body": "Gramatika pro slova se **stejným počtem** a, b, c (Chytil, Příklad 3.1.6 bod 2, s. 120–121; celý rozbor v cviko-2026-11-19-gramatiky):\n\n- Π = {S, B, C}, Σ = {a, b, c}\n- Růst: (1) S → SaBC, (2) S → aBC\n- Prohazování: (3) aB → Ba, (4) Ba → aB, (5) aC → Ca, (6) Ca → aC, (7) BC → CB, (8) CB → BC\n- Úklid: (9) B → b, (10) C → c\n\nOdvození S ⇒^(∗) caabbcbac:\n\n@@ S ⇒^(1) SaBC ⇒^(1) SaBCaBC ⇒^(2) aBCaBCaBC ⇒^(7) aCBaBCaBC ⇒^(5) CaBaBCaBC ⇒^(10) caBaBCaBC\n\n@@ ⇒^(4) caaBBCaBC ⇒^(9) caabBCaBC ⇒^(9) caabbCaBC ⇒^(10) caabbcaBC ⇒^(3) caabbcBaC ⇒^(10) caabbcBac ⇒^(9) caabbcbac\n\n- **Proč to funguje:** pravidla 1 a 2 přidají vždy jedno a, B, C, takže počty sedí; 3–8 mění jen pořadí; 9 a 10 jen převlečou neterminál na terminál.\n- **Typ:** obecná gramatika (typ 0). Pravidla 3–8 nejsou tvaru α X β → α γ β (Chytil, Def. 3.2.1), takže ani kontextová.\n- **Proč B, C velká:** levá strana každého pravidla musí obsahovat aspoň jeden neterminál (Chytil, Def. 3.1.5, s. 119). Pravidlo ab → ba jen z terminálů by nebylo povolené, proto se prohazuje a s B a C, a b, c vzniknou až na konci."
+    },
+    {
+     "level": 2,
+     "heading": "Úloha: zásobníkový automat pro L = {0^(n) 1^(n); n ≥ 1}",
+     "id": "uloha-zasobnikovy-automat-pro-l-0-n-1-n-n-1",
+     "body": ""
+    },
+    {
+     "level": 3,
+     "heading": "Zadání",
+     "id": "zadani",
+     "body": "Sestrojte **nedeterministický zásobníkový automat** ℳ, který rozpoznává jazyk\n\n@@ L = {0^(n) 1^(n); n ≥ 1}.\n\nUkázka slov (ze sešitu): n = 1: 01, n = 2: 0011, n = 3: 000111. Počet nul a jedniček je vždy **stejný**, 0111 do jazyka nepatří."
+    },
+    {
+     "level": 3,
+     "heading": "Krok 1: gramatika",
+     "id": "krok-1-gramatika",
+     "body": "Ze cvičení 19. 11. (cviko-2026-11-19-gramatiky):\n\n@@ 𝒢 = (Π, Σ, S, P), Π = {S}, Σ = {0, 1}\n\n- (1) S → 0S1\n- (2) S → 01\n\nV sešitu je pravidlo napsané jako S = 0S1; v pravidle patří šipka →, ne rovnítko."
+    },
+    {
+     "level": 3,
+     "heading": "Krok 2: automat podle Věty 4.5.1",
+     "id": "krok-2-automat-podle-vety-4-5-1",
+     "body": "Z gramatiky se automat postaví stejně jako na přednášce (2026-11-26-za-a-bezkontextove-jazyky):\n\n@@ ℳ = ({q}, {0, 1}, {S, 0, 1}, δ, q, S, ∅)\n\n| složka | hodnota | proč |\n| --- | --- | --- |\n| Q | {q} | stačí jediný stav |\n| Σ | {0, 1} | terminály gramatiky |\n| Γ | Π ∪ Σ = {S, 0, 1} | do zásobníku jdou neterminály i terminály |\n| q_(0) | q | jediný stav |\n| Z_(0) | S | na začátku je v zásobníku počáteční symbol gramatiky |\n| F | ∅ | rozpoznává se prázdným zásobníkem, L = N(ℳ) |\n\n> [!warning] 🤖 Doplněno z Claude (AI)\n> Přechodová funkce a výpočet níže v sešitu nejsou (zápis končí u ℳ). Jsou sestavené podle Chytila, Věta 4.5.1 (s. 172–173), a ověřené simulací."
+    },
+    {
+     "level": 3,
+     "heading": "Krok 3: přechodová funkce δ",
+     "id": "krok-3-prechodova-funkce",
+     "body": "1. **Typ 1** (na vrcholu neterminál S, vstup se nečte): za každé pravidlo pro S jedna dvojice\n@@ δ(q, e, S) = {(q, 0S1), (q, 01)}\n2. **Typ 2** (na vrcholu terminál, čte se stejný symbol): odebrat\n@@ δ(q, 0, 0) = {(q, e)}, δ(q, 1, 1) = {(q, e)}\n\nPro ostatní trojice je δ prázdná (automat se zasekne)."
+    },
+    {
+     "level": 3,
+     "heading": "Krok 4: výpočet nad slovem 0011",
+     "id": "krok-4-vypocet-nad-slovem-0011",
+     "body": "Situace (q, w, η): w = zbývající vstup, η = zásobník, **vrchol je první symbol vlevo**.\n\n@@ (q, 0011, S) ⊢ (q, 0011, 0S1) ⊢ (q, 011, S1) ⊢ (q, 011, 011) ⊢ (q, 11, 11) ⊢ (q, 1, 1) ⊢ (q, e, e)\n\n| krok | situace před | vrchol | co se stane | situace po |\n| --- | --- | --- | --- | --- |\n| 1 | (q, 0011, S) | S | typ 1, pravidlo (1): S nahradím 0S1 | (q, 0011, 0S1) |\n| 2 | (q, 0011, 0S1) | 0 | typ 2: na vstupu je 0, přečíst a odebrat | (q, 011, S1) |\n| 3 | (q, 011, S1) | S | typ 1, pravidlo (2): S nahradím 01 | (q, 011, 011) |\n| 4 | (q, 011, 011) | 0 | typ 2: přečíst 0 | (q, 11, 11) |\n| 5 | (q, 11, 11) | 1 | typ 2: přečíst 1 | (q, 1, 1) |\n| 6 | (q, 1, 1) | 1 | typ 2: přečíst 1 | (q, e, e) |\n\nVstup je přečtený a zásobník prázdný, slovo **je přijato**, 0011 ∈ N(ℳ).\n\nVýpočet kopíruje levou derivaci S ⇒^(1) 0S1 ⇒^(2) 0011: kroky typu 1 jsou kroky derivace, kroky typu 2 „odškrtávají“ vygenerované terminály proti vstupu."
+    },
+    {
+     "level": 3,
+     "heading": "Proč je automat nedeterministický",
+     "id": "proc-je-automat-nedeterministicky",
+     "body": "Když je na vrcholu S, automat má **dvě** možnosti: 0S1 nebo 01. Ve kroku 1 musí „uhodnout“ pravidlo (1), ve kroku 3 pravidlo (2). Kdyby ve kroku 1 zvolil 01, zásobník by po přečtení 01 byl prázdný, ale na vstupu by zbylo 11, takže tahle větev slovo nepřijme. Slovo je přijato, když **aspoň jedna** větev výpočtu skončí s prázdným vstupem i zásobníkem."
+    },
+    {
+     "level": 3,
+     "heading": "Časté chyby",
+     "id": "caste-chyby",
+     "body": "- ❌ n = 2: 011. Mocnina se týká obou symbolů, 0^(2) 1^(2) = 0011 ✅\n- ❌ F = {q} a přijetí koncovým stavem. Konstrukce z Věty 4.5.1 rozpoznává **prázdným zásobníkem**, F je nepodstatná (∅) ✅\n- ❌ Γ = {S}. Do zásobníku se zapisují i terminály z pravých stran pravidel, Γ = Π ∪ Σ ✅"
+    },
+    {
+     "level": 2,
+     "heading": "K ověření",
+     "id": "k-overeni",
+     "body": "- Sešit se jmenuje „rozpoznání L2 deterministickým zásobn. automatem“, na plátně je ale nadpis „zásobníkový **nedeterministický** automat“ a konstrukce z Věty 4.5.1 dává automat nedeterministický. Jestli se na cvičení dělal i deterministický automat, v exportu není.\n- Export končí u zápisu ℳ; δ a výpočet jsou doplněné (viz callout výše)."
+    },
+    {
+     "level": 2,
+     "heading": "Zdroje",
+     "id": "zdroje",
+     "body": "- Konstrukce automatu: Chytil, *Automaty a gramatiky*, Věta 4.5.1 s důkazem, s. 172–173 (ověřeno podle skenu), jak je v 2026-11-26-za-a-bezkontextove-jazyky.\n- Gramatika pro 0^(n)1^(n): Chytil, Příklad 3.1.6 bod 1, s. 120; pro stejný počet a, b, c: bod 2, s. 120–121 (ověřeno podle skenu).\n- Typ gramatiky: Chytil, Def. 3.2.1, s. 124; levá strana pravidla s neterminálem: Def. 3.1.5, s. 119 (přepis 03-pojem-gramatiky)."
+    }
+   ]
   }
  }
 }
