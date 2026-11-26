@@ -26,7 +26,7 @@ function initSearch(unitSel, noun) {
     const w = fold(q.value.trim());
     if (!w) { idle(); return; }
     const walker = document.createTreeWalker(out, NodeFilter.SHOW_TEXT), nodes = [];
-    for (let n; (n = walker.nextNode());) nodes.push(n);
+    for (let n; (n = walker.nextNode());) if (!n.parentElement.closest('svg')) nodes.push(n); // <mark> v SVG by text schovalo
     for (const node of nodes) {
       const chars = [...node.data], f = chars.map(fold1); // 1 znak původního textu = 1 položka (diakritika se skládá po znacích)
       const flat = f.join(''), map = []; // map: pozice ve složeném textu -> index znaku původního textu
