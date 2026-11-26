@@ -36,6 +36,53 @@ def display_rows(src):
     return ["@@ " + bg.tex(r) for r in rows if r]
 
 
+def svg_ok(s):
+    return not (set(re.findall(r"</?([a-zA-Z]+)", s)) - SVG_TAGS or re.search(r"\son\w+\s*=|href|javascript:|<!", s, re.I))
+
+
+def excalidraw_svg(name):
+    """Kresba ![[name.excalidraw]] z vaultu jako SVG na jeden řádek; None, když soubor chybí nebo je komprimovaný
+    (Obsidian ho po úpravě uloží jako compressed-json). Umí jen obdélníky, čáry, šipky a text, barvy přes currentColor."""
+    hits = list(ROOT.rglob(name + ".excalidraw.md")) if ROOT else []
+    m = re.search(r"```json\n(.*?)\n```", hits[0].read_text(encoding="utf-8"), re.S) if len(hits) == 1 else None
+    if not m:
+        return None
+    esc = lambda t: t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    els = [e for e in json.loads(m.group(1))["elements"] if not e.get("isDeleted")]
+    x0, y0 = min(e["x"] for e in els) - 10, min(e["y"] for e in els) - 10
+    W, H = max(e["x"] + e["width"] for e in els) + 10 - x0, max(e["y"] + e["height"] for e in els) + 10 - y0
+    o = []
+    for e in els:
+        x, y = e["x"] - x0, e["y"] - y0
+        if e["type"] == "rectangle":
+            fill = 'fill="currentColor" fill-opacity="0.12"' if e.get("backgroundColor", "transparent") != "transparent" else ""
+            o.append(f'<rect x="{x:.0f}" y="{y:.0f}" width="{e["width"]:.0f}" height="{e["height"]:.0f}" {fill}/>')
+        elif e["type"] in ("line", "arrow"):
+            pts = [(x + px, y + py) for px, py in e["points"]]
+            o.append('<polyline points="' + " ".join(f"{a:.0f},{b:.0f}" for a, b in pts) + '"/>')
+            if e["type"] == "arrow":  # hrot šipky jako trojúhelník (bez <marker>, ten SVG_TAGS nepouští)
+                (ax, ay), (bx, by) = pts[-2], pts[-1]
+                d = max(((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5, 1)
+                ux, uy = (bx - ax) / d, (by - ay) / d
+                o.append(f'<polygon fill="currentColor" points="{bx:.0f},{by:.0f} {bx - 12 * ux + 6 * uy:.0f},{by - 12 * uy - 6 * ux:.0f} '
+                         f'{bx - 12 * ux - 6 * uy:.0f},{by - 12 * uy + 6 * ux:.0f}"/>')
+        elif e["type"] == "text":
+            fs = e["fontSize"]
+            mid = e.get("textAlign") == "center"
+            tx = x + e["width"] / 2 if mid else x
+            spans = "".join(f'<tspan x="{tx:.0f}" dy="{fs if i == 0 else fs * 1.25:.0f}">{esc(l)}</tspan>'
+                            for i, l in enumerate(e["text"].split("\n")))
+            anchor = ' text-anchor="middle"' if mid else ""
+            o.append(f'<text x="{tx:.0f}" y="{y:.0f}" font-size="{fs}" fill="currentColor" stroke="none"{anchor}>{spans}</text>')
+    s = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:.0f} {H:.0f}" width="{W:.0f}" style="max-width:100%" '
+         f'fill="none" stroke="currentColor" stroke-width="2" font-family="sans-serif">' + "".join(o) + "</svg>")
+    assert svg_ok(s) and "\n" not in s
+    return s
+
+
+ROOT = None  # složka, ve které se hledají kresby (nastaví main: předmět ve vaultu, např. …/TZI1)
+
+
 def convert(lines):
     out, acc = [], None  # acc = (prefix, [řádky]) uvnitř víceřádkového $$ … $$
     for raw in lines:
@@ -59,15 +106,16 @@ def convert(lines):
         if "$$" in c:
             fail("$$ uprostřed řádku", raw)
         e = re.fullmatch(r"!\[\[([^\]|#]+)\.excalidraw\]\]", s)
-        if e:  # kresba z tabule je jen v Obsidianu: ve webu ji nahradí viditelná poznámka
-            out.append(f"{pre}*Řešení z tabule je kresba v Obsidianu ({e.group(1)}).*")
+        if e:  # nekomprimovaná kresba jako SVG, jinak (kresba z tabule jen v Obsidianu) viditelná poznámka
+            svg = excalidraw_svg(e.group(1))
+            out.append(pre + "{svg}" + svg if svg else f"{pre}*Řešení z tabule je kresba v Obsidianu ({e.group(1)}).*")
             continue
         if "![[" in c:
             fail("vložený soubor ![[…]]", raw)
         if ".excalidraw]]" in c:  # odkaz na plátno s rukopisem: ve vaultu, ve webu nemá smysl
             continue
         if s.startswith("<svg") and s.endswith("</svg>"):  # vlastní schéma z poznámky: jen tvary a text, žádné skripty/odkazy
-            if set(re.findall(r"</?([a-zA-Z]+)", s)) - SVG_TAGS or re.search(r"\son\w+\s*=|href|javascript:|<!", s, re.I):
+            if not svg_ok(s):
                 fail("nepovolené SVG", raw)
             out.append(pre + "{svg}" + s); continue
         if s == "<small>":
@@ -108,8 +156,10 @@ def main(src, stem, cviceni=False):
     meta = dict(l.split(": ", 1) for l in m.group(1).split("\n") if ": " in l)
     text = text[m.end():]
     head, orig, tail = text.partition("\n## Originál\n")
-    if orig and tail.strip() != "![[" + Path(src).stem + ".pdf]]":
-        raise SystemExit("CHYBA: sekce Originál obsahuje něco jiného než vložené pdf")
+    if orig and tail.strip() != "![[" + Path(src).stem + ".pdf]]" and not re.fullmatch(r"Plátno: !\[\[[^\]]+\.excalidraw\]\]", tail.strip()):
+        raise SystemExit("CHYBA: sekce Originál obsahuje něco jiného než vložené pdf nebo plátno")
+    global ROOT
+    ROOT = next((p for p in Path(src).resolve().parents if p.parent.name == "Aktualni"), Path(src).resolve().parent)
     lines = convert(head.split("\n"))
     y, mo, d = meta["datum"].split("-")
     title = re.sub(r"^TZI1 — ", "", next(l[2:] for l in lines if l.startswith("# ")))

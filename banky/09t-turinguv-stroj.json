@@ -1,0 +1,324 @@
+{
+ "title": "Turingův stroj",
+ "lecture": 9,
+ "date": "2026-11-26",
+ "questions": [
+  {
+   "type": "choice",
+   "text": "Z čeho se skládá Turingův stroj (model z přednášky)?",
+   "options": {
+    "A": "Z konečné řídicí jednotky a nekonečné pásky z políček; hlava čte jedno políčko.",
+    "B": "Z konečné pásky, kterou hlava čte jen zleva doprava.",
+    "C": "Z řídicí jednotky, vstupní pásky určené jen pro čtení a zásobníku na mezivýsledky.",
+    "D": "Ze dvou zásobníků a řídicí jednotky, která nemá žádné vnitřní stavy."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Chytil, čl. 6.1 a obr. 45, s. 260. Přednáška 26. 11.",
+   "number": 1,
+   "id": "9t-1"
+  },
+  {
+   "type": "choice",
+   "text": "Turingův stroj je pětice ℳ = (Q, Σ, δ, q₀, F). Co je F?",
+   "options": {
+    "A": "Množina koncových stavů, F ⊆ Q.",
+    "B": "Počáteční stav stroje.",
+    "C": "Prázdný symbol pásky.",
+    "D": "Množina symbolů, které smí být na pásce."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Q stavy, Σ symboly stroje, δ přechodová funkce, q₀ počáteční stav, F cílová (koncová) množina. Chytil, Def. 6.1.1, s. 261 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 2,
+   "id": "9t-2"
+  },
+  {
+   "type": "choice",
+   "text": "Jaký je definiční obor přechodové funkce Turingova stroje?",
+   "options": {
+    "A": "Q × Σ × {−1, +1}: trojice stav, symbol, směr.",
+    "B": "(Q − F) × Σ: dvojice nekoncový stav a symbol.",
+    "C": "Q × Σ: všechny dvojice stav a symbol.",
+    "D": "F × Σ: jen koncové stavy a symboly."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "δ: (Q − F) × Σ → Q × Σ × {−1, +1} je parciální funkce. Chytil, Def. 6.1.1, s. 261 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 3,
+   "id": "9t-3"
+  },
+  {
+   "type": "choice",
+   "text": "Proč je v definici Turingova stroje δ: (Q − F) × Σ → … právě Q − F? (bude u zkoušky)",
+   "options": {
+    "A": "Aby stroj nemohl začít výpočet v koncovém stavu q₀ ∈ F.",
+    "B": "Aby δ byla totální funkce definovaná na všech dvojicích stav a symbol.",
+    "C": "Z koncového stavu není definován další přechod, takže výpočet v okamžiku přijetí skončí.",
+    "D": "Koncové stavy nesmí číst žádný symbol, protože páska je v nich už celá prázdná."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Chytil, s. 268: „Podle definice 6.1.1 není z takového stavu další přechod definován, a výpočet proto v okamžiku přijetí končí.“ (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 4,
+   "id": "9t-4"
+  },
+  {
+   "type": "choice",
+   "text": "Co znamená δ(q, x) = (q′, x′, d) u Turingova stroje?",
+   "options": {
+    "A": "Přepíše stav q na x′ a symbol x na q′, hlava stojí.",
+    "B": "Posune se o d políček, teprve tam přečte symbol x a přejde do stavu q.",
+    "C": "Ve stavu q na políčku s x přepíše x na x′, přejde do q′ a posune se o d.",
+    "D": "Ve stavu q přečte x′, zapíše x, přejde do q′ a posune se o d."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Chytil, Def. 6.1.1, s. 261 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 5,
+   "id": "9t-5"
+  },
+  {
+   "type": "choice",
+   "text": "Co u Turingova stroje znamená posun d = +1 a d = −1?",
+   "options": {
+    "A": "d = +1 posun doleva, d = −1 doprava.",
+    "B": "d = +1 přejde do dalšího stavu, d = −1 do předchozího.",
+    "C": "d = +1 přidá symbol na pásku, d = −1 ho smaže.",
+    "D": "d = +1 posun o políčko doprava, d = −1 doleva."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "„… a potom se posune o d políček doprava.“ Chytil, Def. 6.1.1, s. 261 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 6,
+   "id": "9t-6"
+  },
+  {
+   "type": "choice",
+   "text": "Turingův stroj chce symbol x na čteném políčku nechat beze změny. Co udělá?",
+   "options": {
+    "A": "Přepíše ho stejným symbolem, tedy x′ = x.",
+    "B": "Zapíše na políčko prázdný symbol Λ.",
+    "C": "Posune se bez čtení a symbol přeskočí.",
+    "D": "Políčko nepřepíše, instrukce může zápis vynechat."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Políčko, na kterém stojí, musí vždy přepsat (δ vždy vrací x′). Přednáška 26. 11.",
+   "number": 7,
+   "id": "9t-7"
+  },
+  {
+   "type": "choice",
+   "text": "Co znamená symbol Λ na pásce Turingova stroje?",
+   "options": {
+    "A": "Značku začátku vstupního slova na pásce.",
+    "B": "Koncový stav, ve kterém stroj zastaví.",
+    "C": "Prázdné políčko (Chytil místo něj píše b).",
+    "D": "Prázdné slovo e, tedy slovo délky nula."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Chytil, s. 261: symbol b ∈ Σ znamená prázdné políčko. Přednáška 26. 11.",
+   "number": 8,
+   "id": "9t-8"
+  },
+  {
+   "type": "choice",
+   "text": "Co popisuje konfigurace uqv Turingova stroje (u, v ∈ Σ*, q ∈ Q)?",
+   "options": {
+    "A": "Slovo u je stav, q symbol pod hlavou a v zbytek pásky.",
+    "B": "Na pásce je uv, jinde prázdno, stav je q, hlava čte první symbol v.",
+    "C": "Na pásce je jen slovo v, slovo u už stroj během výpočtu smazal a jeho políčka jsou prázdná.",
+    "D": "Na pásce je uv, stav je q, hlava čte poslední symbol u."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Chytil, Def. 6.1.2, s. 261 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 9,
+   "id": "9t-9"
+  },
+  {
+   "type": "choice",
+   "text": "Konfigurace K = uyqxv a δ(q, x) = (q′, x′, +1). Která konfigurace bezprostředně následuje po K?",
+   "options": {
+    "A": "uq′yx′v",
+    "B": "uyxq′v",
+    "C": "uyx′q′v",
+    "D": "uyq′x′v"
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Při +1 se stav zapíše za přepsaný symbol, hlava je na prvním symbolu v. Chytil, Def. 6.1.4, s. 261. Přednáška 26. 11.",
+   "number": 10,
+   "id": "9t-10"
+  },
+  {
+   "type": "choice",
+   "text": "Konfigurace K = uyqxv a δ(q, x) = (q′, x′, −1). Která konfigurace bezprostředně následuje po K?",
+   "options": {
+    "A": "q′uyx′v",
+    "B": "uq′yx′v",
+    "C": "uyx′q′v",
+    "D": "uyq′x′v"
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Při −1 se stav zapíše před y, hlava je na y. Chytil, Def. 6.1.4, s. 262. Přednáška 26. 11.",
+   "number": 11,
+   "id": "9t-11"
+  },
+  {
+   "type": "choice",
+   "text": "Proč se v definici bezprostředně následující konfigurace píše K = uyqxv se symbolem y vlevo od hlavy?",
+   "options": {
+    "A": "y je nový symbol, který stroj na pásku zapíše místo x.",
+    "B": "y je symbol přímo pod hlavou, který stroj v tomto kroku přepíše.",
+    "C": "Při posunu −1 se hlava přesune na y, musí být kam couvnout.",
+    "D": "y označuje stav, do kterého stroj po kroku přejde."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Pod hlavou je x, vlevo od něj y. Chytil, Def. 6.1.4, s. 261. Přednáška 26. 11.",
+   "number": 12,
+   "id": "9t-12"
+  },
+  {
+   "type": "choice",
+   "text": "Co znamená E ⊢*ℳ E′ u Turingova stroje?",
+   "options": {
+    "A": "Konfigurace E′ následuje po E bezprostředně, tedy vždy právě jedním krokem výpočtu.",
+    "B": "Z konfigurace E stroj nikdy neskončí.",
+    "C": "E a E′ jsou stejné konfigurace.",
+    "D": "Existují E₁, …, Eₘ, E₁ = E, Eₘ = E′, Eᵢ ⊢ Eᵢ₊₁: z E se dá dojít do E′."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Reflexivní a tranzitivní uzávěr relace ⊢ℳ. Chytil, s. 262. Přednáška 26. 11.",
+   "number": 13,
+   "id": "9t-13"
+  },
+  {
+   "type": "choice",
+   "text": "Jak vypadá počáteční konfigurace Turingova stroje?",
+   "options": {
+    "A": "q₀ na úplně prázdné pásce; vstupní slovo se na pásku načte až během výpočtu.",
+    "B": "uqv s libovolným q ∈ F.",
+    "C": "q₀w, kde w ∈ (Σ − {Λ})*: hlava na začátku vstupu, stav q₀.",
+    "D": "wq₀: hlava za koncem vstupního slova."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "Chytil, s. 262 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 14,
+   "id": "9t-14"
+  },
+  {
+   "type": "choice",
+   "text": "Jak vypadá koncová konfigurace Turingova stroje?",
+   "options": {
+    "A": "uqv, kde u, v ∈ Σ* a q ∈ F.",
+    "B": "uqv s prázdnou páskou a libovolným q.",
+    "C": "q₀w, kde w ∈ (Σ − {Λ})*.",
+    "D": "uqv, kde v je prázdné slovo a q ∈ Q − F."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Chytil, s. 262 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 15,
+   "id": "9t-15"
+  },
+  {
+   "type": "choice",
+   "text": "Kdy Turingův stroj ℳ přijímá slovo w?",
+   "options": {
+    "A": "Když se výpočet zastaví, v libovolném stavu z Q.",
+    "B": "Když q₀w ⊢* uqv pro nějakou koncovou konfiguraci, q ∈ F.",
+    "C": "Když po přečtení slova w zůstane páska úplně prázdná.",
+    "D": "Když hlava přečte celé slovo w zleva doprava až na konec."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "L(ℳ) = {w ∈ (Σ − {Λ})*; q₀w ⊢* uqv, q ∈ F}. Chytil, s. 262. Přednáška 26. 11.",
+   "number": 16,
+   "id": "9t-16"
+  },
+  {
+   "type": "input",
+   "text": "Konfigurace K = ab q cd (u = a, y = b, x = c, v = d) a δ(q, c) = (p, z, +1). Napiš konfiguraci bezprostředně následující po K.",
+   "hint": "konfigurace bez mezer, např. abqcd",
+   "answer": "abzpd",
+   "solution": "uyx′q′v = a b z p d: c přepsáno na z, hlava doprava na d. Chytil, Def. 6.1.4. Ověřeno výpočtem. Přednáška 26. 11.",
+   "number": 17,
+   "id": "9t-17"
+  },
+  {
+   "type": "input",
+   "text": "Konfigurace K = ab q cd (u = a, y = b, x = c, v = d) a δ(q, c) = (p, z, −1). Napiš konfiguraci bezprostředně následující po K.",
+   "hint": "konfigurace bez mezer, např. abqcd",
+   "answer": "apbzd",
+   "solution": "uq′yx′v = a p b z d: c přepsáno na z, hlava doleva na b. Chytil, Def. 6.1.4. Ověřeno výpočtem. Přednáška 26. 11.",
+   "number": 18,
+   "id": "9t-18"
+  },
+  {
+   "type": "input",
+   "text": "Turingův stroj z přednášky: Q = {q₀, q₁, q_f}, Σ = {a, b, Λ}, F = {q_f}, pravidla (1) δ(q₀, a) = (q₁, b, +1), (2) δ(q₁, b) = (q_f, b, −1). Napiš konfiguraci po prvním kroku z počáteční konfigurace q₀abb.",
+   "hint": "konfigurace bez mezer, stav jako q0, q1, qf",
+   "answer": "bq1bb",
+   "solution": "q₀abb ⊢ bq₁bb: a přepsáno na b, stav q₁, hlava doprava. Ověřeno simulací. Přednáška 26. 11.",
+   "number": 19,
+   "id": "9t-19"
+  },
+  {
+   "type": "input",
+   "text": "Turingův stroj z přednášky: Q = {q₀, q₁, q_f}, Σ = {a, b, Λ}, F = {q_f}, pravidla (1) δ(q₀, a) = (q₁, b, +1), (2) δ(q₁, b) = (q_f, b, −1). Napiš konfiguraci, ve které výpočet nad abb skončí.",
+   "hint": "konfigurace bez mezer, stav jako q0, q1, qf",
+   "answer": "qfbbb",
+   "solution": "q₀abb ⊢ bq₁bb ⊢ q_f bbb: v q₁ se b přepíše na b, stav q_f, hlava doleva. Ověřeno simulací. Přednáška 26. 11.",
+   "number": 20,
+   "id": "9t-20"
+  },
+  {
+   "type": "input",
+   "text": "Turingův stroj z přednášky: Q = {q₀, q₁, q_f}, Σ = {a, b, Λ}, F = {q_f}, pravidla (1) δ(q₀, a) = (q₁, b, +1), (2) δ(q₁, b) = (q_f, b, −1). Přijme stroj slovo abb?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ano",
+   "solution": "Ano: výpočet skončí v q_f ∈ F (koncová konfigurace q_f bbb); z q_f už δ definovaná není. Ověřeno simulací. Přednáška 26. 11.",
+   "number": 21,
+   "id": "9t-21"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Vysvětli, proč je v definici Turingova stroje δ: (Q − F) × Σ → Q × Σ × {−1, +1} právě Q − F (otázka ke zkoušce).",
+   "solution": "δ je definována jen pro nekoncové stavy; pro q ∈ F žádné δ(q, x) neexistuje. Když stroj vstoupí do koncového stavu, nemá jak pokračovat a výpočet skončí; tím je slovo přijato.\nProč to je potřeba: stroj se může pohybovat oběma směry a páska nemá konec, takže výpočet sám od sebe skončit nemusí. Koncový stav je signál „hotovo, přijato“.\nChytil, s. 268: „Podle definice 6.1.1 není z takového stavu další přechod definován, a výpočet proto v okamžiku přijetí končí.“ Přednáška 26. 11.",
+   "number": 22,
+   "id": "9t-22"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Turingův stroj z přednášky: Q = {q₀, q₁, q_f}, Σ = {a, b, Λ}, F = {q_f}, pravidla (1) δ(q₀, a) = (q₁, b, +1), (2) δ(q₁, b) = (q_f, b, −1). Zapiš výpočet nad abb krok po kroku a u každého kroku vysvětli, co stroj udělá.",
+   "solution": "q₀abb ⊢ bq₁bb ⊢ q_f bbb\nKrok 1 (pravidlo 1): stav q₀, hlava na a; přepíše a → b, stav q₁, posun doprava (+1): uyx′q′v.\nKrok 2 (pravidlo 2): stav q₁, hlava na b; přepíše b → b (symbol zůstane, ale přepsat se musí), stav q_f, posun doleva (−1): uq′yx′v.\nq_f ∈ F, takže q_f bbb je koncová konfigurace a abb je přijato. Ověřeno simulací. Přednáška 26. 11.",
+   "number": 23,
+   "id": "9t-23"
+  }
+ ]
+}

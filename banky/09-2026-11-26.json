@@ -1,0 +1,237 @@
+{
+ "title": "Zásobníkové automaty a bezkontextové jazyky",
+ "lecture": 9,
+ "date": "2026-11-26",
+ "questions": [
+  {
+   "type": "choice",
+   "text": "Co tvrdí věta, kterou přednáška začala (Chytil, Věta 4.5.1)?",
+   "options": {
+    "A": "Ke každému bezkontextovému jazyku existuje deterministický ZA s jediným stavem a L = L(ℳ) koncovým stavem.",
+    "B": "Ke každému zásobníkovému automatu existuje regulární gramatika se stejným jazykem.",
+    "C": "Ke každému bezkontextovému jazyku L existuje nedeterministický ZA s jediným stavem, L = N(ℳ).",
+    "D": "Ke každému bezkontextovému jazyku existuje konečný automat s jediným stavem."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "ℳ rozpoznává L prázdným zásobníkem. Opačný směr (ze ZA gramatika) je Věta 4.5.5. Chytil, Věta 4.5.1, s. 172 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 1,
+   "id": "9-1"
+  },
+  {
+   "type": "choice",
+   "text": "Jakým způsobem rozpoznává jazyk automat sestrojený z gramatiky podle Věty 4.5.1?",
+   "options": {
+    "A": "Tím, že přečte celé slovo a na vrcholu zásobníku zůstane nějaký terminál.",
+    "B": "Tím, že na zásobníku zůstane počáteční symbol S.",
+    "C": "Koncovým stavem: po přečtení slova je ve stavu z F.",
+    "D": "Prázdným zásobníkem: slovo je přečtené a zásobník prázdný."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Proto L = N(ℳ) a F = ∅. Chytil, Věta 4.5.1, s. 172 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 2,
+   "id": "9-2"
+  },
+  {
+   "type": "choice",
+   "text": "Kolik stavů má zásobníkový automat z konstrukce podle Věty 4.5.1?",
+   "options": {
+    "A": "Dva stavy: počáteční q₀ a koncový stav, do kterého přejde po přečtení.",
+    "B": "Tolik stavů, kolik má gramatika neterminálů; každý neterminál má svůj stav.",
+    "C": "Jediný stav q; všechnu potřebnou informaci nese zásobník.",
+    "D": "Tolik stavů, kolik má gramatika pravidel."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "ℳ = ({q}, Σ, Π ∪ Σ, δ, q, S, ∅). Chytil, Věta 4.5.1, s. 172 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 3,
+   "id": "9-3"
+  },
+  {
+   "type": "choice",
+   "text": "Jaká je zásobníková abeceda Γ automatu sestrojeného z gramatiky (Π, Σ, S, P)?",
+   "options": {
+    "A": "Γ = Π ∪ Σ: do zásobníku se píšou neterminály i terminály.",
+    "B": "Γ = Π × Σ: v zásobníku jsou uspořádané dvojice neterminál a terminál.",
+    "C": "Γ = Σ: do zásobníku se píšou jen terminály.",
+    "D": "Γ = Π: do zásobníku se píšou jen neterminály, terminály se čtou ze vstupu."
+   },
+   "correct": [
+    "A"
+   ],
+   "explanation": "Pravé strany pravidel obsahují obojí. Chytil, Věta 4.5.1, s. 172 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 4,
+   "id": "9-4"
+  },
+  {
+   "type": "choice",
+   "text": "Co je počáteční symbol zásobníku Z₀ automatu sestrojeného z gramatiky (Π, Σ, S, P)?",
+   "options": {
+    "A": "První symbol vstupního slova.",
+    "B": "Počáteční symbol gramatiky S.",
+    "C": "Stav q.",
+    "D": "Prázdné slovo e."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Výpočet začíná se S v zásobníku, tak jako derivace začíná od S. Chytil, Věta 4.5.1, s. 172 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 5,
+   "id": "9-5"
+  },
+  {
+   "type": "choice",
+   "text": "Proč má automat z Věty 4.5.1 množinu koncových stavů F = ∅?",
+   "options": {
+    "A": "Automat s F = ∅ nepřijímá žádné slovo, jazyk je prázdný.",
+    "B": "F = ∅ znamená, že přijímá každé slovo nad Σ.",
+    "C": "Rozpoznává prázdným zásobníkem, takže F je nepodstatná.",
+    "D": "Jediný stav nesmí být současně počáteční a koncový."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "U rozpoznávání prázdným zásobníkem se F obvykle klade ∅ (přednáška 19. 11.). Chytil, Věta 4.5.1, s. 172 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 6,
+   "id": "9-6"
+  },
+  {
+   "type": "choice",
+   "text": "Co dělá instrukce typu 1, δ(q, e, D) = {(q, η); D → η je pravidlo z P}?",
+   "options": {
+    "A": "Přidá neterminál D pod vrchol zásobníku a vstup přitom vůbec nečte.",
+    "B": "Přečte ze vstupu celé slovo η a neterminál D nechá v zásobníku.",
+    "C": "Bez čtení vstupu nahradí neterminál D na vrcholu pravou stranou η některého pravidla.",
+    "D": "Přečte ze vstupu symbol D a ze zásobníku ho odebere, stav se nemění."
+   },
+   "correct": [
+    "C"
+   ],
+   "explanation": "V každém kroku se buď nahrazuje vrchní symbol řetězcem (typ 1), nebo se odebírá (typ 2). Chytil, s. 172. Přednáška 26. 11.",
+   "number": 7,
+   "id": "9-7"
+  },
+  {
+   "type": "choice",
+   "text": "Co dělá instrukce typu 2, δ(q, a, a) = {(q, e)} pro a ∈ Σ?",
+   "options": {
+    "A": "Nahradí terminál a pravou stranou pravidla, ve kterém a vystupuje.",
+    "B": "Je-li na vrcholu terminál a a na vstupu také a, přečte ho a ze zásobníku odebere.",
+    "C": "Přeskočí a na vstupu bez čtení a obsah zásobníku nechá beze změny.",
+    "D": "Je-li na vrcholu a, přidá na zásobník další a a přečte symbol ze vstupu."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Jde o „odškrtnutí“ už vygenerovaného terminálu proti vstupu. Chytil, s. 172. Přednáška 26. 11.",
+   "number": 8,
+   "id": "9-8"
+  },
+  {
+   "type": "choice",
+   "text": "Proč je automat sestrojený podle Věty 4.5.1 nedeterministický?",
+   "options": {
+    "A": "Protože instrukce typu 2 nečtou vstup a zásobník mění bez čtení.",
+    "B": "Protože má jediný stav, a ten se během celého výpočtu nemůže změnit na jiný stav.",
+    "C": "Protože F = ∅, takže automat neví, kdy má výpočet ukončit.",
+    "D": "Pro jeden neterminál může být víc pravidel, δ(q, e, D) má pak víc dvojic."
+   },
+   "correct": [
+    "D"
+   ],
+   "explanation": "Automat si „vybírá“, kterým pravidlem neterminál přepíše; přijme, když aspoň jedna volba vede k prázdnému zásobníku. Chytil, Věta 4.5.1, s. 172 (ověřeno podle skenu). Přednáška 26. 11.",
+   "number": 9,
+   "id": "9-9"
+  },
+  {
+   "type": "choice",
+   "text": "Čemu odpovídá výpočet automatu sestrojeného podle Věty 4.5.1?",
+   "options": {
+    "A": "Pravé derivaci: přepisuje se vždy nejpravější neterminál.",
+    "B": "Levé derivaci podle gramatiky: krok typu 1 = přepis nejlevějšího neterminálu.",
+    "C": "Derivaci pozpátku: od přečteného slova postupně zpět až k počátečnímu symbolu gramatiky S.",
+    "D": "Žádné derivaci, automat jen porovnává počty symbolů ve slově."
+   },
+   "correct": [
+    "B"
+   ],
+   "explanation": "Přečtená část vstupu + obsah zásobníku je vždy větná forma levé derivace. Chytil, důkaz Věty 4.5.1, s. 172–173. Přednáška 26. 11.",
+   "number": 10,
+   "id": "9-10"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {A, B}, Σ = {a, b, c}, pravidla (1) A → aAc, (2) A → B, (3) B → bBc, (4) B → e. Počáteční symbol S = A. Kolik instrukcí typu 1 a typu 2 dohromady vznikne konstrukcí podle Věty 4.5.1? (Každou dvojici v δ(q, e, D) počítej zvlášť.)",
+   "hint": "číslo",
+   "answer": "7",
+   "solution": "Typ 1: čtyři dvojice, jedna z každého pravidla, δ(q, e, A) = {(q, aAc), (q, B)}, δ(q, e, B) = {(q, bBc), (q, e)}. Typ 2: jedna pro každý terminál, δ(q, a, a), δ(q, b, b), δ(q, c, c), vše = {(q, e)}. Celkem 4 + 3 = 7. Přednáška 26. 11.",
+   "number": 11,
+   "id": "9-11"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {A, B}, Σ = {a, b, c}, pravidla (1) A → aAc, (2) A → B, (3) B → bBc, (4) B → e. Počáteční symbol S = A. Levá derivace A ⇒* bbcc: napiš čísla použitých pravidel.",
+   "hint": "čísla pravidel v pořadí použití, bez mezer, např. 312",
+   "answer": "2334",
+   "solution": "A ⇒ B (2) ⇒ bBc (3) ⇒ bbBcc (3) ⇒ bbcc (4). Ověřeno výpočtem. Přednáška 26. 11.",
+   "number": 12,
+   "id": "9-12"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {A, B}, Σ = {a, b, c}, pravidla (1) A → aAc, (2) A → B, (3) B → bBc, (4) B → e. Počáteční symbol S = A. Instrukce jsou číslované 1–4 podle pravidel a 5, 6, 7 = δ(q, a, a), δ(q, b, b), δ(q, c, c). Kolik kroků má výpočet automatu, který přijme slovo bbcc?",
+   "hint": "číslo",
+   "answer": "8",
+   "solution": "(q, bbcc, A) ⊢ (q, bbcc, B) ⊢ (q, bbcc, bBc) ⊢ (q, bcc, Bc) ⊢ (q, bcc, bBcc) ⊢ (q, cc, Bcc) ⊢ (q, cc, cc) ⊢ (q, c, c) ⊢ (q, e, e). Čtyři kroky typu 1 (pravidla derivace) a čtyři typu 2 (jeden na každé písmeno). Ověřeno simulací. Přednáška 26. 11.",
+   "number": 13,
+   "id": "9-13"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {A, B}, Σ = {a, b, c}, pravidla (1) A → aAc, (2) A → B, (3) B → bBc, (4) B → e. Počáteční symbol S = A. Instrukce jsou číslované 1–4 podle pravidel a 5, 6, 7 = δ(q, a, a), δ(q, b, b), δ(q, c, c). Napiš čísla instrukcí výpočtu, který přijme slovo bbcc.",
+   "hint": "čísla instrukcí v pořadí, bez mezer",
+   "answer": "23636477",
+   "solution": "(q, bbcc, A) ⊢ (q, bbcc, B) ⊢ (q, bbcc, bBc) ⊢ (q, bcc, Bc) ⊢ (q, bcc, bBcc) ⊢ (q, cc, Bcc) ⊢ (q, cc, cc) ⊢ (q, c, c) ⊢ (q, e, e). Instrukce 1–4 jdou v pořadí levé derivace (2, 3, 3, 4). Na tabuli jsou poslední dva kroky označené jako 4, správně je 7 (na vrcholu je c). Ověřeno simulací. Přednáška 26. 11.",
+   "number": 14,
+   "id": "9-14"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {A, B}, Σ = {a, b, c}, pravidla (1) A → aAc, (2) A → B, (3) B → bBc, (4) B → e. Počáteční symbol S = A. Přijme automat sestrojený podle Věty 4.5.1 slovo abcc?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ano",
+   "solution": "Ano: A ⇒ aAc ⇒ aBc ⇒ abBcc ⇒ abcc, tedy pravidla 1, 2, 3, 4, a automat výpočet napodobí. Jazyk gramatiky je aⁿbᵐcⁿ⁺ᵐ. Ověřeno simulací. Přednáška 26. 11.",
+   "number": 15,
+   "id": "9-15"
+  },
+  {
+   "type": "input",
+   "text": "Gramatika z přednášky: Π = {A, B}, Σ = {a, b, c}, pravidla (1) A → aAc, (2) A → B, (3) B → bBc, (4) B → e. Počáteční symbol S = A. Přijme automat sestrojený podle Věty 4.5.1 slovo abc?",
+   "hint": "ano nebo ne (bez tečky)",
+   "answer": "ne",
+   "solution": "Ne: každé a i každé b přidá jedno c, takže c musí být tolik, kolik je a a b dohromady (abcc). Žádná volba instrukcí nevede k prázdnému zásobníku. Ověřeno simulací. Přednáška 26. 11.",
+   "number": 16,
+   "id": "9-16"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Gramatika z přednášky: Π = {A, B}, Σ = {a, b, c}, pravidla (1) A → aAc, (2) A → B, (3) B → bBc, (4) B → e. Počáteční symbol S = A. Zapiš výpočet automatu nad slovem bbcc krok po kroku a u každého kroku vysvětli, proč je použita právě ta instrukce.",
+   "solution": "Vrchol zásobníku je vlevo. Situace (q, zbylý vstup, zásobník).\n1. (q, bbcc, A) ⊢(2) (q, bbcc, B)\n2. (q, bbcc, B) ⊢(3) (q, bbcc, bBc)\n3. (q, bbcc, bBc) ⊢(6) (q, bcc, Bc)\n4. (q, bcc, Bc) ⊢(3) (q, bcc, bBcc)\n5. (q, bcc, bBcc) ⊢(6) (q, cc, Bcc)\n6. (q, cc, Bcc) ⊢(4) (q, cc, cc)\n7. (q, cc, cc) ⊢(7) (q, c, c)\n8. (q, c, c) ⊢(7) (q, e, e)\nKrok 1: vstup začíná b; pravidlo 1 by dalo navrch a, které se s b nikdy neshoduje, proto pravidlo 2.\nKroky 2 a 4: B → bBc, protože vstup začíná b.\nKrok 6: vstup začíná c, pravidlo 3 by dalo navrch b, proto B → e.\nKroky 3, 5, 7, 8: na vrcholu terminál shodný se vstupem, přečíst a odebrat (6, 6, 7, 7).\nKonec (q, e, e): slovo přečtené, zásobník prázdný, bbcc ∈ N(ℳ). Ověřeno simulací. Přednáška 26. 11.",
+   "number": 17,
+   "id": "9-17"
+  },
+  {
+   "type": "input",
+   "reveal": true,
+   "text": "Gramatika: Π = {S}, Σ = {a, b}, pravidla (1) S → aSb, (2) S → e, (3) S → ab. Sestroj podle Věty 4.5.1 zásobníkový automat a zapiš jeho výpočet nad slovem aabb.",
+   "solution": "ℳ = ({q}, {a, b}, {S, a, b}, δ, q, S, ∅)\nTyp 1: δ(q, e, S) = {(q, aSb), (q, e), (q, ab)}\nTyp 2: δ(q, a, a) = {(q, e)}, δ(q, b, b) = {(q, e)}\nVýpočet: (q, aabb, S) ⊢ (q, aabb, aSb) ⊢ (q, abb, Sb) ⊢ (q, abb, abb) ⊢ (q, bb, bb) ⊢ (q, b, b) ⊢ (q, e, e)\n(třetí krok použil S → ab; šlo by i S → aSb a pak S → e). Ověřeno simulací. Úloha na procvičení konstrukce z přednášky 26. 11. (doplněno z Claude).",
+   "number": 18,
+   "id": "9-18"
+  }
+ ]
+}
