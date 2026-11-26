@@ -177,6 +177,18 @@ summary.co-h:hover, summary.co-h:hover .co-t { background: var(--hl); color: var
 .co-b > :last-child { margin-bottom: 6px; }
 .co .co { margin: 12px 0; }
 .ai-tag { display: inline-block; padding: 1px 10px; border-radius: 999px; background: var(--ai); color: var(--ai-ink); font: 700 .8125rem/1.5 var(--font); }
+/* Časté omyly: karta Omyl / Správně (md.js mdOmyly) */
+ul.omyly { list-style: none; padding: 0; margin: 4px 0 12px; display: grid; gap: 8px; max-width: 68ch; }
+ul.omyly li { border: 1px solid var(--line); border-radius: var(--r-m); background: var(--surface); overflow: hidden; }
+ul.omyly li > div { display: grid; grid-template-columns: 5.5rem 1fr; gap: 12px; padding: 10px 14px; font: 400 1rem/1.55 var(--serif); }
+ul.omyly .om-bad { background: color-mix(in srgb, var(--bad) 8%, transparent); }
+ul.omyly .om-ok { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--ok) 8%, transparent); }
+ul.omyly .om-l { font: 700 .75rem/1.9 var(--font); text-transform: uppercase; letter-spacing: .04em; }
+ul.omyly .om-bad .om-l { color: var(--bad); }
+ul.omyly .om-ok .om-l { color: var(--ok); }
+ul.omyly s { text-decoration-color: color-mix(in srgb, var(--bad) 70%, transparent); text-decoration-thickness: 1.5px; }
+ul.omyly .om-why { color: var(--muted); }
+@media (max-width: 600px) { ul.omyly li > div { grid-template-columns: 1fr; gap: 2px; } }
 </style>
 </head>
 <body>
