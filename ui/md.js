@@ -52,6 +52,8 @@ function mdBlocks(L, flat) {
     } else if (!flat && /^@@ /.test(l)) {
       const rows = run(/^@@ /, i); i += rows.length - 1;
       out.push('<div class="dm">' + rows.map(r => `<div>${gInline(r.slice(3))}</div>`).join('') + '</div>');
+    } else if (!flat && l.startsWith('{svg}')) { // schéma z poznámky, build_vypisky.py ho propustí jen s bezpečnými značkami
+      out.push(`<figure class="svg">${l.slice(5)}</figure>`);
     } else if (!flat && l === '{small}') {
       const e = L.indexOf('{/small}', i);
       out.push(`<div class="small">${mdBlocks(L.slice(i + 1, e < 0 ? L.length : e), false).join('')}</div>`);

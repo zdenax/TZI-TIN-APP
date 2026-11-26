@@ -22,6 +22,7 @@ bg.NOTES = True
 OUT = Path(__file__).parent / "vypisky" / "vypisky.json"
 CVICENI = Path(__file__).parent / "vypisky" / "cviceni.json"  # {"seminars": {"<jméno souboru>": {bank, title, date, source, sections}}}
 PREFIX = re.compile(r"^((?:>\s?)*)(.*)$")
+SVG_TAGS = {"svg", "g", "rect", "line", "path", "circle", "ellipse", "polygon", "polyline", "text", "tspan", "title"}
 
 
 def fail(msg, ln):
@@ -65,6 +66,10 @@ def convert(lines):
             fail("vložený soubor ![[…]]", raw)
         if ".excalidraw]]" in c:  # odkaz na plátno s rukopisem: ve vaultu, ve webu nemá smysl
             continue
+        if s.startswith("<svg") and s.endswith("</svg>"):  # vlastní schéma z poznámky: jen tvary a text, žádné skripty/odkazy
+            if set(re.findall(r"</?([a-zA-Z]+)", s)) - SVG_TAGS or re.search(r"\son\w+\s*=|href|javascript:|<!", s, re.I):
+                fail("nepovolené SVG", raw)
+            out.append(pre + "{svg}" + s); continue
         if s == "<small>":
             out.append("{small}"); continue
         if s == "</small>":

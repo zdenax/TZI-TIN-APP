@@ -29,10 +29,11 @@ SYM = {
     # příkazy z výpisků (build_vypisky.py); v glosáři se nevyskytly, jeho výstup nemění
     "iff": "⇔", "implies": "⇒", "leftrightarrow": "↔", "mid": "∣", "varepsilon": "ε", "epsilon": "ε",
     "Pi": "Π", "square": "□", "!": "", "supseteq": "⊇", "alpha": "α", "beta": "β", "gamma": "γ", "ne": "≠",
+    "Gamma": "Γ", "eta": "η", "nu": "ν", "vdash": "⊢",
 }
 # jen pro výpisky (nastaví build_vypisky.py): ^x a _x bez závorek obalit do (x), ^* na horní index, \mathcal na psací písmena
 NOTES = False
-CAL = {"R": "ℛ", "L": "ℒ", "G": "𝒢", "A": "𝒜"}
+CAL = {"R": "ℛ", "L": "ℒ", "G": "𝒢", "A": "𝒜", "M": "ℳ", "P": "𝒫"}
 U1, U2 = "", ""  # začátek a konec podtržení (UI z nich udělá <u>)
 BB = {"N": "ℕ", "Z": "ℤ", "Q": "ℚ", "R": "ℝ", "C": "ℂ"}
 
