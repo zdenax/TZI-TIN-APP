@@ -156,7 +156,7 @@ def main(src, stem, cviceni=False):
     meta = dict(l.split(": ", 1) for l in m.group(1).split("\n") if ": " in l)
     text = text[m.end():]
     head, orig, tail = text.partition("\n## Originál\n")
-    if orig and tail.strip() != "![[" + Path(src).stem + ".pdf]]" and not re.fullmatch(r"Plátno: !\[\[[^\]]+\.excalidraw\]\]", tail.strip()):
+    if orig and tail.strip() != "![[" + Path(src).stem + ".pdf]]" and not re.fullmatch(r"Plátno: !\[\[[^\]]+\]\]", tail.strip()):  # sešit ze cvika nemusí mít příponu .excalidraw
         raise SystemExit("CHYBA: sekce Originál obsahuje něco jiného než vložené pdf nebo plátno")
     global ROOT
     ROOT = next((p for p in Path(src).resolve().parents if p.parent.name == "Aktualni"), Path(src).resolve().parent)
