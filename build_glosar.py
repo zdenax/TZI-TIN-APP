@@ -26,7 +26,14 @@ SYM = {
     "lambda": "λ", "pi": "π", "mapsto": "↦", "leftarrow": "←", "xrightarrow": "→",
     "qquad": " ", "quad": " ", ";": " ", ",": " ", " ": " ", "{": "{", "}": "}", "displaystyle": "",
     "left": "", "right": "",
+    # příkazy z výpisků (build_vypisky.py); v glosáři se nevyskytly, jeho výstup nemění
+    "iff": "⇔", "implies": "⇒", "leftrightarrow": "↔", "mid": "∣", "varepsilon": "ε", "epsilon": "ε",
+    "Pi": "Π", "square": "□", "!": "", "alpha": "α", "beta": "β", "gamma": "γ", "ne": "≠",
 }
+# jen pro výpisky (nastaví build_vypisky.py): ^x a _x bez závorek obalit do (x), ^* na horní index, \mathcal na psací písmena
+NOTES = False
+CAL = {"R": "ℛ", "L": "ℒ", "G": "𝒢", "A": "𝒜"}
+U1, U2 = "", ""  # začátek a konec podtržení (UI z nich udělá <u>)
 BB = {"N": "ℕ", "Z": "ℤ", "Q": "ℚ", "R": "ℝ", "C": "ℂ"}
 
 
@@ -64,12 +71,25 @@ def tex(s):
             elif name == "mathbb":
                 a, i = group(s, i)
                 out += BB[a]
+            elif name == "mathcal" and NOTES:
+                a, i = group(s, i)
+                out += "".join(CAL.get(ch, ch) for ch in a)
             elif name in ("mathrm", "mathcal", "text"):
                 a, i = group(s, i)
                 out += tex(a)
+            elif name == "underline" and NOTES:
+                a, i = group(s, i)
+                out += U1 + tex(a) + U2
+            elif name == "overset" and NOTES:  # \overset{*}{\Rightarrow} -> ⇒ s horním indexem
+                a, i = group(s, i)
+                b, i = group(s, i)
+                out += f"{tex(b).strip()}^({tex(a).strip().replace('*', '∗')})"
+            elif name == "xrightarrow" and NOTES and i < len(s) and s[i] == "{":
+                a, i = group(s, i)
+                out += f"→^({tex(a).strip()})"
             elif name in SYM:
                 out += SYM[name]
-                if name.isalpha() and name not in ("left", "right", "displaystyle"):
+                if not NOTES and name.isalpha() and name not in ("left", "right", "displaystyle"):
                     out += " " if name in ("to", "in", "sin") or SYM[name] in "⇒⇔" else ""
             else:
                 raise ValueError(f"neznámý příkaz \\{name} v: {s}")
@@ -80,6 +100,9 @@ def tex(s):
                 a = a[1:-1]  # fmt neumí vnořené závorky v indexu: P'_(k_1,…,k_n)
             out += f"{c}({a})"
             i = i2
+        elif NOTES and c in "_^" and i + 1 < len(s) and s[i + 1] not in "{\\ ":
+            out += f"{c}({'∗' if s[i + 1] == '*' else s[i + 1]})"
+            i += 2
         else:
             out += c
             i += 1

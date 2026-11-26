@@ -134,31 +134,10 @@ sub, sup { font-size: .72em; line-height: 0; }
   <div id="out"></div>
 </main>
 <script src="/fmt.js"></script>
+<script src="/md.js"></script>
+<script src="/search.js"></script>
 <script>
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const gInline = t => fmt(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>').replace(/`(.+?)`/g, '<code>$1</code>');
-
-// pojmy jsou jednoduchý markdown: odstavce, odrážky, tabulky; citace (> ...) ztratí předponu, popisek „[!warning] Název“ je tučně
-function gBody(body) {
-  const out = [], L = body.split('\n').map(l => l.replace(/^>\s?(\[![a-z]+\]\s*(.*))?/, (m, c, t) => c ? (t ? `**${t}**` : '') : ''));
-  for (let i = 0; i < L.length; i++) {
-    const l = L[i];
-    if (/^\|/.test(l)) {
-      const rows = [];
-      for (; i < L.length && /^\|/.test(L[i]); i++) if (!/^\|[\s|:-]+$/.test(L[i])) rows.push(L[i].replace(/^\||\|$/g, '').split('|'));
-      i--;
-      out.push('<table>' + rows.map((r, k) => '<tr>' + r.map(c => `<${k ? 'td' : 'th'}>${gInline(c.trim())}</${k ? 'td' : 'th'}>`).join('') + '</tr>').join('') + '</table>');
-    } else if (/^- /.test(l)) {
-      const items = [];
-      for (; i < L.length && /^- /.test(L[i]); i++) items.push(L[i].slice(2));
-      i--;
-      out.push('<ul>' + items.map(x => `<li>${gInline(x)}</li>`).join('') + '</ul>');
-    } else if (l.trim()) {
-      out.push(`<p${/^\*Zdroj/.test(l) ? ' class="src"' : ''}>${gInline(l)}</p>`);
-    }
-  }
-  return out.join('');
-}
+const gBody = body => mdRender(body, true); // pojmy jsou jednoduchý markdown, viz md.js
 
 (async () => {
   const source = new URLSearchParams(location.search).get('source') || '';
@@ -173,68 +152,8 @@ function gBody(body) {
     g.entries.map(e => `<div class="entry"><h3>${gInline(e.term)}</h3>${gBody(e.body)}</div>`).join('')
   ).join('') : '<p class="empty">K téhle přednášce zatím nejsou v glosáři žádné pojmy.</p>');
   function $out(html) { document.getElementById('out').innerHTML = html; }
-  initSearch();
+  initSearch('.entry', ' pojmů');
 })();
-
-// vyhledávání jako Ctrl+F: pojmy zůstanou vidět, shody se zvýrazní (bez ohledu na velikost písmen a diakritiku),
-// čítač „3 / 17“, Enter = další, Shift+Enter = předchozí, Esc smaže. Prochází jen textové uzly, takže zlomky a indexy zůstanou celé.
-function initSearch() {
-  const q = document.getElementById('q'), cnt = document.getElementById('cnt'), out = document.getElementById('out');
-  const prevB = document.getElementById('sprev'), nextB = document.getElementById('snext');
-  const total = out.querySelectorAll('.entry').length;
-  const fold1 = c => c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const fold = t => [...t].map(fold1).join('');
-  let marks = [], cur = -1;
-  const idle = () => { cnt.textContent = total ? total + ' pojmů' : ''; prevB.disabled = nextB.disabled = true; };
-  function clear() {
-    out.querySelectorAll('mark.hit').forEach(m => { const p = m.parentNode; p.replaceChild(document.createTextNode(m.textContent), m); p.normalize(); });
-    marks = []; cur = -1;
-  }
-  function go(i, scroll) {
-    if (!marks.length) return;
-    if (cur >= 0) marks[cur].classList.remove('cur');
-    cur = (i + marks.length) % marks.length;
-    marks[cur].classList.add('cur');
-    cnt.textContent = (cur + 1) + ' / ' + marks.length;
-    if (scroll) marks[cur].scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-  }
-  function run() {
-    clear();
-    const w = fold(q.value.trim());
-    if (!w) { idle(); return; }
-    const walker = document.createTreeWalker(out, NodeFilter.SHOW_TEXT), nodes = [];
-    for (let n; (n = walker.nextNode());) nodes.push(n);
-    for (const node of nodes) {
-      const chars = [...node.data], f = chars.map(fold1); // 1 znak původního textu = 1 položka (diakritika se skládá po znacích)
-      const flat = f.join(''), map = []; // map: pozice ve složeném textu -> index znaku původního textu
-      f.forEach((x, i) => { for (let k = 0; k < x.length; k++) map.push(i); });
-      const hits = [];
-      for (let i = flat.indexOf(w); i >= 0; i = flat.indexOf(w, i + w.length)) hits.push([map[i], map[i + w.length - 1] + 1]);
-      for (let h = hits.length - 1; h >= 0; h--) { // odzadu, aby se neposouvaly pozice
-        const [a, b] = hits[h], off = a => chars.slice(0, a).join('').length;
-        node.splitText(off(b)); const mid = node.splitText(off(a));
-        const m = document.createElement('mark'); m.className = 'hit';
-        mid.parentNode.replaceChild(m, mid); m.appendChild(mid);
-        marks.unshift(m);
-      }
-    }
-    // pořadí v dokumentu: zpracování uzlů je popořadě, uvnitř uzlu zpětně, proto seřadit
-    marks.sort((x, y) => (x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
-    prevB.disabled = nextB.disabled = !marks.length;
-    if (marks.length) go(0, true); else cnt.textContent = 'Nic nenalezeno. Zkus kratší výraz.';
-  }
-  q.addEventListener('input', run);
-  q.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); go(cur + (e.shiftKey ? -1 : 1), true); }
-    else if (e.key === 'ArrowDown') { e.preventDefault(); go(cur + 1, true); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); go(cur - 1, true); }
-    else if (e.key === 'Escape') { q.value = ''; run(); }
-  });
-  nextB.addEventListener('click', () => go(cur + 1, true));
-  prevB.addEventListener('click', () => go(cur - 1, true));
-  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') { e.preventDefault(); q.focus(); q.select(); } });
-  idle();
-}
 </script>
 </body>
 </html>

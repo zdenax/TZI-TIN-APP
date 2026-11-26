@@ -97,6 +97,7 @@ sub, sup { font-size: .72em; line-height: 0; }
 .vyp { position: relative; }
 .vyp-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; --vyp-row: 52px; width: min(440px, calc(100vw - 32px)); padding: 14px 8px 8px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-l); box-shadow: var(--shadow); }
 .vyp-pop h2 { display: block; margin: 0 0 6px 12px; font-size: .8125rem; font-weight: 700; color: var(--muted); }
+#vyp-notes-box:not([hidden]) + h2 { margin-top: 14px; }
 /* nejvýš 8 řádků stejné výšky, zbytek se posouvá po celých řádcích; na nízkém okně se výška ořízne podle okna */
 .vyp-pop ul { list-style: none; max-height: min(calc(8 * var(--vyp-row)), calc(100dvh - 190px)); overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; }
 .vyp-pop li { height: var(--vyp-row); scroll-snap-align: start; }
@@ -488,7 +489,7 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
       <div class="brand"><span class="mark" aria-hidden="true">10</span>
         <div><h1>TZI Trenér</h1><p>Opakování přednášek z Teoretické informatiky, KI/TIN</p></div></div>
       <nav class="topnav" aria-label="Další nástroje"><a class="chip" href="/automat">Návrhář automatů</a><a class="chip" href="/glosar?source=_all">Glosář</a><div class="vyp"><button type="button" class="chip" id="vyp-btn" aria-expanded="false" aria-controls="vyp-pop">Výpisky</button>
-        <div class="vyp-pop" id="vyp-pop" role="region" aria-label="Výpisky" hidden><h2>Glosáře</h2><ul id="vyp-list"></ul></div></div></nav>
+        <div class="vyp-pop" id="vyp-pop" role="region" aria-label="Výpisky" hidden><div id="vyp-notes-box" hidden><h2>Výpisky z přednášek</h2><ul id="vyp-notes"></ul></div><h2>Glosáře</h2><ul id="vyp-list"></ul></div></div></nav>
     </header>
 
     <div class="layout">
@@ -682,6 +683,7 @@ async function init() {
   const data = await r.json();
   sources = data.sources;
   currentSource = data.default;
+  notes = await fetch('/api/vypisky').then(r => r.ok ? r.json() : { sources: [] }).then(d => d.sources).catch(() => []); // které přednášky mají výpisky
   renderNotes();
   RECALL = await fetch('/api/recall').then(r => r.ok ? r.json() : []).catch(() => []); // starý server endpoint nemá
   renderLectures();
@@ -706,8 +708,14 @@ function fitLectures() { // vybraná přednáška se při prvním zobrazení vyc
 }
 let lecScrolled = false;
 addEventListener('resize', fitLectures);
-// Výpisky: rozbalovací nabídka v hlavičce, zatím jen odkazy na glosáře (stejné zdroje jako seznam přednášek)
+// Výpisky: rozbalovací nabídka v hlavičce, výpisky z přednášek (jen ty, které je mají) a glosáře
+let notes = [];
 function renderNotes() {
+  $('vyp-notes-box').hidden = !notes.length;
+  $('vyp-notes').innerHTML = sources.filter(s => notes.includes(s.id)).map(s => {
+    const p = parseSource(s);
+    return `<li><a href="/vypisky?source=${encodeURIComponent(s.id)}" title="${esc(p.title)}"><span class="n">${esc(p.n)}</span><span>${esc(p.title)}</span></a></li>`;
+  }).join('');
   $('vyp-list').innerHTML = sources.map(s => {
     const p = parseSource(s);
     return `<li><a href="/glosar?source=${encodeURIComponent(s.id)}" title="${esc(p.title)}"><span class="n">${esc(p.n)}</span><span>${esc(p.title)}</span></a></li>`;
@@ -748,6 +756,7 @@ function _renderLectures() {
     const p = parseSource(s);
     return `<li><button class="lec" title="${esc(p.title)}${p.date ? ' (' + esc(p.date) + ')' : ''}" onclick="selectSource('${esc(s.id)}')" aria-pressed="${s.id === currentSource}">` +
       `<span class="n">${esc(p.n)}</span><span class="t">${esc(p.title)}</span><span class="d">${esc(p.date)}</span></button>` +
+      (notes.includes(s.id) ? `<a class="gl-btn" href="/vypisky?source=${encodeURIComponent(s.id)}" aria-label="Výpisky: ${esc(p.title)}">Výpisky</a>` : '') +
       `<a class="gl-btn" href="/glosar?source=${encodeURIComponent(s.id)}" aria-label="Glosář: ${esc(p.title)}">Glosář</a></li>`;
   }).join('');
 }
