@@ -2,6 +2,7 @@
 """Převede výpisky z přednášky (Obsidian .md) na sekci v vypisky/vypisky.json pro stránku /vypisky.
 
 Spuštění:  python3 build_vypisky.py /cesta/k/2026-11-12-gramatiky.md 07-2026-11-12
+           python3 build_vypisky.py --cviceni /cesta/k/cviko-2026-11-19-gramatiky.md 07-2026-11-12   (-> vypisky/cviceni.json)
 Výstup: {"banks": {"<stem banky>": {title, date, source, sections: [{level, heading, id, body}]}}}.
 Soubor ve vaultu se jen čte. LaTeX se převádí převodníkem z build_glosar.py (režim NOTES), neznámý příkaz nebo
 nepodporovaná markdown konstrukce skript zastaví, ať se nic tiše nepokazí.
@@ -19,6 +20,7 @@ import build_glosar as bg
 
 bg.NOTES = True
 OUT = Path(__file__).parent / "vypisky" / "vypisky.json"
+CVICENI = Path(__file__).parent / "vypisky" / "cviceni.json"  # {"seminars": {"<jméno souboru>": {bank, title, date, source, sections}}}
 PREFIX = re.compile(r"^((?:>\s?)*)(.*)$")
 
 
@@ -55,10 +57,14 @@ def convert(lines):
             continue
         if "$$" in c:
             fail("$$ uprostřed řádku", raw)
-        if "![[" in c or ".excalidraw]]" in c:  # plátno s rukopisem: ve vaultu, ve webu nemá smysl
-            if ".excalidraw]]" in c and "![[" not in c:
-                continue
+        e = re.fullmatch(r"!\[\[([^\]|#]+)\.excalidraw\]\]", s)
+        if e:  # kresba z tabule je jen v Obsidianu: ve webu ji nahradí viditelná poznámka
+            out.append(f"{pre}*Řešení z tabule je kresba v Obsidianu ({e.group(1)}).*")
+            continue
+        if "![[" in c:
             fail("vložený soubor ![[…]]", raw)
+        if ".excalidraw]]" in c:  # odkaz na plátno s rukopisem: ve vaultu, ve webu nemá smysl
+            continue
         if s == "<small>":
             out.append("{small}"); continue
         if s == "</small>":
@@ -69,7 +75,7 @@ def convert(lines):
             fail("vnořený seznam není podporovaný", raw)
         if re.search(r"\]\([^)]*\)|^#{4,} ", c):
             fail("odkaz [text](url) nebo nadpis 4. úrovně není podporovaný", raw)
-        c = bg.clean(c)
+        c = bg.clean(c.replace(" nad ", "\u00a0nad "))  # „(číslo nad šipkou)“ nesmí `fmt` vykreslit jako kombinační číslo
         if "$" in c or "[[" in c or re.search(r"\\[A-Za-z]", c):
             fail("nepřevedený LaTeX nebo odkaz", raw)
         c = re.sub(r"(?<=\d)/(?=\d)", "∕", c)  # „č. 7/2026“ nesmí `fmt` vykreslit jako zlomek
@@ -89,7 +95,7 @@ def slug(t, used):
     return s
 
 
-def main(src, stem):
+def main(src, stem, cviceni=False):
     text = Path(src).read_text(encoding="utf-8")
     m = re.match(r"---\n(.*?)\n---\n", text, re.S)
     if not m:
@@ -116,12 +122,18 @@ def main(src, stem):
     for s in secs:
         s["body"] = re.sub(r"\n{3,}", "\n\n", "\n".join(s["body"]).strip())
     vault = str(Path(src).resolve()).split("/Vault/", 1)[-1]
-    data = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {"banks": {}}
-    data["banks"][stem] = {"title": title, "date": f"{int(d)}. {int(mo)}. {y}", "source": vault, "sections": secs}
-    OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"{stem}: {len(secs)} sekcí -> {OUT}")
+    out, key = (CVICENI, "seminars") if cviceni else (OUT, "banks")
+    data = json.loads(out.read_text(encoding="utf-8")) if out.exists() else {key: {}}
+    rec = {"title": title, "date": f"{int(d)}. {int(mo)}. {y}", "source": vault, "sections": secs}
+    if cviceni:  # klíč = jméno souboru, k jedné bance může být víc cvičení
+        data[key][Path(src).stem] = {"bank": stem, **rec}
+    else:
+        data[key][stem] = rec
+    out.parent.mkdir(exist_ok=True)
+    out.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"{Path(src).stem if cviceni else stem}: {len(secs)} sekcí -> {out}")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    a = sys.argv[1:]
+    main(a[1], a[2], True) if a and a[0] == "--cviceni" else main(a[0], a[1])

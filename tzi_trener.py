@@ -24,6 +24,7 @@ BASE = Path(__file__).resolve().parent
 BANKS = BASE / "banky"
 GLOSAR = BASE / "glosar" / "glosar.json"  # hesla podle přednášky, generuje build_glosar.py
 VYPISKY = BASE / "vypisky" / "vypisky.json"  # výpisky z přednášek, generuje build_vypisky.py
+CVICENI = BASE / "vypisky" / "cviceni.json"  # příklady ze cvičení, generuje build_vypisky.py --cviceni
 RECALL_DIR = BANKS / "doplnovacka"  # otázky typu recall; běžné režimy čtou jen banky/*.json, tyhle nevidí
 PROGRESS_FILE = BASE / "progress.json"
 PORT = 5051
@@ -84,6 +85,20 @@ def load_vypisky(source):
     return {**d, "label": source_label(banks[source]), "glosar": source in banks}
 
 
+def load_cviceni(cid):
+    """Příklady ze cvičení; bez id seznam [{id, bank, title, date}] podle data, s id obsah (KeyError -> 404)."""
+    data = json.loads(CVICENI.read_text(encoding="utf-8"))["seminars"] if CVICENI.exists() else {}
+    if not cid:
+        def key(i):  # datum „19. 11. 2026“ -> (rok, měsíc, den)
+            d, m, y = data[i]["date"].replace(" ", "").rstrip(".").split(".")
+            return int(y), int(m), int(d)
+        return {"seminars": [{"id": i, "bank": data[i]["bank"], "title": data[i]["title"], "date": data[i]["date"]}
+                             for i in sorted(data, key=key)]}
+    d = dict(data[cid])
+    banks = load_banks()
+    return {**d, "id": cid, "label": source_label(banks[d["bank"]]), "glosar": d["bank"] in banks}
+
+
 def load_recall():
     """Otázky pro režim Doplňovačka ze všech bank v banky/doplnovacka/."""
     return [q for p in sorted(RECALL_DIR.glob("*.json"))
@@ -107,6 +122,7 @@ AUTOMAT_FILES = {"/automat": ("text/html; charset=utf-8", "automat.html"),
                 "/glosar": ("text/html; charset=utf-8", "glosar.html"),
                 "/vypisky": ("text/html; charset=utf-8", "vypisky.html"),
                 "/search.js": ("text/javascript; charset=utf-8", "search.js"),
+                "/cviceni": ("text/html; charset=utf-8", "vypisky.html"),  # stejná stránka, režim podle adresy
                 "/md.js": ("text/javascript; charset=utf-8", "md.js"),
                 "/fmt.js": ("text/javascript; charset=utf-8", "fmt.js"),
                 "/automat-core.js": ("text/javascript; charset=utf-8", "automat-core.js"),
@@ -208,6 +224,11 @@ class Handler(BaseHTTPRequestHandler):
         if u.path == "/api/vypisky":
             try:
                 return self._json(load_vypisky(source))
+            except (KeyError, OSError, ValueError) as e:
+                return self._json({"error": str(e)}, 404)
+        if u.path == "/api/cviceni":
+            try:
+                return self._json(load_cviceni(q.get("id", [""])[0]))
             except (KeyError, OSError, ValueError) as e:
                 return self._json({"error": str(e)}, 404)
         if u.path == "/api/recall":

@@ -28,7 +28,7 @@ SYM = {
     "left": "", "right": "",
     # příkazy z výpisků (build_vypisky.py); v glosáři se nevyskytly, jeho výstup nemění
     "iff": "⇔", "implies": "⇒", "leftrightarrow": "↔", "mid": "∣", "varepsilon": "ε", "epsilon": "ε",
-    "Pi": "Π", "square": "□", "!": "", "alpha": "α", "beta": "β", "gamma": "γ", "ne": "≠",
+    "Pi": "Π", "square": "□", "!": "", "supseteq": "⊇", "alpha": "α", "beta": "β", "gamma": "γ", "ne": "≠",
 }
 # jen pro výpisky (nastaví build_vypisky.py): ^x a _x bez závorek obalit do (x), ^* na horní index, \mathcal na psací písmena
 NOTES = False
