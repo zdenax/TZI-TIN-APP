@@ -467,6 +467,66 @@
     "term": "Příklad: gramatika k automatu q_0–q_2",
     "body": "Automat: Q = {q_0, q_1, q_2}, Σ = {0, 1}, F = {q_0} (↔ q_0); z každého stavu vede 0 do q_0, z q_0 vede 1 do q_1 a z q_1 i q_2 vede 1 do q_2.\n**Gramatika:** Π = Q, S = q_0, pravidla (1) q_0 → 0q_0, (2) q_0 → 1q_1, (3) q_0 → e, (4) q_1 → 0q_0, (5) q_1 → 1q_2, (6) q_2 → 0q_0, (7) q_2 → 1q_2: 6 přechodů + 1 koncový stav = 7 pravidel. Zkráceně q_0 → 0q_0 | 1q_1 | e.\n**Slovo 1100:** automat q_0, q_1, q_2, q_0, q_0 ∈ F; gramatika q_0 ⇒ 1q_1 ⇒ 11q_2 ⇒ 110q_0 ⇒ 1100q_0 ⇒ 1100 (pravidla 2, 5, 6, 1, 3), 5 kroků. Slovo 10: pravidla 2, 4, 3.\n**Jazyk:** {e} ∪ slova končící 0. Slovo 1101 nepatří (automat skončí v q_1, pravidlo q_1 → e není); slov délky 3 jsou 4 (000, 010, 100, 110).\n*Dveře z 5. 11.:* q_0 → 0q_0 | 1q_1, q_1 → 0q_0 | 1q_1 | e; q_0 ⇒ 1q_1 ⇒ 10q_0 ⇒ 101q_1 ⇒ 101.\n*Časté omyly:*\n- ❌ „Odvození 1100 má 4 kroky, jako je znaků.“ ✅ 5: čtyři přechody a q_0 → e.\n- ❌ „Gramatika má 6 pravidel, jen přechody.“ ✅ 7: 6 přechodů a q_0 → e za koncový q_0.\n- ❌ „1101 patří do jazyka, cestou prošlo q_0.“ ✅ Skončí v q_1 a q_1 → e v P není.\n*Zdroj: přednáška 12. 11. (rukopis: automat, pravidla, odvození 1100; Chytil [12, obr. 32, Př. 3.3.2, s. 130–131]); jazyk, další slova a dveře **Doplněno z Claude** (ověřeno skriptem: L(G) = L(A) pro všechna slova do délky 10). Příklad a časté omyly **Doplněno z Claude** (omyly podle špatných možností otázek 7. přednášky; ověřeno skriptem).*"
    }
+  ],
+  "09-2026-11-26": [
+   {
+    "term": "Věta 4.5.1: ZA k bezkontextovému jazyku",
+    "body": "Ke každému **bezkontextovému jazyku** L existuje **nedeterministický zásobníkový automat** ℳ (s **jediným stavem**) takový, že **L = N(ℳ)**, tj. rozpoznává L **prázdným zásobníkem**.\nZkráceně z tabule: ∀L₂ ∃ℳ: L₂ = N(ℳ) (L₂ = jazyk typu 2). Opačný směr (ze ZA gramatika) je Věta 4.5.5.\n*Příklad:* gramatika A → aAc | B, B → bBc | e generuje aⁿbᵐcⁿ⁺ᵐ; automat podle věty ho rozpoznává prázdným zásobníkem.\n*Časté omyly:*\n- ❌ „Automat je deterministický a přijímá koncovým stavem.“ ✅ Nedeterministický, přijímá prázdným zásobníkem, L = N(ℳ).\n- ❌ „Stačí konečný automat.“ ✅ Bezkontextové jazyky obecně potřebují zásobník (např. aⁿbⁿ).\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, Věta 4.5.1, s. 172 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Konstrukce ZA z gramatiky (Q = {q}, Γ = Π ∪ Σ, Z₀ = S, F = ∅)",
+    "body": "Z bezkontextové gramatiky 𝒢 = (Π, Σ, S, P) se sestrojí **ℳ = ({q}, Σ, Π ∪ Σ, δ, q, S, ∅)**:\n- **Q = {q}**, jediný stav; informaci nese zásobník.\n- **Γ = Π ∪ Σ**, do zásobníku se píšou neterminály i terminály.\n- **Z₀ = S**, výpočet začíná s počátečním symbolem gramatiky v zásobníku.\n- **F = ∅**, přijímá se prázdným zásobníkem, F je nepodstatná.\n*Příklad:* pro Π = {A, B}, Σ = {a, b, c}, S = A je ℳ = ({q}, {a, b, c}, {A, B, a, b, c}, δ, q, A, ∅).\n*Časté omyly:*\n- ❌ „Γ = Π, terminály se do zásobníku nepíšou.“ ✅ Γ = Π ∪ Σ, pravé strany pravidel obsahují obojí.\n- ❌ „F = ∅ znamená, že automat nic nepřijme.“ ✅ Přijímá prázdným zásobníkem, F se nepoužívá.\n- ❌ „Stavů je tolik, kolik je neterminálů.“ ✅ Stav je jediný, q.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, Věta 4.5.1, s. 172 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Instrukce typu 1: δ(q, e, D) = {(q, η); D → η ∈ P}",
+    "body": "Pro každý neterminál D ∈ Π: je-li D na **vrcholu** zásobníku, automat ho **bez čtení vstupu** (e-krok) nahradí **pravou stranou η některého pravidla D → η**. Jedno pravidlo = jedna dvojice v δ(q, e, D).\nPravidel pro D může být víc, proto je automat **nedeterministický**.\n*Příklad:* z A → aAc | B vznikne δ(q, e, A) = {(q, aAc), (q, B)}; (q, bbcc, A) ⊢ (q, bbcc, B) podle pravidla 2.\n*Časté omyly:*\n- ❌ „Přečte D ze vstupu.“ ✅ D je neterminál, na vstupu nikdy není; krok nečte vstup.\n- ❌ „D se přidá pod vrchol.“ ✅ D se nahradí řetězcem η, první symbol η je nový vrchol.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, Věta 4.5.1 a důkaz, s. 172 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Instrukce typu 2: δ(q, a, a) = {(q, e)}",
+    "body": "Pro každý terminál a ∈ Σ: je-li na **vrcholu** terminál a a na vstupu také **a**, automat ho **přečte a ze zásobníku odebere**. Je to „odškrtnutí“ už vygenerovaného terminálu proti vstupu.\nKdyž se vrchol se vstupem neshoduje, tahle větev výpočtu končí neúspěchem.\n*Příklad:* (q, bcc, bBcc) ⊢ (q, cc, Bcc) instrukcí δ(q, b, b) = {(q, e)}.\n*Časté omyly:*\n- ❌ „Terminál a se nahradí pravou stranou pravidla.“ ✅ To dělá typ 1 s neterminálem; terminál se jen odebere.\n- ❌ „Instrukce nečte vstup.“ ✅ Čte právě symbol a.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, Věta 4.5.1 a důkaz, s. 172 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Výpočet ZA a levá derivace",
+    "body": "Výpočet automatu z Věty 4.5.1 **sleduje levou derivaci** podle gramatiky: krok typu 1 = přepis **nejlevějšího** neterminálu, krok typu 2 = přečtení terminálu. Přečtená část vstupu + obsah zásobníku je vždy větná forma derivace.\n*Příklad:* A ⇒ B ⇒ bBc ⇒ bbBcc ⇒ bbcc (pravidla 2, 3, 3, 4); výpočet (q, bbcc, A) ⊢ (q, bbcc, B) ⊢ (q, bbcc, bBc) ⊢ (q, bcc, Bc) ⊢ (q, bcc, bBcc) ⊢ (q, cc, Bcc) ⊢ (q, cc, cc) ⊢ (q, c, c) ⊢ (q, e, e), instrukce 2, 3, 6, 3, 6, 4, 7, 7. Po 5. kroku: přečteno bb, zásobník Bcc → bbBcc.\n*Časté omyly:*\n- ❌ „Odpovídá pravé derivaci.“ ✅ Vrchol zásobníku je nejlevější nepřečtený symbol, takže levé.\n- ❌ „Poslední dva kroky jsou instrukce 4.“ ✅ Na vrcholu je c, takže instrukce 7 (δ(q, c, c)); na tabuli bylo omylem 4.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, důkaz Věty 4.5.1, s. 172–173 (ověřeno podle skenu); výpočet ověřen simulací. Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   }
+  ],
+  "09t-turinguv-stroj": [
+   {
+    "term": "Turingův stroj ℳ = (Q, Σ, δ, q₀, F)",
+    "body": "Model: **konečná řídicí jednotka** + **nekonečná páska** rozdělená na políčka; hlava čte vždy **jedno** políčko, může ho **přepsat** a posunout se **doleva i doprava**.\nPětice: **Q** konečná neprázdná množina stavů, **Σ** konečná neprázdná množina symbolů stroje, **δ** přechodová funkce, **q₀ ∈ Q** počáteční stav, **F ⊆ Q** množina koncových stavů.\n*Příklad:* stroj z přednášky: Q = {q₀, q₁, q_f}, F = {q_f}, δ(q₀, a) = (q₁, b, +1), δ(q₁, b) = (q_f, b, −1).\n*Časté omyly:*\n- ❌ „Má vstupní pásku jen pro čtení a zásobník.“ ✅ To je zásobníkový automat; Turingův stroj má jednu pásku, kterou čte i přepisuje.\n- ❌ „F je prázdný symbol.“ ✅ F je množina koncových stavů; prázdné políčko je Λ.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, čl. 6.1, obr. 45 a Def. 6.1.1, s. 260–261 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Přechodová funkce δ: (Q − F) × Σ → Q × Σ × {−1, +1}",
+    "body": "**δ(q, x) = (q′, x′, d)**, d ∈ {−1, +1}: stroj ve stavu q na políčku se symbolem x **přepíše x na x′**, **přejde do q′** a **posune se o d** (+1 doprava, −1 doleva). δ je **parciální** funkce.\nPolíčko pod hlavou se **vždy přepisuje**; když má symbol zůstat, x′ = x.\n*Příklad:* δ(q₀, a) = (q₁, b, +1): a → b, stav q₁, hlava doprava.\n*Časté omyly:*\n- ❌ „Nejdřív se posune, pak čte.“ ✅ Přepíše čtené políčko, změní stav a potom se posune.\n- ❌ „+1 je doleva.“ ✅ +1 doprava, −1 doleva.\n- ❌ „Když symbol nemění, nepřepisuje.“ ✅ Přepíše ho stejným symbolem, x′ = x.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, Def. 6.1.1, s. 261 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Proč Q − F v definici δ",
+    "body": "δ je definována jen na **(Q − F) × Σ**, tedy pro koncové stavy **žádný přechod neexistuje**. Když stroj vstoupí do koncového stavu, **výpočet skončí** a slovo je přijato.\nJe to potřeba, protože stroj se pohybuje oběma směry a páska nemá konec; výpočet sám od sebe skončit nemusí. Koncový stav je signál „hotovo, přijato“.\n*Příklad:* v q_f bbb už se nic neděje, δ(q_f, b) není definováno.\n*Časté omyly:*\n- ❌ „Aby byla δ totální.“ ✅ Naopak, δ je parciální; Q − F zajistí zastavení v koncovém stavu.\n- ❌ „V koncovém stavu je páska prázdná.“ ✅ Páska může obsahovat cokoli, jen už se nepokračuje.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, s. 268, úvod čl. 6.2 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Prázdné políčko Λ",
+    "body": "**Λ** označuje **prázdné políčko** pásky. Chytil místo Λ používá symbol **b ∈ Σ** (abeceda každého Turingova stroje ho obsahuje).\n*Příklad:* páska Λ Λ x₁ x₂ … xₙ Λ Λ: vstupní slovo, okolo prázdno.\n*Časté omyly:*\n- ❌ „Λ je prázdné slovo e.“ ✅ Λ je symbol na políčku; e je slovo délky nula.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, s. 261 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Konfigurace uqv",
+    "body": "Konfigurace Turingova stroje je každé slovo **uqv**, kde **u, v ∈ Σ*** a **q ∈ Q**. Znamená: na pásce je napsáno **uv**, ostatní políčka jsou prázdná, stroj je ve stavu **q** a hlava čte **první (zleva) symbol slova v**.\n*Příklad:* u = u₁u₂u₃, v = v₁v₂v₃v₄ → u₁u₂u₃ q v₁v₂v₃v₄, hlava na v₁.\n*Časté omyly:*\n- ❌ „Hlava je na posledním symbolu u.“ ✅ Na prvním symbolu v.\n- ❌ „Slovo u už bylo smazáno.“ ✅ Na pásce je celé uv.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, Def. 6.1.2, s. 261 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Bezprostředně následující konfigurace ⊢ℳ",
+    "body": "Pro K = **uyqxv** (u, v ∈ Σ*, x, y ∈ Σ, q ∈ Q; x pod hlavou, y vlevo od ní):\n- δ(q, x) = (q′, x′, **+1**) → **uyx′q′v** (hlava doprava na první symbol v),\n- δ(q, x) = (q′, x′, **−1**) → **uq′yx′v** (hlava doleva na y).\nPíše se K₁ ⊢ℳ K₂. Správný pojem: „konfigurace bezprostředně následující po konfiguraci K“.\n*Příklad:* ab q cd, δ(q, c) = (p, z, +1) → abzpd; při −1 → apbzd.\n*Časté omyly:*\n- ❌ „Při +1 je výsledek uq′yx′v.“ ✅ To je −1; při +1 je stav za x′: uyx′q′v.\n- ❌ „y je symbol pod hlavou.“ ✅ Pod hlavou je x, y je vlevo a je potřeba pro posun −1.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, Def. 6.1.4, s. 261–262 (ověřeno podle skenu); příklad ověřen výpočtem. Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Relace ⊢*ℳ (výpočet)",
+    "body": "**E ⊢*ℳ E′** ⇔ existují E₁, E₂, …, Eₘ, E₁ = E, Eₘ = E′ a Eᵢ ⊢ Eᵢ₊₁: z E se dá dojít do E′ konečným počtem kroků (i nula). Je to reflexivní a tranzitivní uzávěr relace ⊢ℳ.\n*Příklad:* q₀abb ⊢* q_f bbb přes bq₁bb.\n*Časté omyly:*\n- ❌ „⊢* je právě jeden krok.“ ✅ Jeden krok je ⊢, ⊢* je libovolně mnoho kroků.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, s. 262 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Počáteční a koncová konfigurace",
+    "body": "**Počáteční:** q₀w, kde w ∈ (Σ − {Λ})*: stav q₀, hlava na prvním symbolu vstupu.\n**Koncová:** uqv, kde u, v ∈ Σ* a **q ∈ F**.\n*Příklad:* q₀abb je počáteční, q_f bbb koncová (q_f ∈ F).\n*Časté omyly:*\n- ❌ „Počáteční je wq₀.“ ✅ Stav je před slovem, hlava na jeho začátku: q₀w.\n- ❌ „Koncová má prázdnou pásku.“ ✅ Rozhoduje jen q ∈ F, páska může obsahovat cokoli.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, s. 262 (ověřeno podle skenu). Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   },
+   {
+    "term": "Přijetí slova a jazyk L(ℳ)",
+    "body": "Turingův stroj **přijímá** slovo w, jestliže se z **počáteční** konfigurace dostane do nějaké **koncové**: q₀w ⊢*ℳ uqv, q ∈ F.\n**L(ℳ) = {w ∈ (Σ − {Λ})*; q₀w ⊢*ℳ uqv, q ∈ F}**.\n*Příklad:* stroj z přednášky přijme abb: q₀abb ⊢ bq₁bb ⊢ q_f bbb.\n*Časté omyly:*\n- ❌ „Přijme, když přečte celé slovo.“ ✅ Rozhoduje dosažení stavu z F, ne přečtení slova.\n- ❌ „Přijme, když se zastaví v libovolném stavu.“ ✅ Zastavení mimo F slovo nepřijímá.\n*Zdroj: přednáška 26. 11. 2026 (rukopis a fotky tabule); Chytil, Automaty a gramatiky, s. 262 (ověřeno podle skenu); výpočet ověřen simulací. Doplněno z Claude (Claude Opus 5.5), časté omyly podle špatných možností otázek.*"
+   }
   ]
  }
 }

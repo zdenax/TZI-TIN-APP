@@ -29,7 +29,7 @@ SYM = {
     # příkazy z výpisků (build_vypisky.py); v glosáři se nevyskytly, jeho výstup nemění
     "iff": "⇔", "implies": "⇒", "leftrightarrow": "↔", "mid": "∣", "varepsilon": "ε", "epsilon": "ε",
     "Pi": "Π", "square": "□", "!": "", "supseteq": "⊇", "alpha": "α", "beta": "β", "gamma": "γ", "ne": "≠",
-    "Gamma": "Γ", "eta": "η", "nu": "ν", "vdash": "⊢",
+    "Gamma": "Γ", "eta": "η", "nu": "ν", "vdash": "⊢", "exists": "∃", "forall": "∀", "Lambda": "Λ", "pm": "±",
 }
 # jen pro výpisky (nastaví build_vypisky.py): ^x a _x bez závorek obalit do (x), ^* na horní index, \mathcal na psací písmena
 NOTES = False
@@ -75,7 +75,7 @@ def tex(s):
             elif name == "mathcal" and NOTES:
                 a, i = group(s, i)
                 out += "".join(CAL.get(ch, ch) for ch in a)
-            elif name in ("mathrm", "mathcal", "text"):
+            elif name in ("mathrm", "mathcal", "text") or (name == "boxed" and NOTES):  # rámeček se nevykresluje
                 a, i = group(s, i)
                 out += tex(a)
             elif name == "underline" and NOTES:
