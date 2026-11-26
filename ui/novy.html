@@ -254,7 +254,8 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
   .modes.three .mode .desc { display: none; }
   .filter { display: grid; grid-template-columns: 1fr 1fr; }
   .filter button { padding: 0 6px; }
-  .topnav { width: 100%; position: relative; }
+  .topnav { width: 100%; position: relative; display: grid; grid-template-columns: 1fr 1fr; }
+  .topnav .chip { width: 100%; justify-content: center; }
   .vyp { position: static; }
   .vyp-pop { left: 0; right: 0; width: auto; }
   .top p { display: none; }
@@ -490,7 +491,8 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
       <div class="brand"><span class="mark" aria-hidden="true">10</span>
         <div><h1>TZI Trenér</h1><p>Opakování přednášek z Teoretické informatiky, KI/TIN</p></div></div>
       <nav class="topnav" aria-label="Další nástroje"><a class="chip" href="/automat">Návrhář automatů</a><a class="chip" href="/glosar?source=_all">Glosář</a><div class="vyp"><button type="button" class="chip" id="vyp-btn" aria-expanded="false" aria-controls="vyp-pop">Výpisky</button>
-        <div class="vyp-pop" id="vyp-pop" role="region" aria-label="Výpisky" hidden><div id="vyp-notes-box" hidden><h2>Výpisky z přednášek</h2><ul id="vyp-notes"></ul></div><div id="vyp-cviko-box" hidden><h2>Příklady ze cvičení</h2><ul id="vyp-cviko"></ul></div><h2>Glosáře</h2><ul id="vyp-list"></ul></div></div></nav>
+        <div class="vyp-pop" id="vyp-pop" role="region" aria-label="Výpisky" hidden><div id="vyp-notes-box" hidden><h2>Výpisky z přednášek</h2><ul id="vyp-notes"></ul></div><h2>Glosáře</h2><ul id="vyp-list"></ul></div></div><div class="vyp" id="cv-wrap" hidden><button type="button" class="chip" id="cv-btn" aria-expanded="false" aria-controls="cv-pop">Příklady</button>
+        <div class="vyp-pop" id="cv-pop" role="region" aria-label="Příklady ze cvičení" hidden><h2>Příklady ze cvičení</h2><ul id="vyp-cviko"></ul></div></div></nav>
     </header>
 
     <div class="layout">
@@ -714,7 +716,7 @@ addEventListener('resize', fitLectures);
 let notes = [], cviceni = [];
 const cvLast = id => cviceni.filter(c => c.bank === id).pop(); // nejnovější cvičení k přednášce
 function renderNotes() {
-  $('vyp-cviko-box').hidden = !cviceni.length;
+  $('cv-wrap').hidden = !cviceni.length;
   $('vyp-cviko').innerHTML = cviceni.map(c => {
     const src = sources.find(s => s.id === c.bank), n = src ? parseSource(src).n : '', t = c.title.replace(/^[^:]*: /, '').replace(/^./, x => x.toUpperCase());
     const label = `${c.date.replace(/ \d{4}$/, '')} ${t}`;
@@ -730,8 +732,9 @@ function renderNotes() {
     return `<li><a href="/glosar?source=${encodeURIComponent(s.id)}" title="${esc(p.title)}"><span class="n">${esc(p.n)}</span><span>${esc(p.title)}</span></a></li>`;
   }).join('');
 }
-(() => {
-  const btn = $('vyp-btn'), pop = $('vyp-pop');
+// rozbalovací nabídky v hlavičce (Výpisky, Příklady); klik na druhé tlačítko je „mimo“, takže první se zavře
+for (const [b, p] of [['vyp-btn', 'vyp-pop'], ['cv-btn', 'cv-pop']]) {
+  const btn = $(b), pop = $(p);
   const set = open => { pop.hidden = !open; btn.setAttribute('aria-expanded', open); };
   const links = () => [...pop.querySelectorAll('a')];
   btn.addEventListener('click', () => { set(pop.hidden); if (!pop.hidden) links()[0]?.focus(); });
@@ -744,7 +747,7 @@ function renderNotes() {
       l[(i + (e.key === 'ArrowDown' ? 1 : -1) + l.length) % l.length]?.focus();
     }
   });
-})();
+}
 function renderLectures() {
   const top = $('lectures').scrollTop;
   _renderLectures();
