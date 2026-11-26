@@ -1,0 +1,138 @@
+{
+ "seminars": {
+  "cviko-2026-11-19-gramatiky": {
+   "bank": "07-2026-11-12",
+   "title": "Cvičení 19. 11. 2026: gramatiky (úlohy 1 a 2)",
+   "date": "19. 11. 2026",
+   "source": "Skola/Aktualni/TZI1/Cviceni/cviko-2026-11-19-gramatiky.md",
+   "sections": [
+    {
+     "level": 0,
+     "heading": "Cvičení 19. 11. 2026: gramatiky (úlohy 1 a 2)",
+     "id": "uvod",
+     "body": "> [!info] Deklarace využití AI\n> Vysvětlení a formátování výpisků provedl nástroj **Claude Opus 5.5** (Anthropic, https://claude.ai, 2026) podle zadání a řešení z cvičení. Správnost obou gramatik jsem si nechal ověřit výpočtem v pythonu (úloha 1: všechna odvození do délky slova 12, úloha 2: do délky 6). Uvedeno v souladu se Směrnicí rektora UJEP č. 7∕2026 (pro výpisky povinné není, uvádím dobrovolně).\n\n> [!warning] 🤖 Doplněno z Claude (AI), 19. 11. 2026\n> - **Ze cvičení:** zadání a řešení obou úloh (úloha 1: gramatika, tři přímé přepisy, odvození S ⇒^(∗) 000111; úloha 2: gramatika, odvození slov cab a abcabc a zadání odvodit S ⇒^(∗) caabbcbac) a organizační poznámky.\n> - **Odvození caabbcbac:** pořadí 13 kroků je Chytilovo (Př. 3.1.6 bod 2, s. 120–121, **ověřeno podle skenu**), čísla pravidel přesunutá nad šipku; každý krok ověřen výpočtem. Tabulka a vysvětlení fází jsou moje.\n> - **Z knih, úloha 2:** gramatika je Chytilův Příklad 3.1.6 bod 2 (s. 120–121, **ověřeno podle skenu**), i s důkazem, že generuje právě slova se stejným počtem a, b, c. Zadání je Barilla, kap. 4, ÚKOL 3 (s. 18, **ověřeno z textové vrstvy PDF**). Typ gramatiky podle Chytila, Def. 3.2.1 (s. 124–125, **ověřeno podle skenu**).\n> - **Moje (Claude), úloha 2:** vysvětlení, tabulka přímých přepisů, rozepsaný důkaz, časté chyby, sekce o typu gramatiky. Obě odvození ověřena krok po kroku výpočtem; gramatika do délky 6 generuje přesně 96 slov se stejným počtem a, b, c (6 délky 3 a 90 délky 6), žádné navíc a žádné nechybí.\n> - **Z knih, úloha 1:** stejná gramatika je u Chytila jako Příklad 3.1.6 bod 1 (s. 120, **ověřeno podle skenu**). Chytil u ní jen píše „okamžitě je vidět, že L(𝒢) = {0^(n) 1^(n); n ≥ 1}“, žádné slovo neodvozuje. Zadání odpovídá Barillovi, kap. 4, ÚKOLY 1 a 2 (s. 18, **ověřeno z textové vrstvy PDF**). Barilla v úkolu 2 píše „{0^(n)1^(n); i ≥ 1}“ (překlep, má být n). Formulace „rozpoznejte slovo 000111“ je u Barilly až v kap. 8 u zásobníkových automatů (s. 30).\n> - **Moje (Claude), úloha 1:** celé vysvětlení níže, tabulka přímých přepisů, důkaz L(G) = {0^(n)1^(n); n ≥ 1}, kratší příklady, časté chyby. Gramatika ověřena výpočtem: všechna terminální slova odvoditelná z S do délky 12 jsou přesně 01, 0011, …, 0^(6) 1^(6).\n\nNa cvičení byly dvě úlohy: **úloha 1** gramatika pro {0^(n)1^(n); n ≥ 1} a odvození slova 000111, **úloha 2** gramatika pro slova se stejným počtem a, b, c. Na konci je společná sekce o tom, jakého typu (podle Chomského) obě gramatiky jsou."
+    },
+    {
+     "level": 2,
+     "heading": "Úloha 1: gramatika pro {0^(n) 1^(n); n ≥ 1}",
+     "id": "uloha-1-gramatika-pro-0-n-1-n-n-1",
+     "body": ""
+    },
+    {
+     "level": 3,
+     "heading": "Zadání",
+     "id": "zadani",
+     "body": "Sestrojte gramatiku G = (Π, Σ, S, P), která generuje jazyk\n\n@@ L(G) = {0^(n) 1^(n); n ≥ 1},\n\na slovo 000111 vygenerujte touto (generativní) gramatikou a odvoďte pomocí přímých přepisů.\n\nŘešení ze cvičení (plátno; číslo pravidla je tam psané v závorce za šipkou, ⇒(1), na přednášce nad šipkou, ⇒^(1)):\n\n*Řešení z tabule je kresba v Obsidianu (cviko-2026-11-19-gramatiky-reseni-5).*"
+    },
+    {
+     "level": 3,
+     "heading": "Jak číst zadání",
+     "id": "jak-cist-zadani",
+     "body": "- 0^(n) 1^(n) znamená n nul a za nimi n jedniček: n = 1: 01, n = 2: 0011, n = 3: 000111, …\n- n ≥ 1: aspoň jedna nula a jedna jednička, **prázdné slovo e v jazyce není**.\n- „Sestrojte gramatiku, která **generuje** / rozpoznává jazyk“: hledáme generativní gramatiku s L(G) = L. Gramatika slova **vytváří** (odvozuje z S); „rozpoznávat“ je slovo z automatů, u gramatiky jde o totéž: slovo patří do jazyka, **právě když** ho z S odvodíme.\n- „Odvoďte pomocí přímých přepisů“: napsat řetěz S ⇒ … ⇒ 000111, u každého kroku které pravidlo a na které místo.\n\nPřipomenutí z 2026-11-12-gramatiky:\n\n- **Generativní gramatika** G = (Π, Σ, S, P): Π neterminály, Σ terminály, Π ∩ Σ = ∅, S ∈ Π počáteční symbol, P pravidla α → β s aspoň jedním neterminálem v α [Chytil, Def. 3.1.5, s. 119].\n- **Jazyk gramatiky:** L(G) = { w ∈ Σ^(∗); S ⇒^(∗) w }, tedy slova **jen z terminálů**, která z S odvodíme.\n- **Přímý přepis:** u ⇒ z ⇔ ∃ v, w, x, y ∈ V^(∗): u = v x w, z = v y w, x → y ∈ P [Chytil, Def. 3.1.2, s. 118], kde V = Π ∪ Σ."
+    },
+    {
+     "level": 3,
+     "heading": "Nápad řešení",
+     "id": "napad-reseni",
+     "body": "Slovo 0^(n) 1^(n) je „symetrické“: kolik nul vlevo, tolik jedniček vpravo. Budujeme ho **od středu ven**:\n\n- Neterminál S stojí vždy **uprostřed** mezi nulami a jedničkami.\n- **Pravidlo 1** S → 0S1 přidá najednou **jednu 0 vlevo a jednu 1 vpravo**. Počty proto zůstanou vždy stejné.\n- **Pravidlo 2** S → 01 odvození **ukončí**: S zmizí a doprostřed přijde poslední dvojice 01.\n\n@@ G = (Π, Σ, S, P), Π = {S}, Σ = {0, 1}, V = Π ∪ Σ = {S, 0, 1}\n\n@@ P: 1. S → 0S1, 2. S → 01\n\n**Proč nestačí jen S → 0S1:** S by se nikdy neztratilo, každé odvozené slovo by obsahovalo neterminál (0S1, 00S11, …) a L(G) by bylo prázdné. Potřebujeme pravidlo bez neterminálu vpravo.\n\n**Proč S → 01 a ne S → e:** jazyk má n ≥ 1, prázdné slovo v něm není. S pravidlem S → e bychom odvodili i S ⇒ e. Kdyby zadání bylo n ≥ 0, vzali bychom místo S → 01 pravidlo S → e (pak S ⇒ 0S1 ⇒ 01 atd.).\n\nVšechna pravidla mají tvar X → γ (vlevo jediný neterminál), gramatika je tedy **bezkontextová (typ 2)**. Regulární není (v 0S1 stojí za neterminálem terminál) a tento jazyk ani regulární gramatikou generovat nejde, protože není regulární (Chytil, 1.3.6)."
+    },
+    {
+     "level": 3,
+     "heading": "Přímé přepisy krok po kroku",
+     "id": "prime-prepisy-krok-po-kroku",
+     "body": "V každém kroku najdeme ve slově u levou stranu pravidla x (tady vždy S), rozdělíme u = v x w a x nahradíme pravou stranou y. Okolí v a w se nemění.\n\n| krok | u | pravidlo | v | x | w | y | z = v y w |\n|---|---|---|---|---|---|---|---|\n| 1 | S | 1: S → 0S1 | e | S | e | 0S1 | 0S1 |\n| 2 | 0S1 | 1: S → 0S1 | 0 | S | 1 | 0S1 | 00S11 |\n| 3 | 00S11 | 2: S → 01 | 00 | S | 11 | 01 | 000111 |\n\n(e = prázdné slovo; v plátně psané ε. Podtržené je místo, kde se přepisuje.)\n\n**Co se děje se slovem:**\n\n1. Začínáme slovem S. Celé slovo je levá strana pravidla 1, okolí je prázdné. Dostaneme 0S1: jedna nula, jedna jednička, S uprostřed.\n2. S je mezi 0 a 1. Pravidlo 1 ho nahradí 0S1, takže přibude další 0 vlevo od S a další 1 vpravo: 00S11.\n3. Už máme dvě nuly a dvě jedničky, chceme tři. Pravidlo 2 nahradí S dvojicí 01 a neterminál zmizí: 000111.\n\n**Odvození** (číslo nad šipkou = číslo pravidla):\n\n@@ S ⇒^(1) 0S1 ⇒^(1) 00S11 ⇒^(2) 000111\n\nTedy S ⇒^(∗) 000111, a protože 000111 ∈ Σ^(∗) (jen terminály), je 000111 ∈ L(G).\n\nJe to odvození **délky 4** ve smyslu Chytila (4 slova S, 0S1, 00S11, 000111, tedy 3 kroky; Chytil počítá u = u_(1), viz 2026-11-12-gramatiky). Je minimální (žádné slovo se neopakuje) a je jediné: v každém slově je jen jedno S a pro n = 3 musí být pravidlo 1 použito dvakrát a pravidlo 2 jednou, a to na konci."
+    },
+    {
+     "level": 3,
+     "heading": "Kratší příklady",
+     "id": "kratsi-priklady",
+     "body": "- n = 1: S ⇒^(2) 01.\n- n = 2: S ⇒^(1) 0S1 ⇒^(2) 0011.\n- n = 4: S ⇒^(1) 0S1 ⇒^(1) 00S11 ⇒^(1) 000S111 ⇒^(2) 00001111.\n\nObecně: pravidlo 1 použijeme (n-1)krát, pravidlo 2 jednou na konci."
+    },
+    {
+     "level": 3,
+     "heading": "Důkaz, že L(G) = {0^(n) 1^(n); n ≥ 1}",
+     "id": "dukaz-ze-l-g-0-n-1-n-n-1",
+     "body": "**Pomocné tvrzení:** po k použitích pravidla 1 (a žádném pravidla 2) je odvozené slovo 0^(k) S 1^(k).\n\n*Indukcí podle k:* pro k = 0 je to S. Platí-li pro k, je v 0^(k) S 1^(k) jediný neterminál S; pravidlo 1 z něj udělá 0^(k) 0S1 1^(k) = 0^(k+1) S 1^(k+1). □\n\n**⊆** (každé slovo z L(G) má tvar 0^(n)1^(n)): dokud ve slově je S, má podle pomocného tvrzení tvar 0^(k) S 1^(k). Slovo jen z terminálů vznikne jedině pravidlem 2 (pravidlo 1 nechává S ve slově), a to z 0^(k) S 1^(k) dá 0^(k) 01 1^(k) = 0^(k+1) 1^(k+1). Po něm už žádné S není a odvození končí. Tedy každé w ∈ L(G) je 0^(n) 1^(n) s n = k + 1 ≥ 1.\n\n**⊇** (každé 0^(n)1^(n) s n ≥ 1 odvodíme): použijeme pravidlo 1 (n-1)krát, dostaneme 0^(n-1) S 1^(n-1), a pak pravidlo 2: 0^(n-1) 01 1^(n-1) = 0^(n) 1^(n). □"
+    },
+    {
+     "level": 3,
+     "heading": "Časté chyby a „co když…“",
+     "id": "caste-chyby-a-co-kdyz",
+     "body": "- Pravidlo S → 0S1 bez ukončovacího pravidla → nevygeneruje se žádné slovo.\n- S → e místo S → 01 při n ≥ 1 → do jazyka by se dostalo prázdné slovo.\n- Pravidla S → 0S ∣ S1 ∣ 01 (nuly a jedničky přidávané zvlášť) → počty se rozejdou, vygeneruje se i 001 (S ⇒ 0S ⇒ 001), které do jazyka nepatří.\n- Počítat do L(G) slovo s neterminálem (např. 00S11) → v L(G) jsou jen slova z Σ^(∗).\n- Zapomenout u přímého přepisu napsat číslo pravidla nebo podtrhnout místo přepisu → na přednášce to vyučující chtěl (viz 2026-11-12-gramatiky).\n- *Co když je zadáno {0^(n)1^(n); n ≥ 0}?* Pravidla S → 0S1 ∣ e.\n- *Co když {0^(n) 1^(2n); n ≥ 1}?* Za každou nulu dvě jedničky: S → 0S11 ∣ 011.\n- *Jde to i zásobníkovým automatem?* Ano, jazyk je bezkontextový; automat je ve výpiscích z přednášky 2026-11-19-zasobnikove-automaty, sekce „Příklad: {0^(n) 1^(n); n ≥ 1}“ (Chytil, Pozn. 4.4.9, s. 171)."
+    },
+    {
+     "level": 2,
+     "heading": "Úloha 2: stejný počet a, b, c",
+     "id": "uloha-2-stejny-pocet-a-b-c",
+     "body": ""
+    },
+    {
+     "level": 3,
+     "heading": "Zadání",
+     "id": "zadani-2",
+     "body": "Sestrojte gramatiku, která generuje slova, ve kterých je stejný počet symbolů a, b a c; Σ = {a, b, c}. Podle této gramatiky pak odvoďte S ⇒^(∗) caabbcbac.\n\nŘešení je celé rozepsané v následujících sekcích (pravidla, přímé přepisy, odvození, důkaz)."
+    },
+    {
+     "level": 3,
+     "heading": "Jak číst zadání",
+     "id": "jak-cist-zadani-2",
+     "body": "- Slova nad {a, b, c}, v nichž je a stejně jako b a stejně jako c, **v libovolném pořadí**: abc, cab, bca, aabbcc, abcabc, caabbcbac, …\n- Označme |w|_(a) počet symbolů a ve slově w (Chytil píše w(a)). Hledáme G s\n@@ L(G) = { w ∈ {a, b, c}^(∗); |w|_(a) = |w|_(b) = |w|_(c) ≥ 1 }.\n- Chytil (s. 120) i řešení ze cvičení berou jen **neprázdná** slova (aspoň jedno a, b, c). Kdyby se mělo počítat i prázdné slovo, viz „co když“ níže."
+    },
+    {
+     "level": 3,
+     "heading": "Nápad řešení",
+     "id": "napad-reseni-2",
+     "body": "@@ G = (Π, Σ, S, P), Π = {S, B, C}, Σ = {a, b, c}\n\n| č. | pravidlo | k čemu je |\n|---|---|---|\n| 1 | S → SaBC | přidá další trojici aBC |\n| 2 | S → aBC | poslední trojice, S zmizí |\n| 3 | aB → Ba | prohodí a a B |\n| 4 | Ba → aB | prohodí zpět |\n| 5 | aC → Ca | prohodí a a C |\n| 6 | Ca → aC | prohodí zpět |\n| 7 | BC → CB | prohodí B a C |\n| 8 | CB → BC | prohodí zpět |\n| 9 | B → b | B se stane terminálem b |\n| 10 | C → c | C se stane terminálem c |\n\nTři fáze:\n\n1. **Počty.** Pravidla 1 a 2 vyrobí n trojic: (aBC)^(n). Každá trojice přidá jedno a, jedno B a jedno C, takže počty jsou od začátku stejné.\n2. **Pořadí.** Pravidla 3–8 umí prohodit libovolné dva sousední symboly z a, B, C, oběma směry. Opakovaným prohazováním sousedů (jako u bubble sortu) dostaneme **libovolné pořadí**.\n3. **Dokončení.** Pravidla 9 a 10 přepíšou B → b, C → c.\n\n**Proč B a C, a ne rovnou b a c:** v generativní gramatice musí mít každé pravidlo vlevo aspoň jeden neterminál [Chytil, Def. 3.1.5, s. 119]. Pravidlo ab → ba by tedy nebylo dovolené. Každá dvojice, kterou prohazujeme (aB, aC, BC), proto obsahuje neterminál. Druhá výhoda: jakmile se B změní na b, už se nehýbe. Proto se v odvození nejdřív přeskupuje a pak teprve převádí na terminály."
+    },
+    {
+     "level": 3,
+     "heading": "Přímé přepisy krok po kroku: slovo cab",
+     "id": "prime-prepisy-krok-po-kroku-slovo-cab",
+     "body": "| krok | u | pravidlo | v | x | w | y | z = v y w |\n|---|---|---|---|---|---|---|---|\n| 1 | S | 2: S → aBC | e | S | e | aBC | aBC |\n| 2 | aBC | 7: BC → CB | a | BC | e | CB | aCB |\n| 3 | aCB | 5: aC → Ca | e | aC | B | Ca | CaB |\n| 4 | CaB | 10: C → c | e | C | aB | c | caB |\n| 5 | caB | 9: B → b | ca | B | e | b | cab |\n\n@@ S ⇒^(2) aBC ⇒^(7) aCB ⇒^(5) CaB ⇒^(10) caB ⇒^(9) cab\n\n**Co se děje se slovem:** vyrobíme jednu trojici aBC. Chceme pořadí „c, a, b“: nejdřív prohodíme B a C (aCB), pak a a C (CaB). Teď je pořadí správné a neterminály převedeme na terminály."
+    },
+    {
+     "level": 3,
+     "heading": "Odvození slova abcabc (n = 2)",
+     "id": "odvozeni-slova-abcabc-n-2",
+     "body": "@@ S ⇒^(1) SaBC ⇒^(2) aBCaBC ⇒^(9) abCaBC ⇒^(10) abcaBC ⇒^(9) abcabC ⇒^(10) abcabc\n\nPravidlo 1 přidá trojici aBC za S, pravidlo 2 nahradí S druhou trojicí. Pořadí už je správné, takže stačí převést B, C na b, c (pravidlo 9 vždy na první B zleva, pravidlo 10 na první C). Obě odvození jsou ověřena výpočtem krok po kroku.\n\nChytil (s. 120–121) odvozuje složitější slovo caabbcbac (n = 3, 13 kroků; kroky ověřeny výpočtem). Čísla pravidel píše pod šipku, ⇒_(1), a na konci řádku šipku opakuje na začátku dalšího řádku (je to jeden krok, ne dva). Celé je rozepsané v další sekci."
+    },
+    {
+     "level": 3,
+     "heading": "Odvození slova caabbcbac",
+     "id": "odvozeni-slova-caabbcbac",
+     "body": "Zadání (z cvičení): podle gramatiky odvodit S ⇒^(∗) caabbcbac.\n\nSlovo má tři a, tři b a tři c, takže potřebujeme n = 3 trojice. Odvození (Chytil, Př. 3.1.6 bod 2, s. 120–121; číslo pravidla nad šipkou, podtržená je část, která se v dalším kroku přepíše):\n\n@@ S ⇒^(1) SaBC ⇒^(1) SaBCaBC ⇒^(2) aBCaBCaBC\n@@ ⇒^(7) aCBaBCaBC ⇒^(5) CaBaBCaBC ⇒^(10) caBaBCaBC\n@@ ⇒^(4) caaBBCaBC ⇒^(9) caabBCaBC ⇒^(9) caabbCaBC\n@@ ⇒^(10) caabbcaBC ⇒^(3) caabbcBaC ⇒^(10) caabbcBac ⇒^(9) caabbcbac\n\nTedy S ⇒^(∗) caabbcbac a caabbcbac ∈ L(G). Odvození má **13 kroků** (14 slov).\n\n| krok | u (podtržené x) | pravidlo x → y | v | w | výsledek z = v y w |\n|---|---|---|---|---|---|\n| 1 | S | 1: S → SaBC | e | e | SaBC |\n| 2 | SaBC | 1: S → SaBC | e | aBC | SaBCaBC |\n| 3 | SaBCaBC | 2: S → aBC | e | aBCaBC | aBCaBCaBC |\n| 4 | aBCaBCaBC | 7: BC → CB | a | aBCaBC | aCBaBCaBC |\n| 5 | aCBaBCaBC | 5: aC → Ca | e | BaBCaBC | CaBaBCaBC |\n| 6 | CaBaBCaBC | 10: C → c | e | aBaBCaBC | caBaBCaBC |\n| 7 | caBaBCaBC | 4: Ba → aB | ca | BCaBC | caaBBCaBC |\n| 8 | caaBBCaBC | 9: B → b | caa | BCaBC | caabBCaBC |\n| 9 | caabBCaBC | 9: B → b | caab | CaBC | caabbCaBC |\n| 10 | caabbCaBC | 10: C → c | caabb | aBC | caabbcaBC |\n| 11 | caabbcaBC | 3: aB → Ba | caabbc | C | caabbcBaC |\n| 12 | caabbcBaC | 10: C → c | caabbcBa | e | caabbcBac |\n| 13 | caabbcBac | 9: B → b | caabbc | ac | caabbcbac |\n\n> [!warning] 🤖 Doplněno z Claude (AI), 19. 11. 2026: co se v odvození děje\n> Pořadí kroků je Chytilovo (s. 120–121, **ověřeno podle skenu**), čísla pravidel jsou tu jen přesunutá nad šipku. Každý krok ověřen výpočtem: podtržená část je levá strana použitého pravidla a po nahrazení vznikne přesně další slovo.\n> - **Kroky 1–3 (pravidla 1, 2):** vznikne aBCaBCaBC, tedy tři trojice.\n> - **Kroky 4–13:** přeskupení (pravidla 3–8) a převod na terminály (pravidla 9, 10). Chytil je **střídá**: jakmile je symbol na začátku slova na svém místě, hned ho převede. Kroky 4–6 dají na začátek c (prohodí B s C, pak a s C, a C → c). Krok 7 posune druhé a před B (caaBB…), kroky 8–10 převedou B, B, C na b, b, c (caabbc…). Zbývá aBC, má být bac: krok 11 prohodí a a B (BaC) a kroky 12–13 převedou C a B.\n> - Je to v pořádku, protože převedený symbol už se pak nikdy nemusí hýbat. Šlo by to i přesně podle fází z důkazu (nejdřív všechno přeskupit, pak převést); vyšlo by to jinak, ale se stejným výsledkem."
+    },
+    {
+     "level": 3,
+     "heading": "Důkaz, že L(G) = { w; |w|_(a) = |w|_(b) = |w|_(c) ≥ 1 }",
+     "id": "dukaz-ze-l-g-w-w-a-w-b-w-c-1",
+     "body": "Podle Chytila, s. 121 (ověřeno podle skenu), rozepsané.\n\n**⊆:** v každém slově u, které se z S odvodí, platí\n\n@@ |u|_(a) = |u|_(b) + |u|_(B) = |u|_(c) + |u|_(C).\n\nNa začátku (u = S) jsou všechny počty 0. Pravidla 1 a 2 přidají jedno a, jedno B a jedno C (rovnost zůstane). Pravidla 3–8 jen prohazují, počty se nemění. Pravidlo 9 ubere B a přidá b (součet |u|_(b) + |u|_(B) stejný), pravidlo 10 obdobně pro C. Terminální slovo w nemá B ani C, takže |w|_(a) = |w|_(b) = |w|_(c). A aspoň 1: S zmizí jedině pravidlem 2, které přidá a; pravidlo S → e neexistuje, takže prázdné slovo vygenerovat nejde.\n\n**⊇:** vezměme slovo w s n ≥ 1 symboly a, b i c.\n\n1. Pravidlo 1 použijeme (n-1)krát a pravidlo 2 jednou: vznikne (aBC)^(n).\n2. Pravidly 3–8 přeskupíme symboly tak, aby slovo bylo jako w, jen s B místo b a C místo c. (Prohazováním sousedů jde vytvořit každé pořadí.)\n3. Pravidly 9 a 10 změníme všechna B na b a C na c. Dostaneme w. □\n\nV bodě 2 Chytil píše „pomocí pravidel (2) až (8)“; pravidlo 2 v té fázi už použít nejde (žádné S ve slově není), myslí zřejmě pravidla (3) až (8)."
+    },
+    {
+     "level": 3,
+     "heading": "Časté chyby a „co když…“",
+     "id": "caste-chyby-a-co-kdyz-2",
+     "body": "- Prohazovat přímo terminály (ab → ba) → není to pravidlo generativní gramatiky (vlevo žádný neterminál).\n- S → abcS ∣ abc → generuje jen abc, abcabc, …; chybí např. cab.\n- S → aSbSc ∣ abc → každé slovo začíná a, takže cab ani bca nevygeneruje (ověřeno výpočtem do délky 6: vygeneruje jen abc).\n- V odvození převést B → b příliš brzy → b se už nedá posunout a požadované pořadí nemusí jít dokončit. Nejdřív přeskupit, pak převádět.\n- *Co když se má počítat i prázdné slovo?* Stačí přidat pravidlo S → e (ověřeno výpočtem do délky 6: pak gramatika generuje přesně slova se stejným počtem a, b, c včetně e)."
+    },
+    {
+     "level": 2,
+     "heading": "Z cvičení: organizační poznámky",
+     "id": "z-cviceni-organizacni-poznamky",
+     "body": "- Příští týden už máme na programu **zásobníkové automaty**.\n- Ke zkoušce: kdo chce alespoň trojku, musí **umět definice a rozumět jim**, jinak má úplně smůlu.\n- Příští týden bude stěžejní **souvislost mezi gramatikou a zásobníkovým automatem**: naučíme se, jak k **bezkontextové gramatice sestrojit zásobníkový automat**.\n\nÚvod do zásobníkových automatů je v přednášce 2026-11-19-zasobnikove-automaty. Konstrukce zásobníkového automatu k bezkontextové gramatice (Chytil, Věta 4.5.1, s. 172) je tam v calloutu „🤖 Nad rámec přednášky (Chytil, nepřednášeno)“."
+    },
+    {
+     "level": 2,
+     "heading": "Typ gramatiky (Chomského hierarchie)",
+     "id": "typ-gramatiky-chomskeho-hierarchie",
+     "body": "Podle Chytila, Def. 3.2.1 (s. 124–125, ověřeno podle skenu); podrobně v 2026-11-12-gramatiky.\n\n**Úloha 1** (S → 0S1 ∣ 01): obě pravidla mají tvar X → γ, X ∈ Π, γ ∈ (Π ∪ Σ)^(∗), tedy je to **bezkontextová gramatika (typ 2)** [Def. 3.2.1 bod 3, s. 124]. Je i kontextová (typ 1): pravé strany jsou neprázdné a S → e chybí. Regulární (typ 3) není.\n\n**Úloha 2:** bezkontextová **není**, protože pravidla aB → Ba, aC → Ca, BC → CB a opačná mají vlevo dva symboly. Kontextová podle Chytilovy definice také ne: kontextové pravidlo α X β → α γ β přepíše **jeden** neterminál X a jeho okolí α, β nechá beze změny [Def. 3.2.1 bod 2, s. 124]. Prohození aB → Ba (nebo BC → CB) takový tvar nemá, mění se obě pozice. Formálně je to tedy **gramatika typu 0** [Def. 3.2.1 bod 1, s. 124], i když žádné její pravidlo slovo nezkracuje (pravá strana nikdy není kratší než levá).\n\n> [!note] Typ gramatiky vs. typ jazyka\n> Typ říká, jaký tvar mají **pravidla této gramatiky**. O jazyce samotném to nic neříká: tentýž jazyk může jít generovat i gramatikou vyššího typu. Jestli jazyk z úlohy 2 lze generovat kontextovou nebo bezkontextovou gramatikou, tady neověřujeme. Věta o gramatikách, jejichž pravidla nezkracují slovo, v kapitole 3 Chytila podle přepisu 03-pojem-gramatiky není (hledáno; Chytil tam má jen nevypouštějící bezkontextové gramatiky, Def. 3.2.7 a Věta 3.2.8)."
+    },
+    {
+     "level": 2,
+     "heading": "Zdroje",
+     "id": "zdroje",
+     "body": "- Zadání: Barilla, *Teorie automatů a formálních jazyků*, kap. 4, ÚKOLY 1, 2 a 3, s. 18 (PDF ve vaultu, textová vrstva). Úkol 3 zní: „Sestrojte gramatiku, která generuje jazyk tvořený slovy, která obsahují stejný počet symbolů a, b a c.“\n- Gramatika úlohy 1: Chytil, *Automaty a gramatiky*, Příklad 3.1.6 bod 1, s. 120 (ověřeno podle skenu); přepis 03-pojem-gramatiky.\n- Gramatika úlohy 2 a důkaz: Chytil, Příklad 3.1.6 bod 2, s. 120–121 (ověřeno podle skenu).\n- Chomského hierarchie: Chytil, Def. 3.2.1, s. 124–125 (ověřeno podle skenu).\n- Definice: Chytil, Def. 3.1.2 (s. 118) a Def. 3.1.5 (s. 119), jak jsou v 2026-11-12-gramatiky.\n- Chytil v témže příkladu (s. 120, bod 2) píše čísla pravidel **pod** šipku, ⇒_(1); vyučující na přednášce nad šipku. Obojí znamená totéž."
+    }
+   ]
+  }
+ }
+}

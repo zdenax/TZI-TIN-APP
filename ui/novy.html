@@ -97,7 +97,7 @@ sub, sup { font-size: .72em; line-height: 0; }
 .vyp { position: relative; }
 .vyp-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; --vyp-row: 52px; width: min(440px, calc(100vw - 32px)); padding: 14px 8px 8px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-l); box-shadow: var(--shadow); }
 .vyp-pop h2 { display: block; margin: 0 0 6px 12px; font-size: .8125rem; font-weight: 700; color: var(--muted); }
-#vyp-notes-box:not([hidden]) + h2 { margin-top: 14px; }
+.vyp-pop > div:not([hidden]) { margin-bottom: 14px; }
 /* nejvýš 8 řádků stejné výšky, zbytek se posouvá po celých řádcích; na nízkém okně se výška ořízne podle okna */
 .vyp-pop ul { list-style: none; max-height: min(calc(8 * var(--vyp-row)), calc(100dvh - 190px)); overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; }
 .vyp-pop li { height: var(--vyp-row); scroll-snap-align: start; }
@@ -115,6 +115,7 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
 .lectures li { box-sizing: border-box; display: flex; align-items: center; height: var(--lec-row); flex: none; border-bottom: 1px solid var(--line); scroll-snap-align: start; }
 .lectures li:last-child { border-bottom: 0; }
 .gl-btn { flex: none; margin: 0 8px; padding: 8px 10px; border-radius: var(--r-s); color: var(--muted); font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 560px) { .gl-btn { margin: 0 1px; padding: 8px 5px; font-size: .8125rem; } .lec { padding-right: 2px; column-gap: 8px; } .lec .d { white-space: nowrap; } }
 .lec { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); column-gap: 10px; align-content: center; align-items: center; flex: 1; min-width: 0; height: 100%; padding: 4px 8px 4px 14px; background: none; border: 0; border-radius: 0; text-align: left; }
 .lec .n { grid-row: 1 / span 2; font: 700 1.5rem/1 var(--mono); color: var(--muted); text-align: center; }
 .lec .t { grid-column: 2; font-weight: 500; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
@@ -489,7 +490,7 @@ h2 { margin: 0 0 12px; font-size: 1.0625rem; font-weight: 700; display: flex; al
       <div class="brand"><span class="mark" aria-hidden="true">10</span>
         <div><h1>TZI Trenér</h1><p>Opakování přednášek z Teoretické informatiky, KI/TIN</p></div></div>
       <nav class="topnav" aria-label="Další nástroje"><a class="chip" href="/automat">Návrhář automatů</a><a class="chip" href="/glosar?source=_all">Glosář</a><div class="vyp"><button type="button" class="chip" id="vyp-btn" aria-expanded="false" aria-controls="vyp-pop">Výpisky</button>
-        <div class="vyp-pop" id="vyp-pop" role="region" aria-label="Výpisky" hidden><div id="vyp-notes-box" hidden><h2>Výpisky z přednášek</h2><ul id="vyp-notes"></ul></div><h2>Glosáře</h2><ul id="vyp-list"></ul></div></div></nav>
+        <div class="vyp-pop" id="vyp-pop" role="region" aria-label="Výpisky" hidden><div id="vyp-notes-box" hidden><h2>Výpisky z přednášek</h2><ul id="vyp-notes"></ul></div><div id="vyp-cviko-box" hidden><h2>Příklady ze cvičení</h2><ul id="vyp-cviko"></ul></div><h2>Glosáře</h2><ul id="vyp-list"></ul></div></div></nav>
     </header>
 
     <div class="layout">
@@ -684,6 +685,7 @@ async function init() {
   sources = data.sources;
   currentSource = data.default;
   notes = await fetch('/api/vypisky').then(r => r.ok ? r.json() : { sources: [] }).then(d => d.sources).catch(() => []); // které přednášky mají výpisky
+  cviceni = await fetch('/api/cviceni').then(r => r.ok ? r.json() : { seminars: [] }).then(d => d.seminars).catch(() => []); // cvičení, od nejstaršího
   renderNotes();
   RECALL = await fetch('/api/recall').then(r => r.ok ? r.json() : []).catch(() => []); // starý server endpoint nemá
   renderLectures();
@@ -709,8 +711,15 @@ function fitLectures() { // vybraná přednáška se při prvním zobrazení vyc
 let lecScrolled = false;
 addEventListener('resize', fitLectures);
 // Výpisky: rozbalovací nabídka v hlavičce, výpisky z přednášek (jen ty, které je mají) a glosáře
-let notes = [];
+let notes = [], cviceni = [];
+const cvLast = id => cviceni.filter(c => c.bank === id).pop(); // nejnovější cvičení k přednášce
 function renderNotes() {
+  $('vyp-cviko-box').hidden = !cviceni.length;
+  $('vyp-cviko').innerHTML = cviceni.map(c => {
+    const src = sources.find(s => s.id === c.bank), n = src ? parseSource(src).n : '', t = c.title.replace(/^[^:]*: /, '').replace(/^./, x => x.toUpperCase());
+    const label = `${c.date.replace(/ \d{4}$/, '')} ${t}`;
+    return `<li><a href="/cviceni?id=${encodeURIComponent(c.id)}" title="${esc(label)}"><span class="n">${esc(n)}</span><span>${esc(label)}</span></a></li>`;
+  }).join('');
   $('vyp-notes-box').hidden = !notes.length;
   $('vyp-notes').innerHTML = sources.filter(s => notes.includes(s.id)).map(s => {
     const p = parseSource(s);
@@ -757,6 +766,7 @@ function _renderLectures() {
     return `<li><button class="lec" title="${esc(p.title)}${p.date ? ' (' + esc(p.date) + ')' : ''}" onclick="selectSource('${esc(s.id)}')" aria-pressed="${s.id === currentSource}">` +
       `<span class="n">${esc(p.n)}</span><span class="t">${esc(p.title)}</span><span class="d">${esc(p.date)}</span></button>` +
       (notes.includes(s.id) ? `<a class="gl-btn" href="/vypisky?source=${encodeURIComponent(s.id)}" aria-label="Výpisky: ${esc(p.title)}">Výpisky</a>` : '') +
+      (cvLast(s.id) ? `<a class="gl-btn" href="/cviceni?id=${encodeURIComponent(cvLast(s.id).id)}" aria-label="Cvičení: ${esc(p.title)}">Cvičení</a>` : '') +
       `<a class="gl-btn" href="/glosar?source=${encodeURIComponent(s.id)}" aria-label="Glosář: ${esc(p.title)}">Glosář</a></li>`;
   }).join('');
 }

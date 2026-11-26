@@ -21,6 +21,16 @@ function mdCallout(q) {
   return `<div class="${cls}"><div class="co-h">${head}</div>${body ? `<div class="co-b">${body}</div>` : ''}</div>`;
 }
 
+// „Časté omyly“: odrážky „- ❌ „tvrzení“ proč ✅ správně“ → karta Omyl / Správně (tvar hlídá test_glosar.js)
+function mdOmyly(items) {
+  return '<ul class="omyly">' + items.map(x => {
+    const k = x.indexOf('✅'), bad = x.slice(2, k).replace(/^❌\s*/, '').trim(), ok = x.slice(k + 1).trim();
+    const q = bad.match(/^(„[^“]*“)\s*(.*)$/), claim = q ? q[1] : bad, why = q ? q[2] : '';
+    return `<li><div class="om-bad"><span class="om-l">Omyl</span><span><s>${gInline(claim)}</s>${why ? ` <span class="om-why">${gInline(why)}</span>` : ''}</span></div>` +
+      `<div class="om-ok"><span class="om-l">Správně</span><span>${gInline(ok)}</span></div></li>`;
+  }).join('') + '</ul>';
+}
+
 function mdBlocks(L, flat) {
   const out = [], run = (re, i) => { const a = []; for (; i < L.length && re.test(L[i]); i++) a.push(L[i]); return a; };
   for (let i = 0; i < L.length; i++) {
@@ -34,7 +44,8 @@ function mdBlocks(L, flat) {
       out.push(flat ? t : `<div class="tw">${t}</div>`);
     } else if (/^- /.test(l)) {
       const items = run(/^- /, i); i += items.length - 1;
-      out.push('<ul>' + items.map(x => `<li>${gInline(x.slice(2))}</li>`).join('') + '</ul>');
+      out.push(items.every(x => /^- ❌.*✅/.test(x)) ? mdOmyly(items)
+        : '<ul>' + items.map(x => `<li>${gInline(x.slice(2))}</li>`).join('') + '</ul>');
     } else if (!flat && /^\d+\. /.test(l)) {
       const items = run(/^\d+\. /, i); i += items.length - 1;
       out.push(`<ol start="${parseInt(l, 10)}">` + items.map(x => `<li>${gInline(x.replace(/^\d+\. /, ''))}</li>`).join('') + '</ol>');
